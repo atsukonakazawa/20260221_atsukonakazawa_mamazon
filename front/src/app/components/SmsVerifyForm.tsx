@@ -1,0 +1,58 @@
+'use client';
+import { useState } from 'react';
+
+type Props = {
+    tel: string;
+    onVerify: (code: string) => void;
+};
+
+export default function SmsVerifyForm({ tel, onVerify }: Props) {
+    const [code, setCode] = useState('');
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onVerify(code);
+    };
+
+    return (
+    <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded-lg border border-[#CCCCCC] w-full max-w-[350px]"
+    >
+        <h2 className="pb-2 text-[1.3rem]">SMS認証</h2>
+
+        <p className="mb-3 text-sm text-gray-700">
+        {tel} に送信された認証コードを入力してください
+        </p>
+
+        <input
+        type="text"
+        placeholder="6桁の認証コード"
+        value={code}
+        onChange={(e) => setCode(e.target.value)}
+        className="
+            w-full
+            p-2
+            mb-3
+            rounded
+            border border-[#888C8C]
+            focus:outline-none
+        "
+        />
+
+        <button
+        type="submit"
+        className="
+            w-full
+            py-1.5
+            bg-[#FFD712]
+            text-[#111111]
+            font-medium
+            rounded-full
+        "
+        >
+        認証する
+        </button>
+    </form>
+    );
+}
