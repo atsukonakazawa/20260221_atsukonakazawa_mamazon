@@ -4,7 +4,6 @@ import Header from '../../../components/Header';
 import FooterLogin from "../../../components/FooterLogin";
 import ProductSwiper from "../../../components/ProductSwiper";
 
-
 export default async function ProductDetail({
     params,
     }: {
