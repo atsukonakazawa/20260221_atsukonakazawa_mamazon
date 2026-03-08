@@ -8,6 +8,7 @@ import { fetchProducts } from '@/lib/api/productApi';
 import useSWR from 'swr';
 import { Product } from '@/types/Product';
 import Link from 'next/link';
+import ProductCard from "../../components/ProductCard";
 
 
 export default function MyPage() {
@@ -47,24 +48,10 @@ export default function MyPage() {
                         href={`/products/${product.id}`}
                         className="w-full max-w-xs"
                     >
-                        <div className="cursor-pointer hover:shadow-lg transition p-3 border rounded">
-                            <div className="overflow-x-auto">
-                                <div className="flex gap-4">
-                                    {product.images?.map((img) => (
-                                        <img
-                                            key={img.id}
-                                            src={`http://localhost/storage/${img.image_path}`}
-                                            className=" flex-shrink-0 object-contain"
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-
-                            <p className="font-bold truncate">{product.product_name}</p>
-                            <p className="text-2xl">¥{product.product_price.toLocaleString()}</p>
-                        </div>
+                        <ProductCard product={product} />
                     </Link>
-                ))}</div>
+                    ))}
+                </div>
             </div>
 
             <FooterLogin />

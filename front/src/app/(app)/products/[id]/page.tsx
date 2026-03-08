@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { fetchProductById } from "@/lib/api/productApi";
 import Header from '../../../components/Header';
 import FooterLogin from "../../../components/FooterLogin";
+import ProductSwiper from "../../../components/ProductSwiper";
 
 
 export default async function ProductDetail({
@@ -25,16 +26,8 @@ export default async function ProductDetail({
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
                         {/* 左：商品画像 */}
-                        <div className="w-full max-w-xs mx-auto overflow-x-auto">
-                            <div className="flex gap-4">
-                                {product.images?.map((img) => (
-                                    <img
-                                        key={img.id}
-                                        src={`http://localhost/storage/${img.image_path}`}
-                                        className="w-full flex-shrink-0 object-contain"
-                                    />
-                                ))}
-                            </div>
+                        <div className="w-full max-w-xs mx-auto">
+                            <ProductSwiper images={product.images} />
                         </div>
 
                         {/* 中：商品情報 */}

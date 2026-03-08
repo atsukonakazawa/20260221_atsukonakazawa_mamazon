@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 依存関係をインストール
-RUN npm install
+RUN npm install --include=dev
 
 # アプリケーションのソースをコピー
 COPY . .
