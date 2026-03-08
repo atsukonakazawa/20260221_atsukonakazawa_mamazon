@@ -5,7 +5,7 @@ import FooterLogin from "../components/FooterLogin";
 import SmsVerifyForm from '../components/SmsVerifyForm';
 import PasswordForm from '../components/PasswordForm';
 import SignupForm from '../components/SignupForm';
-import { checkUser, sendSmsCode, verifySmsCode, registerUser, loginUser  } from '../../lib/api';
+import { checkUser, sendSmsCode, verifySmsCode, registerUser, loginUser  } from '../../lib/api/authApi';
 import type { SignupData } from '../components/SignupForm';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/UserContext';
