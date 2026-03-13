@@ -2,7 +2,7 @@
 import Header from '../../components/Header';
 import FooterLogin from "../../components/FooterLogin";
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@/lib/UserContext';
 import { fetchProducts } from '@/lib/api/productApi';
 import useSWR from 'swr';
@@ -15,10 +15,15 @@ export default function MyPage() {
     const { user } = useUser();
     const router = useRouter();
 
+    //検索ワード取得
+    const searchParams = useSearchParams();
+    const keyword = searchParams.get("keyword");
+
     //５秒ごとに自動再取得
-    const fetcher = () => fetchProducts();
+    //検索がかかったら検索内容の再取得
+    const fetcher = () => fetchProducts(keyword ?? undefined);
     const { data: products, error, isLoading } = useSWR<Product[]>(
-        'products',
+        ['products', keyword],
         fetcher,
         { refreshInterval: 5000 }
     );
@@ -40,18 +45,40 @@ export default function MyPage() {
             <Header />
 
             <div className="p-4 sm:p-8">
-                <h2 className="text-xl mb-4 font-bold">商品一覧</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center">
-                    {products.map((product) => (
-                    <Link
-                        key={product.id}
-                        href={`/products/${product.id}`}
-                        className="w-full max-w-xs"
+                <h2 className="text-xl mb-4 font-bold">
+                    {keyword ? `「${keyword}」の検索結果` : "商品一覧"}
+                </h2>
+                {products.length === 0 ? (
+                <div className="text-center py-20">
+                    <p className="text-xl font-semibold">
+                    「{keyword}」の検索結果は見つかりませんでした
+                    </p>
+
+                    <p className="text-gray-500 mt-3">
+                    別のキーワードを試してください
+                    </p>
+
+                    <button
+                    onClick={() => router.push("/mypage")}
+                    className="mt-6 px-4 py-2 bg-yellow-400 rounded cursor-pointer"
                     >
-                        <ProductCard product={product} />
-                    </Link>
-                    ))}
+                    商品一覧に戻る
+                    </button>
                 </div>
+            ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center">
+                {products.map((product) => (
+                    <Link
+                    key={product.id}
+                    href={`/products/${product.id}`}
+                    className="w-full max-w-xs cursor-pointer hover:opacity-80 active:scale-95 transition"
+                    >
+                    <ProductCard product={product} />
+                    </Link>
+                ))}
+                </div>
+            )}
+
             </div>
 
             <FooterLogin />

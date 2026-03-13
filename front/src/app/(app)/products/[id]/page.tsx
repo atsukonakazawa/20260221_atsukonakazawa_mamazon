@@ -59,6 +59,11 @@ export default async function ProductDetail({
                                 {product.seller && (
                                     <p>販売者: {product.seller.seller_name}</p>
                                 )}
+
+                                <div>
+                                    <p>説明：{product.product_description}</p>
+                                </div>
+
                             </div>
                         </div>
 
