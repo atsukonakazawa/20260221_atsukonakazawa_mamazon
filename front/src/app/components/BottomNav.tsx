@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, User, ShoppingCart, Menu, Bot } from 'lucide-react';
+import { useCart } from '@/lib/context/CartContext';
 
 export default function BottomNav() {
     const pathname = usePathname();
@@ -13,7 +14,6 @@ export default function BottomNav() {
         Icon: any
     ) => {
     const isActive = pathname === href;
-
     return (
         <Link
             href={href}
@@ -27,11 +27,34 @@ export default function BottomNav() {
         );
     };
 
+    //カート
+    const { cartItems } = useCart();
+    const totalQuantity = cartItems.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+    );
+
+
     return (
         <div className="sm:hidden fixed bottom-0 left-0 w-full bg-white border-t flex justify-around py-2 z-50">
         {navItem('/mypage', 'ホーム', Home)}
         {navItem('/account', 'アカウント', User)}
-        {navItem('/cart', 'カート', ShoppingCart)}
+        <Link
+            href="/cart"
+            className="flex flex-col items-center text-xs text-gray-600"
+            >
+            <div className="relative">
+                <ShoppingCart size={22} />
+
+                {totalQuantity > 0 && (
+                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">
+                    {totalQuantity}
+                </span>
+                )}
+            </div>
+
+            <span>カート</span>
+        </Link>
         {navItem('/menu', 'メニュー', Menu)}
         {navItem('/ai', 'AI', Bot)}
         </div>

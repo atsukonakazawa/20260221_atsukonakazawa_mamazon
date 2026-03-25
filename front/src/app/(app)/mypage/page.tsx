@@ -3,7 +3,7 @@ import Header from '../../components/Header';
 import FooterLogin from "../../components/FooterLogin";
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useUser } from '@/lib/UserContext';
+import { useUser } from '@/lib/context/UserContext';
 import { fetchProducts } from '@/lib/api/productApi';
 import useSWR from 'swr';
 import { Product } from '@/types/Product';

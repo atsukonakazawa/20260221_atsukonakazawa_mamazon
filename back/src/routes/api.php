@@ -4,8 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\SmsAuthController;
-//use App\Models\Product;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
 
 
 /*
@@ -37,3 +37,11 @@ Route::get('/products', [
     ProductController::class, 'index'
 ]);
 Route::get('/products/{id}', [ProductController::class, 'show']);
+
+//カート機能
+//Route::middleware('auth:sanctum')->group(function () {
+Route::get('/cart', [CartController::class, 'index']);
+Route::post('/cart', [CartController::class, 'store']);
+Route::patch('/cart/{id}', [CartController::class, 'update']);
+Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+//});

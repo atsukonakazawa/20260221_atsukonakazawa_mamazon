@@ -1,11 +1,12 @@
 'use client';
 
 import { Roboto_Condensed } from 'next/font/google';
-import { useUser } from '@/lib/UserContext';
+import { useUser } from '@/lib/context/UserContext';
 import Link from 'next/link';
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCart } from '@/lib/context/CartContext';
 
 // Montserrat フォントの設定
 // subsets: 文字セット（日本語は含まれないが英字のみなので問題なし）
@@ -45,6 +46,13 @@ export default function Header() {
     "哺乳瓶",
     "おしゃぶり"
   ];
+
+  //カート
+  const { cartItems } = useCart();
+  const totalQuantity = cartItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
 
   return (
     <>
@@ -111,10 +119,17 @@ export default function Header() {
               <div className="font-bold">注文履歴</div>
             </div>
 
-              {/* カート */}
-            <div className="ml-5 relative text-white cursor-pointer whitespace-nowrap">
-              <ShoppingCart size={28} strokeWidth={2} />
-            </div>
+            {/* カート */}
+            <Link href="/cart">
+              <div className="ml-5 relative text-white cursor-pointer whitespace-nowrap">
+                <ShoppingCart size={28} strokeWidth={2} />
+                {totalQuantity > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                    {totalQuantity}
+                  </span>
+                )}
+              </div>
+            </Link>
           </div>
 
           {/* 下段：横スクロール可能エリア */}

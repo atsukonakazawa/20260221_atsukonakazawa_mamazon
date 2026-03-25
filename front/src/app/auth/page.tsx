@@ -8,7 +8,8 @@ import SignupForm from '../components/SignupForm';
 import { checkUser, sendSmsCode, verifySmsCode, registerUser, loginUser  } from '../../lib/api/authApi';
 import type { SignupData } from '../components/SignupForm';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/lib/UserContext';
+import { useUser } from '@/lib/context/UserContext';
+
 
 
 export default function LoginPage() {
@@ -46,6 +47,7 @@ export default function LoginPage() {
       });
 
       setUser({
+        id: res.user.id,
         last_name: res.user.last_name,
         first_name: res.user.first_name,
         postcode: res.user.postcode,
