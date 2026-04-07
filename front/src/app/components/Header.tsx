@@ -114,10 +114,12 @@ export default function Header() {
             </div>
 
               {/* 注文履歴 */}
-            <div className="ml-5 text-white text-xs sm:text-sm cursor-pointer whitespace-nowrap">
-              <div>返品もこちら</div>
-              <div className="font-bold">注文履歴</div>
-            </div>
+            <Link href="/mypage/orders">
+              <div className="ml-5 text-white text-xs sm:text-sm cursor-pointer whitespace-nowrap">
+                <div>返品もこちら</div>
+                <div className="font-bold">注文履歴</div>
+              </div>
+            </Link>
 
             {/* カート */}
             <Link href="/cart">

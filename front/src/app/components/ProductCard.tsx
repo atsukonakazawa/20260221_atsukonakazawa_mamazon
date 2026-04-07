@@ -56,7 +56,7 @@ export default function ProductCard({ product }: Props) {
                         // 👇 修正②
                         addToCart(product.id);
                     }}
-                    className="mt-3 w-full bg-yellow-400 py-2 rounded-full hover:bg-yellow-500"
+                    className="cursor-pointer mt-3 w-full bg-yellow-400 py-2 rounded-full hover:bg-yellow-500"
                 >
                     カートに入れる
                 </button>
@@ -67,12 +67,12 @@ export default function ProductCard({ product }: Props) {
                         e.preventDefault();
                         e.stopPropagation();
                     }}
-                    className="mt-3 flex items-center justify-between border-2 border-yellow-400 rounded-full px-2 py-2"
+                    className="cursor-pointer mt-3 flex items-center justify-between border-2 border-yellow-400 rounded-full px-2 py-2"
                 >
                     <button
                         // 👇 修正③
                         onClick={() => decreaseQuantity(cartItem.id)}
-                        className="px-3 py-1 rounded-lg"
+                        className="cursor-pointer px-3 py-1 rounded-lg"
                     >
                         −
                     </button>
@@ -82,7 +82,7 @@ export default function ProductCard({ product }: Props) {
                     <button
                         // 👇 修正③
                         onClick={() => increaseQuantity(cartItem.id)}
-                        className="px-3 py-1 rounded-lg"
+                        className="cursor-pointer px-3 py-1 rounded-lg"
                     >
                         ＋
                     </button>

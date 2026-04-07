@@ -51,6 +51,7 @@ export default function LoginPage() {
         last_name: res.user.last_name,
         first_name: res.user.first_name,
         postcode: res.user.postcode,
+        address: res.user.address,
       });
 
       router.push('/mypage');

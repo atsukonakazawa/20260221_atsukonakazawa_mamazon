@@ -4,6 +4,7 @@ import { createContext, useContext, useState, ReactNode, useEffect } from 'react
 import { fetchCart, addCart, updateCart, deleteCart } from '@/lib/api/cartApi';
 import { useUser } from '@/lib/context/UserContext';
 
+
 type CartItem = {
     id: number; // 👈 cart.id
     product_id: number;
@@ -68,7 +69,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // −
     const decreaseQuantity = async (cartId: number) => {
         if (!user) return;
-        await updateCart(cartId, 'increase', user.id);
+        await updateCart(cartId, 'decrease', user.id);
         await loadCart();
     };
 
@@ -102,3 +103,4 @@ export function useCart() {
 
     return context;
 }
+

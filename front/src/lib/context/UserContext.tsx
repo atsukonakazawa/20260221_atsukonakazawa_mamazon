@@ -7,6 +7,7 @@ type User = {
     last_name: string;
     first_name: string
     postcode: string;
+    address: string;
 } | null;
 
 // ② Contextを作る
