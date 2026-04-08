@@ -355,7 +355,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
         SMSで認証コードを送信
       </button>
       <div className="mt-3 text-right">
-        <a href="/login"
+        <a href="/auth"
           className="text-sm text-[#2162A1] hover:underline">前の画面へ戻る</a>
       </div>
     </form>

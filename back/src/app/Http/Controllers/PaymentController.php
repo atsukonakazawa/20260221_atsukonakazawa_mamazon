@@ -7,6 +7,8 @@ use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\PaymentWay;
+use App\Models\PaymentStatus;
 use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
@@ -34,15 +36,34 @@ class PaymentController extends Controller
         }
     }
 
+    public function getPaymentWays()
+    {
+        return response()->json(
+            PaymentWay::where('is_active', true)->get()
+        );
+    }
+
     public function storeOrder(Request $request)
     {
         DB::beginTransaction();
 
+        //支払い方法取得
+        $paymentWay = PaymentWay::find($request->payment_way_id);
+
+        //支払い方法による分岐条件でpayment_statusを決定
+        if ($paymentWay->payment_way === 'クレジット') {
+            $paymentStatus = PaymentStatus::where('payment_status', '支払い完了')->first();
+        } elseif ($paymentWay->payment_way === 'コンビニ払い') {
+            $paymentStatus = PaymentStatus::where('payment_status', '支払い待機中')->first();
+        } else {
+            throw new \Exception('不正な支払い方法です');
+        }
+
         try {
             $order = Order::create([
                 'user_id' => $request->user_id,
-                'payment_way_id' => 2, // クレカ（仮）
-                'payment_status_id' => 2, // 支払い完了（仮）
+                'payment_way_id' => $paymentWay->id,
+                'payment_status_id' => $paymentStatus->id,
                 'shipment_status_id' => 1, // 出荷準備中（仮）
 
                 'shipping_postcode' => $request->shipping_postcode,
@@ -57,7 +78,7 @@ class PaymentController extends Controller
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $item['product_id'],
-                    'number_id' => $item['quantity'], // quantityとして使ってるならOK
+                    'number_id' => $item['quantity'],
                     'price' => $item['price'],
                 ]);
             }

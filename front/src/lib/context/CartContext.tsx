@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { fetchCart, addCart, updateCart, deleteCart } from '@/lib/api/cartApi';
+import { fetchCart, addCart, updateCart, clearCartApi } from '@/lib/api/cartApi';
 import { useUser } from '@/lib/context/UserContext';
 
 
@@ -19,7 +19,7 @@ type CartContextType = {
     addToCart: (productId: number) => Promise<void>;
     increaseQuantity: (cartId: number) => Promise<void>;
     decreaseQuantity: (cartId: number) => Promise<void>;
-    removeFromCart: (cartId: number) => Promise<void>;
+    clearCart: () => Promise<void>;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -73,10 +73,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
         await loadCart();
     };
 
-    // 削除
-    const removeFromCart = async (cartId: number) => {
-        await deleteCart(cartId);
-        await loadCart();
+    //カートを空にする
+    const clearCart = async () => {
+        if (!user) return;
+        await clearCartApi(user.id);
+        setCartItems([]); // ← これ重要（画面更新）
     };
 
     return (
@@ -86,7 +87,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 addToCart,
                 increaseQuantity,
                 decreaseQuantity,
-                removeFromCart,
+                clearCart,
             }}
         >
             {children}

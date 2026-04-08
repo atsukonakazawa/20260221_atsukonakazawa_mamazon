@@ -32,8 +32,18 @@ export async function updateCart(
 }
 
 // 削除
-export async function deleteCart(cartId: number) {
-    return apiFetch(`/api/cart/${cartId}`, {
+export const clearCartApi = async (userId: number) => {
+    const res = await fetch('http://localhost/api/cart/clear', {
         method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_id: userId }),
     });
-}
+
+    if (!res.ok) {
+        throw new Error('カート削除失敗');
+    }
+
+    return res.json();
+};

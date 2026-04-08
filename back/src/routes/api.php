@@ -45,10 +45,11 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/cart', [CartController::class, 'index']);
 Route::post('/cart', [CartController::class, 'store']);
 Route::patch('/cart/{id}', [CartController::class, 'update']);
-Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+Route::delete('/cart/clear', [CartController::class, 'clear']);
 //});
 
 //購入
+Route::get('/payment-ways', [PaymentController::class, 'getPaymentWays']);
 Route::post('/payment', [PaymentController::class, 'pay']);
 Route::post('/order', [PaymentController::class, 'storeOrder']);
 Route::get('/orders', [OrderController::class, 'index']);

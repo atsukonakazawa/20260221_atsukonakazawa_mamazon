@@ -17,7 +17,7 @@ class PaymentStatusesTableSeeder extends Seeder
         $paymentStatus = [
             'ポイント適用済み',
             '支払い完了',
-            'あと払い（ペイディ）待機中',
+            '支払い待機中',
             '返金手続き中',
             '返金完了',
         ];

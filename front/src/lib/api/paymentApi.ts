@@ -9,3 +9,7 @@ export async function createPayment(amount: number, paymentMethodId: string) {
         }),
     });
 }
+
+export const getPaymentWays = async () => {
+    return await apiFetch('/api/payment-ways');
+};

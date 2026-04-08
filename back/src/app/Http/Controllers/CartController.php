@@ -72,4 +72,13 @@ class CartController extends Controller
 
         return response()->json(['message' => 'deleted']);
     }
+
+    public function clear(Request $request)
+    {
+        \App\Models\Cart::where('user_id', $request->user_id)->delete();
+
+        return response()->json([
+            'message' => 'カートを空にしました'
+        ]);
+    }
 }

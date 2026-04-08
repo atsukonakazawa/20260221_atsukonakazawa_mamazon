@@ -19,7 +19,7 @@ class PaymentWaysTableSeeder extends Seeder
             'クレジット',
             'PayPay',
             'オリコ分割払い',
-            'あと払い（ペイディ）',
+            'コンビニ払い',
             '携帯電話会社請求払い',
             'メルペイ',
         ];

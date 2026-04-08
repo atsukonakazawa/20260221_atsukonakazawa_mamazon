@@ -23,3 +23,5 @@ back/docker/mysql/data/
 .vscode/
 .env
 .DS_Store
+/vendor
+/back/vendor

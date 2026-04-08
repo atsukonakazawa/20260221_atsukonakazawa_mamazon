@@ -3,18 +3,18 @@
 import Header from '../../components/Header';
 import FooterLogin from "../../components/FooterLogin";
 import { useCart } from '@/lib/context/CartContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CheckoutForm from '../../components/CheckoutForm';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import { createPayment } from '@/lib/api/paymentApi';
+import { createPayment, getPaymentWays } from '@/lib/api/paymentApi';
 import { createOrder } from '@/lib/api/orderApi';
 import { useUser } from '@/lib/context/UserContext';
 import { useRouter } from 'next/navigation';
 
 
 export default function CheckoutPage() {
-    const { cartItems } = useCart();
+    const { cartItems, clearCart } = useCart();
 
     // 小計
     const subtotal = cartItems.reduce((sum, item) => {
@@ -28,7 +28,17 @@ export default function CheckoutPage() {
     const total = subtotal + shipping;
 
     //支払い方法
-    const [paymentMethod, setPaymentMethod] = useState('credit');
+    const [paymentWays, setPaymentWays] = useState<any[]>([]);
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getPaymentWays();
+            setPaymentWays(data);
+        };
+        fetchData();
+    }, []);
+
+    //注文時にpayment_statusを決定するためpayment_wayを取得
+    const [selectedPaymentWayId, setSelectedPaymentWayId] = useState<number | null>(null);
 
     //Stripe初期化
     const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY!);
@@ -41,7 +51,6 @@ export default function CheckoutPage() {
     const router = useRouter();
 
     const handleOrder = async () => {
-        console.log(cartItems);
         if (!paymentMethodId) {
             alert('カード情報を入力してください');
             return;
@@ -61,6 +70,7 @@ export default function CheckoutPage() {
             } else if (result.paymentIntent.status === 'succeeded') {
                 await createOrder({
                     user_id: user ? user.id : null,
+                    payment_way_id: selectedPaymentWayId,
                     total_price: total,
                     items: cartItems.map(item => ({
                         product_id: item.product_id,
@@ -73,6 +83,7 @@ export default function CheckoutPage() {
                     sender: user ? user.last_name + user.first_name : "",
                 });
 
+                await clearCart();
                 router.push('/checkout/complete');
 
             }
@@ -122,55 +133,34 @@ export default function CheckoutPage() {
                 <div className="border p-6 rounded space-y-4 mt-6">
                     <h2 className="text-lg font-bold">支払い方法</h2>
 
-                    <label className="flex items-center gap-3 cursor-pointer">
-                        <input
-                            type="radio"
-                            name="payment"
-                            value="credit"
-                            checked={paymentMethod === 'credit'}
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                        />
-                        <span>クレジットカード</span>
-                    </label>
+                    {paymentWays.map((way) => (
+                        <div key={way.id}>
+                            <label className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="payment"
+                                    value={way.id}
+                                    checked={selectedPaymentWayId === way.id}
+                                    onChange={() => setSelectedPaymentWayId(way.id)}
+                                />
+                                <span>{way.payment_way}</span>
+                            </label>
 
+                            {/* クレカ */}
+                                {selectedPaymentWayId === way.id && way.payment_way === 'クレジット' && (
+                                    <Elements stripe={stripePromise}>
+                                        <CheckoutForm setPaymentMethodId={setPaymentMethodId} />
+                                    </Elements>
+                                )}
 
-                    {/* クレジットカード情報入力欄 */}
-                    {paymentMethod === 'credit' && (
-                        <Elements stripe={stripePromise}>
-                            <CheckoutForm
-                                setPaymentMethodId={setPaymentMethodId}
-                            />
-                        </Elements>
-                    )}
-
-                    <label className="flex items-center gap-3 cursor-pointer">
-                        <input
-                            type="radio"
-                            name="payment"
-                            value="convenience"
-                            checked={paymentMethod === 'convenience'}
-                            onChange={(e) => setPaymentMethod(e.target.value)}
-                        />
-                        <span>コンビニ払い</span>
-                    </label>
-                    {/* 💳 コンビニ払いの説明 */}
-                    <div className="mt-4">
-
-                        {/* コンビニ払い */}
-                        {paymentMethod === 'convenience' && (
-                            <div className="bg-gray-100 p-4 rounded text-sm leading-relaxed">
-                                <p>
-                                    ご注文後にお支払い番号が発行されます。
-                                </p>
-                                <p>
-                                    お近くのコンビニでお支払いください。
-                                </p>
-                                <p>
-                                    ※支払い期限を過ぎると自動キャンセルとなります。
-                                </p>
-                            </div>
-                        )}
-                    </div>
+                                {/* コンビニ */}
+                                {selectedPaymentWayId === way.id && way.payment_way === 'コンビニ払い' && (
+                                    <div className="bg-gray-100 p-4 rounded text-sm">
+                                        コンビニでお支払いください
+                                    </div>
+                                )}
+                        </div>
+                    ))}
                 </div>
             </div>
 
