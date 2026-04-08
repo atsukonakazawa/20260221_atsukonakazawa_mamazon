@@ -1,0 +1,25 @@
+# ========================
+# Laravel
+# ========================
+back/src/vendor/
+back/src/node_modules/
+back/src/storage/
+back/src/bootstrap/cache/
+
+# ========================
+# Next.js
+# ========================
+front/node_modules/
+front/.next/
+
+# ========================
+# Docker / MySQL
+# ========================
+back/docker/mysql/data/
+
+# ========================
+# その他
+# ========================
+.vscode/
+.env
+.DS_Store
