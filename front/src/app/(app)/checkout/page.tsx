@@ -51,46 +51,71 @@ export default function CheckoutPage() {
     const router = useRouter();
 
     const handleOrder = async () => {
-        if (!paymentMethodId) {
-            alert('カード情報を入力してください');
+
+        if (!selectedPaymentWayId) {
+            alert('支払い方法を選択してください');
             return;
         }
 
         try {
-            const data = await createPayment(total, paymentMethodId);
 
-            const stripe = await stripePromise;
+            // 💳 クレジットカードの場合
+            if (paymentWays.find(w => w.id === selectedPaymentWayId)?.payment_way === 'クレジット') {
 
-            const result = await stripe!.confirmCardPayment(data.clientSecret, {
-                payment_method: paymentMethodId,
-            });
+                if (!paymentMethodId) {
+                    alert('カード情報を入力してください');
+                    return;
+                }
 
-            if (result.error) {
-                alert(result.error.message);
-            } else if (result.paymentIntent.status === 'succeeded') {
-                await createOrder({
-                    user_id: user ? user.id : null,
-                    payment_way_id: selectedPaymentWayId,
-                    total_price: total,
-                    items: cartItems.map(item => ({
-                        product_id: item.product_id,
-                        quantity: item.quantity,
-                        price: item.price,
-                    })),
-                    shipping_postcode: user ? user.postcode : "",
-                    shipping_address: user ? user.address : "",
-                    shipping_name: user ? user.last_name + user.first_name : "",
-                    sender: user ? user.last_name + user.first_name : "",
+                const data = await createPayment(total, paymentMethodId);
+
+                const stripe = await stripePromise;
+
+                const result = await stripe!.confirmCardPayment(data.clientSecret, {
+                    payment_method: paymentMethodId,
                 });
 
-                await clearCart();
-                router.push('/checkout/complete');
+                if (result.error) {
+                    alert(result.error.message);
+                    return;
+                }
 
+                if (result.paymentIntent.status !== 'succeeded') {
+                    alert('決済に失敗しました');
+                    return;
+                }
             }
+
+            // 🧾 注文作成（クレカでもコンビニでも共通）
+            const res = await createOrder({
+                user_id: user ? user.id : null,
+                payment_way_id: selectedPaymentWayId,
+                total_price: total,
+                items: cartItems.map(item => ({
+                    product_id: item.product_id,
+                    quantity: item.quantity,
+                    price: item.price,
+                })),
+                shipping_postcode: user ? user.postcode : "",
+                shipping_address: user ? user.address : "",
+                shipping_name: user ? user.last_name + user.first_name : "",
+                sender: user ? user.last_name + user.first_name : "",
+            });
+
+            await clearCart();
+
+            const selectedWay = paymentWays.find(w => w.id === selectedPaymentWayId);
+
+            if (selectedWay?.payment_way === 'コンビニ払い') {
+                router.push(`/checkout/complete?number=${res.payment_number}&limit=${res.payment_limit}`);
+            } else {
+                router.push('/checkout/complete');
+            }
+
 
         } catch (error) {
             console.error(error);
-            alert('決済エラー');
+            alert('エラーが発生しました');
         }
     };
 
@@ -156,7 +181,8 @@ export default function CheckoutPage() {
                                 {/* コンビニ */}
                                 {selectedPaymentWayId === way.id && way.payment_way === 'コンビニ払い' && (
                                     <div className="bg-gray-100 p-4 rounded text-sm">
-                                        コンビニでお支払いください
+                                    コンビニでお支払いください。
+                                    お支払い確認後に商品発送となります。
                                     </div>
                                 )}
                         </div>

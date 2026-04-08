@@ -47,10 +47,10 @@ class PaymentController extends Controller
     {
         DB::beginTransaction();
 
-        //支払い方法取得
+        // 支払い方法取得
         $paymentWay = PaymentWay::find($request->payment_way_id);
 
-        //支払い方法による分岐条件でpayment_statusを決定
+        // 支払いステータス決定
         if ($paymentWay->payment_way === 'クレジット') {
             $paymentStatus = PaymentStatus::where('payment_status', '支払い完了')->first();
         } elseif ($paymentWay->payment_way === 'コンビニ払い') {
@@ -59,12 +59,22 @@ class PaymentController extends Controller
             throw new \Exception('不正な支払い方法です');
         }
 
+        // ✅ コンビニ払い関係の値を初期化
+        $paymentNumber = null;
+        $limitDate = null;
+
+        // ✅ コンビニのときだけ生成
+        if ($paymentWay->payment_way === 'コンビニ払い') {
+            $paymentNumber = str_pad(mt_rand(0, 999999999), 9, '0', STR_PAD_LEFT);
+            $limitDate = now()->addDays(3);
+        }
+
         try {
             $order = Order::create([
                 'user_id' => $request->user_id,
                 'payment_way_id' => $paymentWay->id,
                 'payment_status_id' => $paymentStatus->id,
-                'shipment_status_id' => 1, // 出荷準備中（仮）
+                'shipment_status_id' => 1,
 
                 'shipping_postcode' => $request->shipping_postcode,
                 'shipping_address' => $request->shipping_address,
@@ -72,6 +82,10 @@ class PaymentController extends Controller
                 'sender' => $request->sender,
 
                 'total_price' => $request->total_price,
+
+                // ✅ DB保存も分岐
+                'payment_number' => $paymentNumber,
+                'payment_limit' => $limitDate,
             ]);
 
             foreach ($request->items as $item) {
@@ -85,7 +99,12 @@ class PaymentController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => '注文保存成功']);
+            // ✅ フロントに返す値も分岐
+            return response()->json([
+                'message' => '注文保存成功',
+                'payment_number' => $paymentNumber,
+                'payment_limit' => $limitDate,
+            ]);
         } catch (\Exception $e) {
             DB::rollback();
 
