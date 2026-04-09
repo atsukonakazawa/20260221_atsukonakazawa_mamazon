@@ -4,28 +4,19 @@ import Header from '../../components/Header';
 import FooterLogin from "../../components/FooterLogin";
 import { useCart } from '@/lib/context/CartContext';
 import { useState, useEffect } from 'react';
-import CheckoutForm from '../../components/CheckoutForm';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
 import { createPayment, getPaymentWays } from '@/lib/api/paymentApi';
 import { createOrder } from '@/lib/api/orderApi';
 import { useUser } from '@/lib/context/UserContext';
 import { useRouter } from 'next/navigation';
+import PaymentMethodSelector from '../../components/purchase/PaymentMethodSelector';
+import { loadStripe } from '@stripe/stripe-js';
+import OrderSummary from '../../components/purchase/OrderSummary';
+import ShippingInfo from '../../components/purchase/ShippingInfo';
 
 
 export default function CheckoutPage() {
+    //カートの中身取得
     const { cartItems, clearCart } = useCart();
-
-    // 小計
-    const subtotal = cartItems.reduce((sum, item) => {
-        return sum + item.price * item.quantity;
-    }, 0);
-
-    // 配送料（今回は0円）
-    const shipping = 0;
-
-    // 合計
-    const total = subtotal + shipping;
 
     //支払い方法
     const [paymentWays, setPaymentWays] = useState<any[]>([]);
@@ -40,17 +31,16 @@ export default function CheckoutPage() {
     //注文時にpayment_statusを決定するためpayment_wayを取得
     const [selectedPaymentWayId, setSelectedPaymentWayId] = useState<number | null>(null);
 
-    //Stripe初期化
-    const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY!);
-
     //カード情報保存
     const [paymentMethodId, setPaymentMethodId] = useState<string | null>(null);
 
-    //paymentApiからデータを受け取り注文を確定する
+    //stripeを初期化
+    const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY!);
+
+    //paymentApiからデータを受け取り注文確定
     const { user } = useUser();
     const router = useRouter();
-
-    const handleOrder = async () => {
+    const handleOrder = async (total: number) => {
 
         if (!selectedPaymentWayId) {
             alert('支払い方法を選択してください');
@@ -68,9 +58,7 @@ export default function CheckoutPage() {
                 }
 
                 const data = await createPayment(total, paymentMethodId);
-
                 const stripe = await stripePromise;
-
                 const result = await stripe!.confirmCardPayment(data.clientSecret, {
                     payment_method: paymentMethodId,
                 });
@@ -96,10 +84,10 @@ export default function CheckoutPage() {
                     quantity: item.quantity,
                     price: item.price,
                 })),
-                shipping_postcode: user ? user.postcode : "",
-                shipping_address: user ? user.address : "",
-                shipping_name: user ? user.last_name + user.first_name : "",
-                sender: user ? user.last_name + user.first_name : "",
+                shipping_postcode: shippingInfo.shipping_postcode,
+                shipping_address: shippingInfo.shipping_address,
+                shipping_name: shippingInfo.shipping_name,
+                sender: shippingInfo.sender,
             });
 
             await clearCart();
@@ -119,6 +107,13 @@ export default function CheckoutPage() {
         }
     };
 
+    const [shippingInfo, setShippingInfo] = useState({
+        shipping_postcode: '',
+        shipping_address: '',
+        shipping_name: '',
+        sender: '',
+    });
+
     return (
         <>
             <Header />
@@ -126,70 +121,33 @@ export default function CheckoutPage() {
             <div className="p-6 max-w-2xl mx-auto">
                 <h1 className="text-2xl font-bold mb-6">注文確認</h1>
 
-                {/* 💰 金額エリア */}
-                <div className="border p-6 rounded space-y-4">
-
-                    {/* ボタン（次ステップ用） */}
-                    <button
-                        onClick={handleOrder}
-                        className="mt-3 mb-10 w-full bg-yellow-400 hover:bg-yellow-500 py-3 rounded-full font-bold cursor-pointer">
-                        注文を確定する
-                    </button>
-
-                    <div className="flex justify-between">
-                        <span>商品の小計：</span>
-                        <span>¥{subtotal.toLocaleString()}円</span>
-                    </div>
-
-                    <div className="flex justify-between">
-                        <span>配送料・手数料：</span>
-                        <span>¥{shipping.toLocaleString()}円</span>
-                    </div>
-
-                    <hr />
-
-                    <div className="flex justify-between text-xl font-bold">
-                        <span>ご請求額：</span>
-                        <span>¥{total.toLocaleString()}円</span>
-                    </div>
-                </div>
+                {/* 💰 金額エリアと確定ボタン */}
+                <OrderSummary
+                    cartItems={cartItems}
+                    onOrder={handleOrder}
+                />
 
                 {/* 💳 支払い方法 */}
-                <div className="border p-6 rounded space-y-4 mt-6">
-                    <h2 className="text-lg font-bold">支払い方法</h2>
+                <PaymentMethodSelector
+                    paymentWays={paymentWays}
+                    selectedPaymentWayId={selectedPaymentWayId}
+                    setSelectedPaymentWayId={setSelectedPaymentWayId}
+                    setPaymentMethodId={setPaymentMethodId}
+                />
 
-                    {paymentWays.map((way) => (
-                        <div key={way.id}>
-                            <label className="flex items-center gap-3 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="payment"
-                                    value={way.id}
-                                    checked={selectedPaymentWayId === way.id}
-                                    onChange={() => setSelectedPaymentWayId(way.id)}
-                                />
-                                <span>{way.payment_way}</span>
-                            </label>
-
-                            {/* クレカ */}
-                                {selectedPaymentWayId === way.id && way.payment_way === 'クレジット' && (
-                                    <Elements stripe={stripePromise}>
-                                        <CheckoutForm setPaymentMethodId={setPaymentMethodId} />
-                                    </Elements>
-                                )}
-
-                                {/* コンビニ */}
-                                {selectedPaymentWayId === way.id && way.payment_way === 'コンビニ払い' && (
-                                    <div className="bg-gray-100 p-4 rounded text-sm">
-                                    コンビニでお支払いください。
-                                    お支払い確認後に商品発送となります。
-                                    </div>
-                                )}
-                        </div>
-                    ))}
-                </div>
+                {/* 📮 配送情報 */}
+                <ShippingInfo
+                    initialPostcode={user?.postcode || ''}
+                    initialAddress={user?.address || ''}
+                    initialShippingName={
+                        user ? `${user.last_name}${user.first_name}` : ''
+                    }
+                    initialSender={
+                        user ? `${user.last_name}${user.first_name}` : ''
+                    }
+                    onChange={setShippingInfo}
+                />
             </div>
-
             <FooterLogin />
         </>
     );

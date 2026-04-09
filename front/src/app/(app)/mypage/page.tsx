@@ -8,7 +8,7 @@ import { fetchProducts } from '@/lib/api/productApi';
 import useSWR from 'swr';
 import { Product } from '@/types/Product';
 import Link from 'next/link';
-import ProductCard from "../../components/ProductCard";
+import ProductCard from "../../components/products/ProductCard";
 
 
 export default function MyPage() {

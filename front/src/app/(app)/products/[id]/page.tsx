@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { fetchProductById } from "@/lib/api/productApi";
 import Header from '../../../components/Header';
 import FooterLogin from "../../../components/FooterLogin";
-import ProductSwiper from "../../../components/ProductSwiper";
-import AddToCartButton from '../../../components/AddToCartButton';
+import ProductSwiper from "../../../components/products/ProductSwiper";
+import AddToCartButton from '../../../components/products/AddToCartButton';
 
 export default async function ProductDetail({
     params,

@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import HeaderLogin from '../components/HeaderLogin';
 import FooterLogin from "../components/FooterLogin";
-import SmsVerifyForm from '../components/SmsVerifyForm';
-import PasswordForm from '../components/PasswordForm';
-import SignupForm from '../components/SignupForm';
+import SmsVerifyForm from '../components/login/SmsVerifyForm';
+import PasswordForm from '../components/login/PasswordForm';
+import SignupForm from '../components/login/SignupForm';
 import { checkUser, sendSmsCode, verifySmsCode, registerUser, loginUser  } from '../../lib/api/authApi';
-import type { SignupData } from '../components/SignupForm';
+import type { SignupData } from '../components/login/SignupForm';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/context/UserContext';
 
