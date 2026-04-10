@@ -62,7 +62,7 @@ export default function PaymentMethodSelector({
                     {selectedPaymentWayId === way.id &&
                         way.payment_way === 'コンビニ払い' && (
                             <div className="bg-gray-100 p-4 rounded text-sm">
-                                コンビニでお支払いください。
+                            注文履歴からお支払い番号をご確認の上、コンビニでお支払いください。<br/>
                                 お支払い確認後に商品発送となります。
                             </div>
                         )}

@@ -53,7 +53,6 @@ export default function ProductCard({ product }: Props) {
                         e.preventDefault();
                         e.stopPropagation();
 
-                        // 👇 修正②
                         addToCart(product.id);
                     }}
                     className="cursor-pointer mt-3 w-full bg-yellow-400 py-2 rounded-full hover:bg-yellow-500"

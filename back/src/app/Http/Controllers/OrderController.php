@@ -9,7 +9,11 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $orders = Order::with('items.product.images')
+        $orders = Order::with([
+            'items.product.images',
+            'shipmentStatus',
+            'paymentStatus'
+        ])
             ->where('user_id', $request->user_id)
             ->latest()
             ->get();
