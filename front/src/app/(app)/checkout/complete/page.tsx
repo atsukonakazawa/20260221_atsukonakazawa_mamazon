@@ -6,11 +6,19 @@ import FooterLogin from "../../../components/FooterLogin";
 import Link from 'next/link';
 
 export default function OrderCompletePage() {
-
     const searchParams = useSearchParams();
 
     const paymentNumber = searchParams.get('number');
     const paymentLimit = searchParams.get('limit');
+    const confirmationNumber = searchParams.get('confirmation');
+    // 支払い期限のフォーマット（秒数を表示しない）
+    const formattedLimit = paymentLimit
+        ? new Date(paymentLimit).toLocaleString('ja-JP', {
+                dateStyle: 'short',
+                timeStyle: 'short',
+                hour12: false,
+            })
+        : null;
 
     return (
         <>
@@ -34,9 +42,17 @@ export default function OrderCompletePage() {
                             お支払い番号：{paymentNumber}
                         </p>
 
-                        <p>
-                            支払い期限：{paymentLimit}
-                        </p>
+                        {confirmationNumber && (
+                            <p>
+                                確認番号：{confirmationNumber}
+                            </p>
+                        )}
+
+                        {formattedLimit && (
+                            <p>
+                                支払い期限：{formattedLimit}
+                            </p>
+                        )}
                     </div>
                 )}
 

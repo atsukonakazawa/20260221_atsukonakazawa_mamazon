@@ -12,7 +12,8 @@ class OrderController extends Controller
         $orders = Order::with([
             'items.product.images',
             'shipmentStatus',
-            'paymentStatus'
+            'paymentStatus',
+            'paymentWay'
         ])
             ->where('user_id', $request->user_id)
             ->latest()

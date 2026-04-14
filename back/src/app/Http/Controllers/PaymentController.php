@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PaymentWay;
 use App\Models\PaymentStatus;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
@@ -59,14 +60,35 @@ class PaymentController extends Controller
             throw new \Exception('不正な支払い方法です');
         }
 
-        // ✅ コンビニ払い関係の値を初期化
+        // コンビニ払い関係の値を初期化
         $paymentNumber = null;
+        $confirmationNumber = null;
         $limitDate = null;
 
-        // ✅ コンビニのときだけ生成
+        // ユーザー情報取得
+        $user = User::findOrFail($request->user_id);
+
+        // コンビニのときだけ生成
         if ($paymentWay->payment_way === 'コンビニ払い') {
+            //支払い番号(9桁)
             $paymentNumber = str_pad(mt_rand(0, 999999999), 9, '0', STR_PAD_LEFT);
-            $limitDate = now()->addDays(3);
+
+            //支払い期限(3日後の23:59:59)
+            $limitDate = now()->addDays(3)->endOfDay();
+
+            // 電話番号から確認番号を生成
+            $phoneNumber = $user->phone_number;
+
+            // 数字以外を削除
+            $cleanPhoneNumber = preg_replace('/\D/', '', $phoneNumber);
+
+            // 下6桁を取得
+            $confirmationNumber = substr($cleanPhoneNumber, -6);
+
+            // 桁数不足時は0埋め
+            if (strlen($confirmationNumber) < 6) {
+                $confirmationNumber = str_pad($confirmationNumber, 6, '0', STR_PAD_LEFT);
+            }
         }
 
         try {
@@ -83,8 +105,8 @@ class PaymentController extends Controller
 
                 'total_price' => $request->total_price,
 
-                // ✅ DB保存も分岐
                 'payment_number' => $paymentNumber,
+                'confirmation_number' => $confirmationNumber,
                 'payment_limit' => $limitDate,
             ]);
 
@@ -99,10 +121,11 @@ class PaymentController extends Controller
 
             DB::commit();
 
-            // ✅ フロントに返す値も分岐
+            // フロントに返すレスポンス
             return response()->json([
                 'message' => '注文保存成功',
                 'payment_number' => $paymentNumber,
+                'confirmation_number' => $confirmationNumber,
                 'payment_limit' => $limitDate,
             ]);
         } catch (\Exception $e) {

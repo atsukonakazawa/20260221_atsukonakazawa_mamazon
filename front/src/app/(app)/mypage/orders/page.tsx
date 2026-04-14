@@ -6,9 +6,16 @@ import { useUser } from '@/lib/context/UserContext';
 import useSWR from 'swr';
 import { fetchOrders } from '@/lib/api/orderApi';
 import Link from 'next/link';
+import { useState, useRef } from 'react';
+
 
 export default function OrdersPage() {
     const { user } = useUser();
+
+    //支払い番号表示用のuseStateを追加
+    const [paymentMessage, setPaymentMessage] = useState<string | null>(null);
+    //支払い番号表示時に画面上部に自動スクロール
+    const messageRef = useRef<HTMLDivElement | null>(null);
 
     const { data: orders, isLoading } = useSWR(
         user ? ['orders', user.id] : null,
@@ -29,8 +36,41 @@ export default function OrdersPage() {
             shipping_address: order.shipping_address,
             shipment_status: order.shipment_status?.shipment_status || "準備中",
             payment_status: order.payment_status?.payment_status || "支払確認中",
+            payment_method: order.payment_way?.payment_way,
+            payment_number: order.payment_number,
+            confirmation_number: order.confirmation_number,
+            payment_limit:order.payment_limit,
         }))
     );
+
+    //支払い番号表示ボタン押下時の処理
+    const handlePaymentInfo = (item: any) => {
+        if (item.payment_method === 'コンビニ払い') {
+            setPaymentMessage(
+                `注文番号：${item.order_id}
+                お支払い番号：${item.payment_number}
+                確認番号：${item.confirmation_number}
+                お支払い期限：${new Date(item.payment_limit).toLocaleString('ja-JP', {
+                    dateStyle: 'short',
+                    timeStyle: 'short',
+                    hour12: false,
+                })
+                }`
+            );
+        } else {
+            setPaymentMessage(
+                `すでに${item.payment_method}で支払い済みです。`
+            );
+        }
+        // 描画後にスクロール
+        setTimeout(() => {
+            messageRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+            });
+        }, 100);
+
+    };
 
     return (
         <>
@@ -38,6 +78,14 @@ export default function OrdersPage() {
 
             <div className="p-6 max-w-3xl mx-auto">
                 <h1 className="text-2xl font-bold mb-6">注文履歴</h1>
+
+                {paymentMessage && (
+                    <div
+                        ref={messageRef}
+                        className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded whitespace-pre-line">
+                        {paymentMessage}
+                    </div>
+                )}
 
                 {orders.length === 0 ? (
                     <p>注文履歴がありません</p>
@@ -151,6 +199,7 @@ export default function OrdersPage() {
                                             テスト
                                         </button>
                                         <button
+                                            onClick={() => handlePaymentInfo(item)}
                                             className="cursor-pointer my-1 p-1 text-sm w-full rounded-full border border-black-100"
                                         >
                                             お支払い番号の確認

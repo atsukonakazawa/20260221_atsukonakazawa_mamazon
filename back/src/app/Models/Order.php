@@ -20,6 +20,7 @@ class Order extends Model
         'sender',
         'total_price',
         'payment_number',
+        'confirmation_number',
         'payment_limit',
     ];
 
