@@ -74,6 +74,6 @@ return [
         |  - Sanctum を使った SPA 認証
         |  - Laravel のセッション Cookie を使う場合
      */
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];

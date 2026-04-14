@@ -2,13 +2,14 @@
 import { useState } from 'react';
 import HeaderLogin from '../components/HeaderLogin';
 import FooterLogin from "../components/FooterLogin";
-import SmsVerifyForm from '../components/SmsVerifyForm';
-import PasswordForm from '../components/PasswordForm';
-import SignupForm from '../components/SignupForm';
+import SmsVerifyForm from '../components/login/SmsVerifyForm';
+import PasswordForm from '../components/login/PasswordForm';
+import SignupForm from '../components/login/SignupForm';
 import { checkUser, sendSmsCode, verifySmsCode, registerUser, loginUser  } from '../../lib/api/authApi';
-import type { SignupData } from '../components/SignupForm';
+import type { SignupData } from '../components/login/SignupForm';
 import { useRouter } from 'next/navigation';
-import { useUser } from '@/lib/UserContext';
+import { useUser } from '@/lib/context/UserContext';
+
 
 
 export default function LoginPage() {
@@ -46,9 +47,11 @@ export default function LoginPage() {
       });
 
       setUser({
+        id: res.user.id,
         last_name: res.user.last_name,
         first_name: res.user.first_name,
         postcode: res.user.postcode,
+        address: res.user.address,
       });
 
       router.push('/mypage');

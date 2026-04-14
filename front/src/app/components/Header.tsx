@@ -1,9 +1,12 @@
 'use client';
 
 import { Roboto_Condensed } from 'next/font/google';
-import { useUser } from '@/lib/UserContext';
+import { useUser } from '@/lib/context/UserContext';
 import Link from 'next/link';
 import { ShoppingCart } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCart } from '@/lib/context/CartContext';
 
 // Montserrat フォントの設定
 // subsets: 文字セット（日本語は含まれないが英字のみなので問題なし）
@@ -16,14 +19,49 @@ const robotoCondensed = Roboto_Condensed({
 export default function Header() {
   const { user } = useUser();
 
+  //検索状態
+  const [keyword, setKeyword] = useState("");
+  const router = useRouter();
+
+  //検索実行関数
+  const handleSearch = () => {
+    if (!keyword) return;
+    router.push(`/mypage?keyword=${encodeURIComponent(keyword)}`);
+  };
+
+  //よく使われるワードで検索(クイック検索)
+  const handleQuickSearch = (word: string) => {
+    router.push(`/mypage?keyword=${encodeURIComponent(word)}`);
+  };
+  const quickWords = [
+    "ネットスーパー",
+    "リラックス",
+    "Prime Video",
+    "おむつ",
+    "ミルク",
+    "クリーム",
+    "ハーブティー",
+    "おやつ",
+    "おしりふき",
+    "哺乳瓶",
+    "おしゃぶり"
+  ];
+
+  //カート
+  const { cartItems } = useCart();
+  const totalQuantity = cartItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+
   return (
     <>
       <header
-        className={`${robotoCondensed.className}  pt-0 py-4 px-0`}
+        className={`${robotoCondensed.className}  pt-0 p-4 px-0`}
       >
         {/* PC用ヘッダー */}
-        <div className="hidden sm:flex bg-[#131921] py-3 px-5">
-          <div className="flex w-full pt-2 items-center">
+        <div className="hidden sm:flex flex-col">
+          <div className="flex w-full p-3 items-center bg-[#131921] ">
 
               {/* ロゴ */}
             <Link href="/mypage">
@@ -53,9 +91,18 @@ export default function Header() {
               <input
                 type="text"
                 placeholder="mamazonで検索"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearch();
+                  }
+                }}
                 className="w-full px-3 py-2 rounded-l-md bg-white text-black outline-none"
               />
-              <button className="bg-yellow-400 px-4 rounded-r-md">
+              <button
+                onClick={handleSearch}
+                className="bg-yellow-400 px-4 rounded-r-md cursor-pointer active:scale-95 transition">
                 🔍
               </button>
             </div>
@@ -67,14 +114,40 @@ export default function Header() {
             </div>
 
               {/* 注文履歴 */}
-            <div className="ml-5 text-white text-xs sm:text-sm cursor-pointer whitespace-nowrap">
-              <div>返品もこちら</div>
-              <div className="font-bold">注文履歴</div>
-            </div>
+            <Link href="/mypage/orders">
+              <div className="ml-5 text-white text-xs sm:text-sm cursor-pointer whitespace-nowrap">
+                <div>返品もこちら</div>
+                <div className="font-bold">注文履歴</div>
+              </div>
+            </Link>
 
-              {/* カート */}
-            <div className="ml-5 relative text-white cursor-pointer whitespace-nowrap">
-              <ShoppingCart size={28} strokeWidth={2} />
+            {/* カート */}
+            <Link href="/cart">
+              <div className="ml-5 relative text-white cursor-pointer whitespace-nowrap">
+                <ShoppingCart size={28} strokeWidth={2} />
+                {totalQuantity > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                    {totalQuantity}
+                  </span>
+                )}
+              </div>
+            </Link>
+          </div>
+
+          {/* 下段：横スクロール可能エリア */}
+          <div className="flex gap-3 m-3 overflow-x-auto whitespace-nowrap no-scrollbar">
+
+            {/* クイックサーチ */}
+            <div className="flex gap-3 overflow-x-auto whitespace-nowrap no-scrollbar">
+              {quickWords.map((word) => (
+                <button
+                  key={word}
+                  onClick={() => handleQuickSearch(word)}
+                  className="px-3 py-1 border rounded-full text-sm cursor-pointer active:scale-95 transition bg-white"
+                >
+                  {word}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -87,9 +160,18 @@ export default function Header() {
             <input
               type="text"
               placeholder="mamazonで検索"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleSearch();
+                }
+              }}
               className="w-full px-3 py-2 border rounded-l-md outline-none"
             />
-            <button className="bg-yellow-400 px-4 rounded-r-md">
+            <button
+              onClick={handleSearch}
+              className="bg-yellow-400 px-4 rounded-r-md cursor-pointer active:scale-95 transition">
               🔍
             </button>
           </div>
@@ -97,27 +179,18 @@ export default function Header() {
           {/* 下段：横スクロール可能エリア */}
           <div className="flex gap-3 overflow-x-auto whitespace-nowrap no-scrollbar">
 
-            {/* 郵便番号ボタン */}
-            <button className="px-3 py-1 border rounded-full text-sm">
-              📍 123-4567
-            </button>
-
-            <button className="px-3 py-1 border rounded-full text-sm">
-              ネットスーパー
-            </button>
-
-            <button className="px-3 py-1 border rounded-full text-sm">
-              プライム
-            </button>
-
-            <button className="px-3 py-1 border rounded-full text-sm">
-              Prime Video
-            </button>
-
-            <button className="px-3 py-1 border rounded-full text-sm">
-              ああああああああああああaaaaaaaaaaaaaaaa
-            </button>
-
+            {/* クイックサーチ */}
+            <div className="flex gap-3 overflow-x-auto whitespace-nowrap no-scrollbar">
+              {quickWords.map((word) => (
+                <button
+                  key={word}
+                  onClick={() => handleQuickSearch(word)}
+                  className="px-3 py-1 border rounded-full text-sm cursor-pointer active:scale-95 transition"
+                >
+                  {word}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </header>

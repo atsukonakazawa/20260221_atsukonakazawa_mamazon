@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { fetchProductById } from "@/lib/api/productApi";
 import Header from '../../../components/Header';
 import FooterLogin from "../../../components/FooterLogin";
-import ProductSwiper from "../../../components/ProductSwiper";
-
+import ProductSwiper from "../../../components/products/ProductSwiper";
+import AddToCartButton from '../../../components/products/AddToCartButton';
 
 export default async function ProductDetail({
     params,
@@ -40,6 +40,10 @@ export default async function ProductDetail({
                                 ¥{product.product_price.toLocaleString()}
                             </div>
 
+                            <div className="md:hidden mt-4">
+                                <AddToCartButton product={product} />
+                            </div>
+
                             <div className="mt-4">
                                 {product.category && (
                                     <p>カテゴリー: {product.category.category_name}</p>
@@ -60,16 +64,20 @@ export default async function ProductDetail({
                                 {product.seller && (
                                     <p>販売者: {product.seller.seller_name}</p>
                                 )}
+
+                                <div>
+                                    <p>説明：{product.product_description}</p>
+                                </div>
                             </div>
                         </div>
 
                         {/* 右：カート */}
-                        <div className="border p-6 h-fit">
+                        <div className="hidden md:block border p-6 h-fit">
                             <h2 className="text-xl font-bold">
                                 カート
                             </h2>
+                            <AddToCartButton product={product} />
                         </div>
-
                     </div>
                 </div>
 

@@ -19,6 +19,9 @@ class Order extends Model
         'shipping_name',
         'sender',
         'total_price',
+        'payment_number',
+        'confirmation_number',
+        'payment_limit',
     ];
 
     // リレーション

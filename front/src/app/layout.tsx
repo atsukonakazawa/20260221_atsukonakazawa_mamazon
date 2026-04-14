@@ -1,10 +1,9 @@
-// グローバルCSSを読み込む（全ページに適用）
 import './globals.css';
 // Google Fonts から Montserrat フォントを読み込む
 import { Roboto_Condensed } from 'next/font/google';
-// Next.js の Metadata 型
 import type { Metadata } from 'next';
-import { UserProvider } from '@/lib/UserContext';
+import { UserProvider } from '@/lib/context/UserContext';
+import { CartProvider } from '@/lib/context/CartContext';
 
 // Roboto_Condensed フォントの設定
 const robotoCondensed = Roboto_Condensed({
@@ -30,7 +29,9 @@ export default function RootLayout({
     <html lang="ja">
       <body className={robotoCondensed.className}>
         <UserProvider>
-          {children}
+          <CartProvider>
+            {children}
+          </CartProvider>
         </UserProvider>
       </body>
     </html>

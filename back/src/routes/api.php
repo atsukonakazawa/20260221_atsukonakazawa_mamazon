@@ -4,8 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\SmsAuthController;
-//use App\Models\Product;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\OrderController;
 
 
 /*
@@ -37,3 +39,17 @@ Route::get('/products', [
     ProductController::class, 'index'
 ]);
 Route::get('/products/{id}', [ProductController::class, 'show']);
+
+//カート機能 機能を完成させてから認証を追加する
+//Route::middleware('auth:sanctum')->group(function () {
+Route::get('/cart', [CartController::class, 'index']);
+Route::post('/cart', [CartController::class, 'store']);
+Route::patch('/cart/{id}', [CartController::class, 'update']);
+Route::delete('/cart/clear', [CartController::class, 'clear']);
+//});
+
+//購入
+Route::get('/payment-ways', [PaymentController::class, 'getPaymentWays']);
+Route::post('/payment', [PaymentController::class, 'pay']);
+Route::post('/order', [PaymentController::class, 'storeOrder']);
+Route::get('/orders', [OrderController::class, 'index']);

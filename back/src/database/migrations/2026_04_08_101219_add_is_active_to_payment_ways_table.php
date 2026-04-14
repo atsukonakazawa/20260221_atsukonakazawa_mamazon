@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePaymentWaysTable extends Migration
+class AddIsActiveToPaymentWaysTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreatePaymentWaysTable extends Migration
      */
     public function up()
     {
-        Schema::create('payment_ways', function (Blueprint $table) {
-            $table->id();
-            $table->string('payment_way');
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
+        Schema::table('payment_ways', function (Blueprint $table) {
+            //
         });
     }
 
@@ -28,6 +25,8 @@ class CreatePaymentWaysTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('payment_ways');
+        Schema::table('payment_ways', function (Blueprint $table) {
+            //
+        });
     }
 }
