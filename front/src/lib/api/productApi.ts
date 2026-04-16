@@ -11,6 +11,6 @@ export async function fetchProducts(keyword?: string): Promise<Product[]> {
 }
 
 // 商品詳細
-export async function fetchProductById(id: string): Promise<Product> {
+export async function fetchProductById(id: number): Promise<Product> {
     return apiFetch(`/api/products/${id}`);
 }

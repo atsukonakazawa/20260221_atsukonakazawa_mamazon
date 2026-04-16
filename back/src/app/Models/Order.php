@@ -39,7 +39,7 @@ class Order extends Model
     }
     public function shipmentStatus()
     {
-        return $this->belongsTo(ShipmentStatus::class);
+        return $this->belongsTo(ShipmentStatus::class, 'shipment_status_id');
     }
     public function items()
     {

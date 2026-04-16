@@ -60,7 +60,7 @@ export default function OrderCompletePage() {
                     href="/mypage"
                     className="bg-yellow-400 px-6 py-3 rounded font-bold"
                 >
-                    商品一覧へ戻る
+                    ホーム
                 </Link>
             </div>
 

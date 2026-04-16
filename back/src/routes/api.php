@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReviewController;
 
 
 /*
@@ -46,6 +47,10 @@ Route::get('/cart', [CartController::class, 'index']);
 Route::post('/cart', [CartController::class, 'store']);
 Route::patch('/cart/{id}', [CartController::class, 'update']);
 Route::delete('/cart/clear', [CartController::class, 'clear']);
+
+//レビュー
+Route::get('/reviews/create/{productId}', [ReviewController::class, 'create']);
+Route::post('/reviews', [ReviewController::class, 'store']);
 //});
 
 //購入
