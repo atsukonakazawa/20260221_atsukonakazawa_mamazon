@@ -9,6 +9,17 @@ use App\Models\User;
 
 class ReviewController extends Controller
 {
+    //レビュー一覧表示
+    public function index($productId)
+    {
+        $reviews = Review::with('user')
+            ->where('product_id', $productId)
+            ->latest()
+            ->get();
+
+        return response()->json($reviews);
+    }
+
     // レビュー投稿可否確認
     public function create(Request $request, $productId)
     {

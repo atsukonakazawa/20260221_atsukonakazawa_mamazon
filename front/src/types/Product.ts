@@ -51,6 +51,9 @@ export type Product = {
 
     created_at: string;
     updated_at: string;
+
+    reviews_avg_score?: number;
+    reviews_count?: number;
 };
 
 export type ProductImage = {

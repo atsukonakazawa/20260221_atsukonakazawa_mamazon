@@ -49,12 +49,13 @@ Route::patch('/cart/{id}', [CartController::class, 'update']);
 Route::delete('/cart/clear', [CartController::class, 'clear']);
 
 //レビュー
+Route::get('/products/{id}/reviews', [ReviewController::class, 'index']);
 Route::get('/reviews/create/{productId}', [ReviewController::class, 'create']);
 Route::post('/reviews', [ReviewController::class, 'store']);
-//});
 
 //購入
 Route::get('/payment-ways', [PaymentController::class, 'getPaymentWays']);
 Route::post('/payment', [PaymentController::class, 'pay']);
 Route::post('/order', [PaymentController::class, 'storeOrder']);
 Route::get('/orders', [OrderController::class, 'index']);
+//});
