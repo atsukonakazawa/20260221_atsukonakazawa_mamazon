@@ -58,4 +58,44 @@ class SmsAuthController extends Controller
             'message' => '認証成功'
         ]);
     }
+
+    public function sendForReset(Request $request)
+    {
+        // ① バリデーション
+        $request->validate([
+            'tel' => 'required|string'
+        ]);
+
+        // ② ユーザー確認
+        $user = User::where('tel', $request->tel)->first();
+
+        if ($user) {
+            // ③ コード生成
+            $code = rand(100000, 999999);
+
+            // ④ SMS認証テーブル更新
+            SmsVerification::updateOrCreate(
+                ['tel' => $request->tel],
+                [
+                    'code' => $code,
+                    'expires_at' => now()->addMinutes(5),
+                ]
+            );
+
+            // ⑤ SMS送信（本番用）
+            // sendSms($request->tel, $code);
+
+            // 開発用ログ（あとで消す）
+            logger('RESET SMS CODE', [
+                'tel' => $request->tel,
+                'code' => $code
+            ]);
+        }
+
+        // ⑥ 常に同じレスポンス（超重要）
+        return response()->json([
+            'message' => '認証コードを送信しました',
+            'debug_code' => $code,
+        ]);
+    }
 }

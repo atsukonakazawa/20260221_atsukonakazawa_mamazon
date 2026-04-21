@@ -61,6 +61,34 @@ export default function AccountEditPage() {
             return;
         }
 
+        //変更検知
+        const isTelChanged = tel !== user.tel;
+        const isEmailChanged = email !== user.email;
+        const isPasswordChanged = !!password;
+        const isNameChanged =
+            lastName !== user.last_name ||
+            firstName !== user.first_name;
+        const isAddressChanged =
+            postcode !== user.postcode ||
+            address !== user.address;
+        const isPlacementChanged =
+            placement !== user.placement ||
+            placeOfPlacement !== user.place_of_placement;
+
+        //何も変更がない場合は変更処理しない
+        const isNothingChanged =
+            !isTelChanged &&
+            !isEmailChanged &&
+            !isPasswordChanged &&
+            !isNameChanged &&
+            !isAddressChanged &&
+            !isPlacementChanged;
+
+        if (isNothingChanged) {
+            alert('変更箇所がありません');
+            return;
+        }
+
         //apiに送信するデータを作成
         //passwordは安全のため入力時だけ追加し、空なら送らない
         const data: UpdateUserRequest = {
@@ -76,9 +104,6 @@ export default function AccountEditPage() {
             ...(password && { password }),
         };
 
-        //電話番号・メールアドレスの変更検知
-        const isTelChanged = tel !== user.tel;
-        const isEmailChanged = email !== user.email;
         //パスワード・電話番号・メールアドレスどれか変更があればsmsを送る
         const needSms = !!password || isTelChanged || isEmailChanged;
 

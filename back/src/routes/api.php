@@ -61,4 +61,6 @@ Route::get('/orders', [OrderController::class, 'index']);
 
 //アカウント情報の変更
 Route::put('/user', [AuthController::class, 'update']);
+Route::post('/sms/send-for-reset', [SmsAuthController::class, 'sendForReset']);
+Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 //});

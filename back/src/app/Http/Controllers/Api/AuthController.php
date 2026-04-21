@@ -143,4 +143,19 @@ class AuthController extends Controller
 
         return response()->json($user);
     }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'tel' => 'required',
+            'password' => 'required|min:6',
+        ]);
+
+        $user = User::where('tel', $request->tel)->firstOrFail();
+
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        return response()->json(['message' => 'ok']);
+    }
 }

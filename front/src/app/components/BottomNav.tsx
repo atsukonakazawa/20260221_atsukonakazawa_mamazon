@@ -44,7 +44,7 @@ export default function BottomNav() {
                 {navItem('/mypage', 'ホーム', Home)}
 
                 {/* アカウントボタン */}
-                {navItem('/account', 'アカウント', User)}
+                {navItem('/mypage/account', 'アカウント', User)}
 
                 {/* カートボタン */}
                 <Link

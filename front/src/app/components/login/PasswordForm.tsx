@@ -32,8 +32,16 @@ export default function PasswordForm({ emailOrPhone, onSubmit }: Props) {
         ログイン
       </button>
       <div className="mt-3 text-right">
-        <a href="/login"
+        <a href="/auth"
           className="text-sm text-[#2162A1] hover:underline">前の画面へ戻る</a>
+      </div>
+      <div className="mt-3 text-right">
+        <a
+          href="/auth/password-reset/request"
+          className="text-sm text-[#2162A1] hover:underline"
+        >
+          パスワードを忘れてしまった場合
+          </a>
       </div>
     </form>
   );

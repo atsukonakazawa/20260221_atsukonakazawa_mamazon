@@ -78,3 +78,14 @@ export async function loginUser(data: {
         body: JSON.stringify(data),
     });
 }
+
+//パスワードリセット用SMS送信
+export async function sendSmsCodeForReset(payload: { tel: string }) {
+    return apiFetch("/api/sms/send-for-reset", {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    });
+}
