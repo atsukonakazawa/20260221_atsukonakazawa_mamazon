@@ -89,13 +89,6 @@ export default function LoginPage() {
     // ③SMS認証画面へ
     setStep('smsVerify');
 
-    //await registerUser({
-    //  email: userInput,
-    //  ...data,
-    //});
-
-    //alert('アカウント登録が完了しました');
-    //setStep('password');
   };
   const handleVerify = async (code: string) => {
     if (!pendingSignup) return;

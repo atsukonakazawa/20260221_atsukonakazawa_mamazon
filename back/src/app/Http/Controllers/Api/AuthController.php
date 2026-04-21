@@ -37,11 +37,6 @@ class AuthController extends Controller
             'placement' => 'boolean',
         ]);
 
-        // email / tel 判定
-        //$field = filter_var($request->email, FILTER_VALIDATE_EMAIL)
-        //    ? 'email'
-        //    : 'tel';
-
         //bcryptをつけることでパスワードがハッシュ化
         $user = User::create([
             'first_name' => $request->first_name,
