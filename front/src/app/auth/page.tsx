@@ -13,24 +13,32 @@ import { useUser } from '@/lib/context/UserContext';
 
 
 export default function LoginPage() {
+  //フォーム入力の状態管理
+  const [userInput, setUserInput] = useState<string>("");
+
+  //一時データ保存（２段階処理をするために重要）
+  const [pendingSignup, setPendingSignup] =
+    useState<SignupData | null>(null);
+
+  //フローに応じて画面切り替え
   const [step, setStep] = useState<
     'inputUser' | 'password' | 'signup' | 'smsVerify'
     >('inputUser');
-  const [userInput, setUserInput] = useState<string>("");
-  const [pendingSignup, setPendingSignup] =
-    useState<SignupData | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const { setUser } = useUser();
   const router = useRouter();
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
+    //未入力の場合
     if (!userInput.trim()) {
       setErrorMessage("電話番号またはメールアドレスを入力してください");
       return;
     }
     try {
+      //user存在確認し、その後のフローを決定
       const { exists } = await checkUser(userInput);
       setErrorMessage("");
       if (exists) setStep("password");
@@ -90,11 +98,12 @@ export default function LoginPage() {
     setStep('smsVerify');
 
   };
+
   const handleVerify = async (code: string) => {
     if (!pendingSignup) return;
 
     try {
-      //①SMSコード検証
+      //SMSコード検証
       const result = await verifySmsCode({
         tel: pendingSignup.tel!,
         code,
@@ -105,13 +114,13 @@ export default function LoginPage() {
         return;
       }
 
-      // ②必須項目チェック
+      // 必須項目チェック
       if (!pendingSignup.email || !pendingSignup.tel) {
         alert('メールアドレスまたは電話番号がを入力してください');
         return;
       }
 
-      // ③本登録
+      // 本登録
       await registerUser({
         email: pendingSignup.email, // string に確定
         tel: pendingSignup.tel,     // string に確定
@@ -125,7 +134,7 @@ export default function LoginPage() {
         place_of_placement: pendingSignup.place_of_placement,
       });
 
-      //④次へ
+      //次へ
       alert('アカウント登録が完了しました');
       setStep('password');
     } catch(e) {

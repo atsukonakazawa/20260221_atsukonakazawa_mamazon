@@ -28,8 +28,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 //チェックユーザー、アカウント登録、ログイン
 Route::post('/check-user', [AuthController::class, 'checkUser']);
+Route::post('/check-email', [AuthController::class, 'checkEmail']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
 
 //SMS認証
 Route::post('/sms/send', [SmsAuthController::class, 'send']);

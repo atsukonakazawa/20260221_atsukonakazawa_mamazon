@@ -13,6 +13,17 @@ export async function checkUser(emailOrPhone: string) {
     });
 }
 
+// メールアドレス重複チェック
+export async function checkEmail(email: string): Promise<{ exists: boolean }> {
+    return apiFetch("/api/check-email", {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+    });
+}
+
 // SMS認証コード送信
 export async function sendSmsCode(payload: {
     tel: string;
@@ -89,3 +100,4 @@ export async function sendSmsCodeForReset(payload: { tel: string }) {
         body: JSON.stringify(payload),
     });
 }
+

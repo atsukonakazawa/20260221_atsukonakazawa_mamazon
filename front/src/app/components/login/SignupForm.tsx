@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { checkEmail } from '../../../lib/api/authApi';
 
 /**
  * 親（LoginPage）や API に渡す正式データ型
@@ -36,11 +37,14 @@ type Props = {
 };
 
 
-
 export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
 
   // props が使えるのはここから
   const isEmail = emailOrPhone.includes('@');
+
+  //メールアドレスの入力状態管理
+  const [emailError, setEmailError] = useState<string>('');
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
   // useState はコンポーネント内で使う
   const [form, setForm] = useState<SignupFormState>({
@@ -76,6 +80,11 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
 
     if (form.password !== form.password_confirm) {
       alert('パスワードが一致しません');
+      return;
+    }
+
+    if (emailError) {
+      alert('メールアドレスを確認してください');
       return;
     }
 
@@ -173,9 +182,6 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       <input
         type="email"
         value={form.email}
-        onChange={(e) =>
-          setForm({ ...form, email: e.target.value })
-        }
         className="
           w-full
           p-2
@@ -185,9 +191,44 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
           focus:outline-none
           focus:bg-[#F6FEFF]
           focus:shadow-[0_0_5px_5px_#C8F3FA]
-          transition-all
-        "
+          transition-all"
+        onChange={(e) => {
+          const value = e.target.value;
+
+          // 入力値更新
+          setForm({ ...form, email: value });
+
+          // 前のタイマーを止める
+          if (timer) clearTimeout(timer);
+
+          // 0.5秒後にAPI実行
+          const newTimer = setTimeout(async () => {
+            if (!value) {
+              setEmailError('');
+              return;
+            }
+
+            try {
+              const res = await checkEmail(value);
+
+              if (res.exists) {
+                setEmailError('このメールアドレスはすでに使われています');
+              } else {
+                setEmailError('');
+              }
+            } catch {
+              setEmailError('');
+            }
+          }, 500);
+
+          setTimer(newTimer);
+        }}
       />
+      {emailError && (
+        <p className="text-red-500 text-sm mb-2">
+          {emailError}
+        </p>
+      )}
 
       {/* パスワード入力欄 */}
       <label className="block mb-1 font-bold text-[0.9rem]">
