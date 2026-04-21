@@ -135,6 +135,12 @@ class AuthController extends Controller
             'email' => $request->email,
         ]);
 
+        if ($request->filled('password')) {
+            $user->update([
+                'password' => bcrypt($request->password),
+            ]);
+        }
+
         return response()->json($user);
     }
 }
