@@ -8,27 +8,42 @@ type User = {
     first_name: string
     postcode: string;
     address: string;
+    tel?: string;
+    placement: boolean;
+    place_of_placement?: string;
+    email: string;
 } | null;
 
-// ② Contextを作る
-const UserContext = createContext<{
+// ② Contextの型を定義
+type UserContextType = {
     user: User;
-    setUser: (user: User) => void;
-}>({
+    setUser: React.Dispatch<React.SetStateAction<User>>;
+    logout: () => void;
+};
+
+//③ Contextを作る
+const UserContext = createContext<UserContextType>({
     user: null,
-    setUser: () => {},
+    setUser: () => { },
+    logout: () => {},
 });
 
-// ③ Provider（アプリ全体を包む）
+// ④ Provider（アプリ全体を包む）
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User>(null);
 
+    //logout
+    const logout = () => {
+        localStorage.removeItem('token'); // トークン削除（あれば）
+        setUser(null);
+    };
+
     return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, logout }}>
         {children}
     </UserContext.Provider>
     );
 };
 
-// ④ 使いやすくするためのHook
+// ⑤ 使いやすくするためのHook
 export const useUser = () => useContext(UserContext);

@@ -39,6 +39,7 @@ export default function LoginPage() {
       setErrorMessage("ユーザー確認に失敗しました。もう一度試してください。");
     }
   };
+
   const handleLogin = async (password: string) => {
     try {
       const res = await loginUser({
@@ -52,6 +53,10 @@ export default function LoginPage() {
         first_name: res.user.first_name,
         postcode: res.user.postcode,
         address: res.user.address,
+        tel: res.user.tel,
+        placement: res.user.placement,
+        place_of_placement: res.user.place_of_placement,
+        email: res.user.email,
       });
 
       router.push('/mypage');
@@ -66,6 +71,7 @@ export default function LoginPage() {
       alert(err.message ?? 'ログイン失敗');
     }
   };
+
   const handleSignup = async (data: SignupData) => {
     if (!data.tel) {
       alert('電話番号がありません');

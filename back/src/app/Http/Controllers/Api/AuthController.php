@@ -38,9 +38,9 @@ class AuthController extends Controller
         ]);
 
         // email / tel 判定
-        $field = filter_var($request->email, FILTER_VALIDATE_EMAIL)
-            ? 'email'
-            : 'tel';
+        //$field = filter_var($request->email, FILTER_VALIDATE_EMAIL)
+        //    ? 'email'
+        //    : 'tel';
 
         //bcryptをつけることでパスワードがハッシュ化
         $user = User::create([
@@ -101,5 +101,40 @@ class AuthController extends Controller
             'message' => 'ログイン成功',
             'user' => $user,
         ]);
+    }
+
+    public function update(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if (!$user) {
+            return response()->json([
+                'message' => '未認証'
+            ], 401);
+        }
+
+        $request->validate([
+            'last_name'  => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'postcode'   => 'nullable|string|max:7',
+            'address'    => 'nullable|string|max:255',
+            'tel' => 'nullable|string|max:20',
+            'placement' => 'nullable|boolean',
+            'place_of_placement' => 'nullable|string|max:255',
+            'email' => 'nullable|string|max:255',
+        ]);
+
+        $user->update([
+            'last_name'  => $request->last_name,
+            'first_name' => $request->first_name,
+            'postcode'   => $request->postcode,
+            'address'    => $request->address,
+            'tel' => $request->tel,
+            'placement' => $request->placement,
+            'place_of_placement' => $request->place_of_placement,
+            'email' => $request->email,
+        ]);
+
+        return response()->json($user);
     }
 }

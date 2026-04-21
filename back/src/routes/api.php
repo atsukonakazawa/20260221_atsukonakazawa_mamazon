@@ -58,4 +58,7 @@ Route::get('/payment-ways', [PaymentController::class, 'getPaymentWays']);
 Route::post('/payment', [PaymentController::class, 'pay']);
 Route::post('/order', [PaymentController::class, 'storeOrder']);
 Route::get('/orders', [OrderController::class, 'index']);
+
+//アカウント情報の変更
+Route::put('/user', [AuthController::class, 'update']);
 //});

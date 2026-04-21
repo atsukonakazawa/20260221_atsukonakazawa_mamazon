@@ -61,7 +61,7 @@ export default function Header() {
       >
         {/* PC用ヘッダー */}
         <div className="hidden sm:flex flex-col">
-          <div className="flex w-full p-3 items-center bg-[#131921] ">
+          <div className="flex w-full p-3 items-center bg-[#8B82B6] ">
 
               {/* ロゴ */}
             <Link href="/mypage">
@@ -76,7 +76,7 @@ export default function Header() {
               {/* お届け先 */}
             <div className="ml-5 text-white text-xs sm:text-sm leading-tight whitespace-nowrap">
               <div>
-                お届け先 {user ? user.last_name : 'ゲスト'}
+                お届け先 {user ? user.last_name : ''}
                 {user ? user.first_name : ''}さん
               </div>
               <div className="text-[10px] sm:text-xs">
@@ -108,10 +108,15 @@ export default function Header() {
             </div>
 
               {/* アカウント＆リスト */}
-            <div className="ml-5 text-white text-xs sm:text-sm cursor-pointer whitespace-nowrap">
-              <div>こんにちは,</div>
-              <div className="font-bold">アカウント＆リスト</div>
-            </div>
+            <Link href="/mypage/account">
+              <div className="ml-5 text-white text-xs sm:text-sm cursor-pointer whitespace-nowrap">
+                <div>
+                  {user ? user.last_name : ''}
+                  {user ? user.first_name : ''}さん
+                </div>
+                <div className="font-bold">アカウント＆リスト</div>
+              </div>
+            </Link>
 
               {/* 注文履歴 */}
             <Link href="/mypage/orders">
