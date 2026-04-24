@@ -53,6 +53,10 @@ export default function SmsVerifyForm({ tel, onVerify }: Props) {
         >
         認証する
         </button>
+        <div className="mt-3 text-right">
+            <a href="/auth"
+            className="text-sm text-[#2162A1] hover:underline">最初の画面へ戻る</a>
+        </div>
     </form>
     );
 }

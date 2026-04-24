@@ -5,16 +5,23 @@ import FooterLogin from "../components/FooterLogin";
 import SmsVerifyForm from '../components/login/SmsVerifyForm';
 import PasswordForm from '../components/login/PasswordForm';
 import SignupForm from '../components/login/SignupForm';
-import { checkUser, sendSmsCode, verifySmsCode, registerUser, loginUser  } from '../../lib/api/authApi';
+import {
+  checkUser,
+  sendSmsCode,
+  verifySmsCode,
+  registerUser,
+  loginUser
+} from '../../lib/api/authApi';
 import type { SignupData } from '../components/login/SignupForm';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/context/UserContext';
-
+import { isValidPhone, isValidEmail, normalizePhone } from '@/lib/utils/validation';
 
 
 export default function LoginPage() {
-  //フォーム入力の状態管理
   const [userInput, setUserInput] = useState<string>("");
+  const [normalizedInput, setNormalizedInput] = useState("");
+  const [isEmail, setIsEmail] = useState(false);
 
   //一時データ保存（２段階処理をするために重要）
   const [pendingSignup, setPendingSignup] =
@@ -25,60 +32,101 @@ export default function LoginPage() {
     'inputUser' | 'password' | 'signup' | 'smsVerify'
     >('inputUser');
 
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const { setUser } = useUser();
   const router = useRouter();
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const handleNext = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
 
-    //未入力の場合
-    if (!userInput.trim()) {
+  //===========================
+  //入り口処理
+  //===========================
+
+  //(e: React.SyntheticEvent<HTMLFormElement>)・・・form上の何らかのイベント
+  const handleNext = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    //無駄なリロードを止める
+    e.preventDefault();
+
+    const input = userInput.trim();
+
+    // 未入力の場合
+    if (!input) {
       setErrorMessage("電話番号またはメールアドレスを入力してください");
       return;
     }
+
+    //メールアドレスや電話番号らしき値が入力されているかチェック
+    const emailCheck = isValidEmail(input);
+    const phoneCheck = isValidPhone(input);
+
+    if (!emailCheck && !phoneCheck) {
+      setErrorMessage("正しいメールアドレスまたは電話番号を入力してください");
+      return;
+    }
+
+    //正規化
+    const normalized = phoneCheck ? normalizePhone(input) : input;
+
+    //正規化された電話番号またはメールアドレスを状態に保存
+    setNormalizedInput(normalized);
+    setIsEmail(emailCheck);
+
     try {
-      //user存在確認し、その後のフローを決定
-      const { exists } = await checkUser(userInput);
+      //userの存在を確認し、その後のフローを決定
+      const { exists } = await checkUser(normalized);
       setErrorMessage("");
+
       if (exists) setStep("password");
       else setStep("signup");
+
     } catch {
       setErrorMessage("ユーザー確認に失敗しました。もう一度試してください。");
     }
   };
 
+  //===========================
+  //ログイン
+  //===========================
+
   const handleLogin = async (password: string) => {
+    setErrorMessage("");
+
+    //未入力の場合
+    if (!password.trim()) {
+      setErrorMessage("パスワードを入力してください");
+      return;
+    }
+
     try {
       const res = await loginUser({
-        email: userInput,
+        email: normalizedInput,
         password,
       });
 
-      setUser({
-        id: res.user.id,
-        last_name: res.user.last_name,
-        first_name: res.user.first_name,
-        postcode: res.user.postcode,
-        address: res.user.address,
-        tel: res.user.tel,
-        placement: res.user.placement,
-        place_of_placement: res.user.place_of_placement,
-        email: res.user.email,
-      });
-
+      setUser(res.user);
       router.push('/mypage');
 
     } catch (err: any) {
+
       // 🔑 SMS未認証
       if (err.status === 403) {
         alert('SMS認証が必要です');
         setStep('smsVerify');
         return;
       }
+
+      // ❌ パスワード不一致（401）
+      if (err.status === 401) {
+        setErrorMessage("パスワードが一致しません");
+        return;
+      }
+
       alert(err.message ?? 'ログイン失敗');
     }
   };
+
+  //===========================
+  //新規登録
+  //===========================
 
   const handleSignup = async (data: SignupData) => {
     if (!data.tel) {
@@ -99,6 +147,10 @@ export default function LoginPage() {
 
   };
 
+  //===========================
+  //SMS認証
+  //===========================
+
   const handleVerify = async (code: string) => {
     if (!pendingSignup) return;
 
@@ -114,29 +166,25 @@ export default function LoginPage() {
         return;
       }
 
-      // 必須項目チェック
+      // 必須チェック（ここ超重要）
       if (!pendingSignup.email || !pendingSignup.tel) {
-        alert('メールアドレスまたは電話番号がを入力してください');
+        alert('メールアドレスと電話番号は必須です');
         return;
       }
 
-      // 本登録
-      await registerUser({
-        email: pendingSignup.email, // string に確定
-        tel: pendingSignup.tel,     // string に確定
-        password: pendingSignup.password,
-        first_name: pendingSignup.first_name,
-        last_name: pendingSignup.last_name,
-        postcode: pendingSignup.postcode,
-        address: pendingSignup.address,
-        date_of_birth: pendingSignup.date_of_birth,
-        placement: pendingSignup.placement,
-        place_of_placement: pendingSignup.place_of_placement,
-      });
+      // 型を確定させる（RegisterPayloadに合わせる）
+      const payload = {
+        ...pendingSignup,
+        email: pendingSignup.email,
+        tel: pendingSignup.tel,
+      };
 
-      //次へ
+      // 本登録
+      await registerUser(payload);
+
       alert('アカウント登録が完了しました');
       setStep('password');
+
     } catch(e) {
       alert('通信エラーが発生しました。もう一度お試しください');
     }
@@ -164,12 +212,6 @@ export default function LoginPage() {
               サインインまたはアカウントを作成
             </h2>
 
-            {errorMessage && (
-              <p className="text-red-600 text-sm mb-2 ">
-                {errorMessage}
-              </p>
-            )}
-
             <label className="block mb-1 font-bold text-[0.9rem]">
               携帯電話番号またはメールアドレスを入力
             </label>
@@ -194,6 +236,13 @@ export default function LoginPage() {
                 transition-all
               "
             />
+
+            {errorMessage && (
+              <p className="text-red-600 text-sm mb-2 ">
+                {errorMessage}
+              </p>
+            )}
+
             <button
               type="submit"
               className="
@@ -254,10 +303,12 @@ export default function LoginPage() {
         {step === 'password' &&
           <PasswordForm
             emailOrPhone={userInput}
-            onSubmit={handleLogin} />}
+            onSubmit={handleLogin}
+            errorMessage={errorMessage}/>}
         {step === 'signup' &&
           <SignupForm
-            emailOrPhone={userInput}
+            emailOrPhone={normalizedInput}
+            isEmail={isEmail}
             onSubmit={handleSignup} />}
       </main>
 

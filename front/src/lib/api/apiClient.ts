@@ -10,14 +10,19 @@ const API_BASE =
     const res = await fetch(`${API_BASE}${path}`, {
         ...options,
         headers: {
-            'Content-Type': 'application/json', // 👈 これ追加
+            'Content-Type': 'application/json',
             ...(options.headers || {}),
         },
     });
 
+    const data = await res.json();
+
     if (!res.ok) {
-        throw new Error("API Error");
+        throw {
+        status: res.status,
+        message: data.message,
+        };
     }
 
-    return res.json();
+    return data;
 }

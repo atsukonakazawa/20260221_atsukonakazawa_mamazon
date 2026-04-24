@@ -1,6 +1,13 @@
 'use client';
 import React, { useState } from 'react';
 import { checkEmail } from '../../../lib/api/authApi';
+import {
+  isValidEmail,
+  isValidPhone,
+  isValidPassword,
+  isValidPostcode,
+  normalizePhone
+} from '@/lib/utils/validation';
 
 /**
  * 親（LoginPage）や API に渡す正式データ型
@@ -23,7 +30,7 @@ export type SignupData = {
 * 確認用パスワードは API に渡さない
 */
 type SignupFormState = SignupData & {
-password_confirm: string;
+  password_confirm: string;
 };
 
 /**
@@ -32,15 +39,14 @@ password_confirm: string;
 type Props = {
   // すでに入力済みのメールアドレス or 電話番号（表示専用）
   emailOrPhone: string;
+  //メールアドレス形式になっているかどうか
+  isEmail: boolean;
   // 登録処理を親に委ねるための関数
   onSubmit: (data: SignupData) => void;
 };
 
 
-export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
-
-  // props が使えるのはここから
-  const isEmail = emailOrPhone.includes('@');
+export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
 
   //メールアドレスの入力状態管理
   const [emailError, setEmailError] = useState<string>('');
@@ -61,6 +67,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
     place_of_placement: '',
   });
 
+  const [formError, setFormError] = useState<string>("");
 
   /**
    * フォーム送信時の処理
@@ -73,25 +80,92 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!form.first_name || !form.last_name) {
+      setFormError("名を入力してください");
+      return;
+    }
+
     if (!form.tel) {
-      alert('SMS認証には電話番号が必要です');
+      setFormError("電話番号を入力してください");
+      return;
+    }
+
+    if (!form.email) {
+      setFormError("メールアドレスを入力してください");
+      return;
+    }
+
+    if (!form.password) {
+      setFormError("パスワードを入力してください");
+      return;
+    }
+
+    if (!form.password_confirm) {
+      setFormError("確認用パスワードを入力してください");
+      return;
+    }
+
+    if (!form.postcode) {
+      setFormError("郵便番号を入力してください");
+      return;
+    }
+
+    if (!form.address) {
+      setFormError("住所を入力してください");
+      return;
+    }
+
+    if (!form.date_of_birth) {
+      setFormError("生年月日を入力してください");
+      return;
+    }
+
+    // =========================
+    // 追加チェック
+    // =========================
+
+    if (!isValidEmail(form.email)) {
+      setFormError('正しいメールアドレス形式で入力してください');
+      return;
+    }
+
+    if (!isValidPhone(form.tel)) {
+      setFormError('電話番号は10〜11桁の数字で入力してください');
+      return;
+    }
+
+    if (!isValidPassword(form.password)) {
+      setFormError('パスワードは8文字以上で入力してください');
+      return;
+    }
+
+    if (!isValidPostcode(form.postcode)) {
+      setFormError('郵便番号は7桁の数字で入力してください');
       return;
     }
 
     if (form.password !== form.password_confirm) {
-      alert('パスワードが一致しません');
+      setFormError('パスワードが一致しません');
       return;
     }
 
     if (emailError) {
-      alert('メールアドレスを確認してください');
+      setFormError('メールアドレスを確認してください');
       return;
     }
 
+    // =========================
+    // OKなら送信
+    // =========================
+
+    // 正規化（重要）
+    const normalizedTel = normalizePhone(form.tel);
     // password_confirm を除外して親へ渡す
     const { password_confirm, ...signupData } = form;
-
-    onSubmit(signupData);
+    onSubmit({
+      ...signupData,
+      tel: normalizedTel,
+    });
   };
 
   return (
@@ -112,6 +186,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       {/*  姓  */}
       {/* name 属性は FormData.get() のキーになる */}
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         姓
       </label>
       <input
@@ -134,6 +209,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
 
       {/*  名  */}
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         名
       </label>
       <input
@@ -155,6 +231,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       />
 
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         電話番号
       </label>
       <input
@@ -177,6 +254,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       />
 
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         メールアドレス
       </label>
       <input
@@ -232,6 +310,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
 
       {/* パスワード入力欄 */}
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         パスワード
       </label>
       <input
@@ -256,7 +335,10 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
         "
       />
 
-      <label className="block mb-1 font-bold text-[0.9rem]">パスワード（確認）</label>
+      <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
+        パスワード（確認）
+      </label>
         <input
         type="password"
         value={form.password_confirm}
@@ -276,6 +358,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       />
 
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         郵便番号
       </label>
       <input
@@ -299,6 +382,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       />
 
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         住所（番地まで）
       </label>
       <input
@@ -322,6 +406,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       />
 
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         生年月日
       </label>
       <input
@@ -379,6 +464,12 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
           transition-all
         "
       />
+
+      {formError && (
+        <p className="text-red-600 text-sm mb-2">
+          {formError}
+        </p>
+      )}
 
       {/* 送信ボタン */}
       <button
