@@ -2,11 +2,8 @@
 import React, { useState } from 'react';
 import { checkEmail } from '../../../lib/api/authApi';
 import {
-  isValidEmail,
-  isValidPhone,
-  isValidPassword,
-  isValidPostcode,
-  normalizePhone
+  normalizePhone,
+  validateUserForm
 } from '@/lib/utils/validation';
 
 /**
@@ -80,72 +77,19 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!form.first_name || !form.last_name) {
-      setFormError("名を入力してください");
-      return;
-    }
+    const error = validateUserForm({
+      first_name: form.first_name,
+      last_name: form.last_name,
+      email: form.email ?? '',
+      tel: form.tel ?? '',
+      password: form.password,
+      password_confirm: form.password_confirm,
+      postcode: form.postcode ?? '',
+      address: form.address ?? '',
+    });
 
-    if (!form.tel) {
-      setFormError("電話番号を入力してください");
-      return;
-    }
-
-    if (!form.email) {
-      setFormError("メールアドレスを入力してください");
-      return;
-    }
-
-    if (!form.password) {
-      setFormError("パスワードを入力してください");
-      return;
-    }
-
-    if (!form.password_confirm) {
-      setFormError("確認用パスワードを入力してください");
-      return;
-    }
-
-    if (!form.postcode) {
-      setFormError("郵便番号を入力してください");
-      return;
-    }
-
-    if (!form.address) {
-      setFormError("住所を入力してください");
-      return;
-    }
-
-    if (!form.date_of_birth) {
-      setFormError("生年月日を入力してください");
-      return;
-    }
-
-    // =========================
-    // 追加チェック
-    // =========================
-
-    if (!isValidEmail(form.email)) {
-      setFormError('正しいメールアドレス形式で入力してください');
-      return;
-    }
-
-    if (!isValidPhone(form.tel)) {
-      setFormError('電話番号は10〜11桁の数字で入力してください');
-      return;
-    }
-
-    if (!isValidPassword(form.password)) {
-      setFormError('パスワードは8文字以上で入力してください');
-      return;
-    }
-
-    if (!isValidPostcode(form.postcode)) {
-      setFormError('郵便番号は7桁の数字で入力してください');
-      return;
-    }
-
-    if (form.password !== form.password_confirm) {
-      setFormError('パスワードが一致しません');
+    if (error) {
+      setFormError(error);
       return;
     }
 
@@ -154,12 +98,8 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
       return;
     }
 
-    // =========================
-    // OKなら送信
-    // =========================
-
     // 正規化（重要）
-    const normalizedTel = normalizePhone(form.tel);
+    const normalizedTel = normalizePhone(form.tel!);
     // password_confirm を除外して親へ渡す
     const { password_confirm, ...signupData } = form;
     onSubmit({
@@ -488,7 +428,7 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
       </button>
       <div className="mt-3 text-right">
         <a href="/auth"
-          className="text-sm text-[#2162A1] hover:underline">前の画面へ戻る</a>
+          className="text-sm text-[#2162A1] hover:underline">最初の画面へ戻る</a>
       </div>
     </form>
   );

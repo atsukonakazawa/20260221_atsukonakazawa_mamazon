@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { updateUser, type UpdateUserRequest } from '@/lib/api/userApi';
 import { sendSmsCode, verifySmsCode } from '../../../../../lib/api/authApi';
 import SmsVerifyForm from '../../../../components/login/SmsVerifyForm';
+import { validateUserForm, normalizePhone } from '@/lib/utils/validation';
 
 
 export default function AccountEditPage() {
@@ -23,6 +24,9 @@ export default function AccountEditPage() {
     const [placement, setPlacement] = useState(false);
     const [placeOfPlacement, setPlaceOfPlacement] = useState('');
     const [email, setEmail] = useState('');
+
+    const [formError, setFormError] = useState<string>("");
+    const [smsError, setSmsError] = useState('');
 
     //パスワードの変更の状態管理
     const [password, setPassword] = useState('');
@@ -56,24 +60,43 @@ export default function AccountEditPage() {
 
     // 保存処理
     const handleSave = async () => {
+
+        const error = validateUserForm({
+            first_name: firstName,
+            last_name: lastName,
+            email,
+            tel,
+            password,
+            password_confirm: passwordConfirm,
+            postcode,
+            address,
+        });
+
+        if (error) {
+            setFormError(error);
+            return;
+        }
+
         if (password && password !== passwordConfirm) {
-            alert('パスワードが一致しません');
+            setFormError('パスワードが一致しません');
             return;
         }
 
         //変更検知
-        const isTelChanged = tel !== user.tel;
-        const isEmailChanged = email !== user.email;
+        const safe = (v: string | null | undefined) => v ?? '';
+        const isTelChanged = normalizePhone(tel) !== normalizePhone(safe(user.tel));
+        const isEmailChanged = safe(email) !== safe(user.email);
         const isPasswordChanged = !!password;
         const isNameChanged =
-            lastName !== user.last_name ||
-            firstName !== user.first_name;
+            safe(lastName) !== safe(user.last_name) ||
+            safe(firstName) !== safe(user.first_name);
         const isAddressChanged =
-            postcode !== user.postcode ||
-            address !== user.address;
+            safe(postcode) !== safe(user.postcode) ||
+            safe(address) !== safe(user.address);
+
         const isPlacementChanged =
-            placement !== user.placement ||
-            placeOfPlacement !== user.place_of_placement;
+            placement !== (user.placement ?? false) ||
+            safe(placeOfPlacement) !== safe(user.place_of_placement);
 
         //何も変更がない場合は変更処理しない
         const isNothingChanged =
@@ -85,9 +108,12 @@ export default function AccountEditPage() {
             !isPlacementChanged;
 
         if (isNothingChanged) {
-            alert('変更箇所がありません');
+            setFormError('変更箇所がありません');
             return;
         }
+
+        // 電話番号の正規化
+        const normalizedTel = normalizePhone(tel);
 
         //apiに送信するデータを作成
         //passwordは安全のため入力時だけ追加し、空なら送らない
@@ -97,7 +123,7 @@ export default function AccountEditPage() {
             first_name: firstName,
             postcode: postcode,
             address: address,
-            tel: tel,
+            tel: normalizedTel,
             placement: placement,
             place_of_placement: placeOfPlacement,
             email: email,
@@ -110,10 +136,11 @@ export default function AccountEditPage() {
         if (needSms) {
             // SMS認証必要なときは先に認証
             // SMS送信先を決定(電話番号変更なら新しい番号に送信)
-            const targetTel = isTelChanged ? tel : user.tel;
+            const targetTelRaw = isTelChanged ? tel : user.tel;
+            const targetTel = targetTelRaw ? normalizePhone(targetTelRaw) : '';
 
             if (!targetTel) {
-                alert('電話番号が不正です');
+                setFormError('電話番号が不正です');
                 return;
             }
 
@@ -143,17 +170,37 @@ export default function AccountEditPage() {
 
         //再度SMS送信先を決定(電話番号変更なら新しい番号に送信)
         const isTelChanged = pendingData.tel !== user.tel;
-        const targetTel = isTelChanged ? pendingData.tel : user.tel;
+        const targetTelRaw = isTelChanged ? pendingData.tel : user.tel;
+
+        if (!targetTelRaw) {
+            setSmsError('電話番号が不正です');
+            return;
+            }
+
+        const targetTel = targetTelRaw ? normalizePhone(targetTelRaw) : '';
 
         //apiにform値を送信
-        const result = await verifySmsCode({
-            tel: targetTel!,
-            code,
-        });
+        try {
+            const result = await verifySmsCode({
+                tel: targetTel!,
+                code,
+            });
 
-        if (!result.success) {
-            alert('コードが違います');
-            return;
+            if (!result.success) {
+                setSmsError('認証コードが正しくありません');
+                return;
+            }
+
+            setSmsError('');
+
+        } catch (e: any) {
+            // 👇 Laravelの422エラーを拾う
+            if (e.status === 422) {
+                setSmsError(e.message ?? '認証コードが正しくありません');
+                return;
+            }
+
+            setSmsError('通信エラーが発生しました');
         }
 
         const updatedUser = await updateUser(pendingData);
@@ -256,7 +303,14 @@ export default function AccountEditPage() {
                     onChange={(e) => setPasswordConfirm(e.target.value)}
                     placeholder="パスワード（確認用）"
                     className="w-full border p-2 rounded"
-                    />
+                        />
+
+                    {/* エラーメッセージ */}
+                    {formError && (
+                        <p className="text-red-600 text-sm mb-2">
+                        {formError}
+                        </p>
+                    )}
 
                     {/* 更新ボタン */}
                     <button
@@ -274,6 +328,7 @@ export default function AccountEditPage() {
                 <SmsVerifyForm
                 tel={pendingData.tel}
                 onVerify={handleVerify}
+                errorMessage={smsError}
                 />
             </div>
         )}

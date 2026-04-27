@@ -28,3 +28,61 @@ export const isValidPassword = (input: string) => {
 export const isValidPostcode = (input: string) => {
     return /^[0-9]{7}$/.test(input);
 };
+
+//エラーメッセージ
+export const validateUserForm = (data: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    tel: string;
+    password?: string;
+    password_confirm?: string;
+    postcode: string;
+    address: string;
+}) => {
+
+    if (!data.first_name || !data.last_name) {
+        return "名前を入力してください";
+    }
+
+    if (!data.tel) {
+        return "電話番号を入力してください";
+    }
+
+    if (!data.email) {
+        return "メールアドレスを入力してください";
+    }
+
+    if (!data.postcode) {
+        return "郵便番号を入力してください";
+    }
+
+    if (!data.address) {
+        return "住所を入力してください";
+    }
+
+    if (!isValidEmail(data.email)) {
+        return "正しいメールアドレス形式で入力してください";
+    }
+
+    if (!isValidPhone(data.tel)) {
+        return "電話番号は10〜11桁の数字で入力してください";
+    }
+
+    if (!isValidPostcode(data.postcode)) {
+        return "郵便番号は7桁の半角数字で入力してください";
+    }
+
+    // パスワードは「ある時だけチェック」
+    if (data.password) {
+        if (!isValidPassword(data.password)) {
+        return "パスワードは8文字以上で入力してください";
+        }
+
+        if (data.password !== data.password_confirm) {
+        return "パスワードが一致しません";
+        }
+    }
+
+    return null; // OK
+};
