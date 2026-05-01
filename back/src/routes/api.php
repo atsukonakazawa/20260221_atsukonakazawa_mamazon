@@ -9,6 +9,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\Admin\UserController;
 
 
 /*
@@ -43,7 +44,8 @@ Route::get('/products', [
 ]);
 Route::get('/products/{id}', [ProductController::class, 'show']);
 
-//カート機能 機能を完成させてから認証を追加する
+//カート機能
+//機能を完成させてから認証を追加する
 //Route::middleware('auth:sanctum')->group(function () {
 Route::get('/cart', [CartController::class, 'index']);
 Route::post('/cart', [CartController::class, 'store']);
@@ -65,4 +67,16 @@ Route::get('/orders', [OrderController::class, 'index']);
 Route::put('/user', [AuthController::class, 'update']);
 Route::post('/sms/send-for-reset', [SmsAuthController::class, 'sendForReset']);
 Route::post('/password/reset', [AuthController::class, 'resetPassword']);
+
+//管理画面 ユーザー一覧
+Route::get('/admin/users', [UserController::class, 'index']);
+Route::get('/admin/users/{id}', [UserController::class, 'show']);
+Route::patch('/admin/users/{id}/status', [UserController::class, 'toggleStatus']);
+
+//管理画面 ユーザー詳細
+Route::patch('/admin/users/{id}/withdraw', [
+    UserController::class,
+    'withdraw'
+]);
+Route::put('/admin/users/{id}', [UserController::class, 'update']);
 //});

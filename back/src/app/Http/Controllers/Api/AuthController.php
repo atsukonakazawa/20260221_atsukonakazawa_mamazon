@@ -90,9 +90,27 @@ class AuthController extends Controller
         }
 
         // ユーザー取得
-        $user = Auth::user();;
+        $user = Auth::user();
 
-        // 🚫 SMS未認証チェック
+        //ユーザーが利用停止中の場合ログイン不可
+        if ($user->status === 'suspended') {
+            Auth::logout();
+
+            return response()->json([
+                'message' => 'このアカウントは現在利用停止中です'
+            ], 403);
+        }
+
+        //ユーザーが退会済みの場合ログイン不可
+        if ($user->status === 'withdrawn') {
+            Auth::logout();
+
+            return response()->json([
+                'message' => 'このアカウントは退会済みです'
+            ], 403);
+        }
+
+        // SMS未認証チェック
         if (is_null($user->sms_verified_at)) {
             Auth::logout();
             return response()->json([
@@ -100,7 +118,7 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // ✅ ログイン成功
+        // ログイン成功
         return response()->json([
             'message' => 'ログイン成功',
             'user' => $user,

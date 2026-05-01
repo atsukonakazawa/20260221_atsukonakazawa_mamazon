@@ -107,8 +107,20 @@ export default function LoginPage() {
 
     } catch (err: any) {
 
+      // 🚫 利用停止
+      if (
+        err.status === 403 &&
+        err.message === 'このアカウントは現在利用停止中です'
+      ) {
+        setErrorMessage('このアカウントは現在利用停止中です');
+        return;
+      }
+
       // 🔑 SMS未認証
-      if (err.status === 403) {
+      if (
+        err.status === 403 &&
+        err.message === 'SMS認証が完了していません'
+      ) {
         alert('SMS認証が必要です');
         setStep('smsVerify');
         return;
@@ -120,6 +132,7 @@ export default function LoginPage() {
         return;
       }
 
+      //その他
       alert(err.message ?? 'ログイン失敗');
     }
   };
