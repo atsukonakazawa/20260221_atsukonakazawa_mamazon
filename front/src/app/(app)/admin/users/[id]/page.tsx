@@ -3,6 +3,7 @@
 import useSWR from 'swr';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchUserDetail, UserDetail, withdrawUser } from '@/lib/api/adminUserApi';
+import Link from 'next/link';
 
 export default function AdminUserDetailPage() {
     const { id } = useParams();
@@ -33,14 +34,14 @@ export default function AdminUserDetailPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 p-5">
-            <button
-                onClick={() => router.back()}
-                className="mb-4 text-xs bg-white border border-gray-300 rounded-md hover:pointer cursor-pointer px-4 py-2"
+            <Link
+                href="/admin/users"
+                className="inline-block mb-4 text-xs bg-white border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50 cursor-pointer"
             >
                 一覧に戻る
-            </button>
+            </Link>
 
-            <div className="bg-white border border-gray-300 rounded-md p-6 max-w-2xl">
+            <div className="bg-white border border-gray-300 rounded-md mx-auto p-6 max-w-2xl">
                 <h1 className="text-xl font-semibold mb-4">ユーザー詳細</h1>
 
                 <div className="space-y-3 text-sm">
@@ -77,17 +78,17 @@ export default function AdminUserDetailPage() {
                     </div>
                 </div>
             </div>
-            <div className="mt-8 flex gap-3">
+            <div className="mt-8 mx-auto max-w-2xl flex gap-3 justify-center">
                 <button
                     onClick={() => router.push(`/admin/users/${data.id}/edit`)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm cursor-pointer"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 mx-4 rounded cursor-pointer"
                 >
                     編集
                 </button>
 
                 <button
                     onClick={handleWithdraw}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm cursor-pointer"
+                    className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 mx-4 rounded cursor-pointer"
                 >
                     退会処理
                 </button>
