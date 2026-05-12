@@ -4,6 +4,8 @@ import useSWR from 'swr';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchUsers, UserListItem, toggleUserStatus } from '@/lib/api/adminUserApi';
+import Link from 'next/link';
+
 
 export default function AdminUsersPage() {
     const router = useRouter();
@@ -51,7 +53,14 @@ export default function AdminUsersPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 p-5">
-            <h1 className="text-xl font-semibold mb-4">ユーザー 一覧</h1>
+            <h1 className="text-2xl font-semibold mb-4">ユーザー 一覧</h1>
+
+            <Link
+                href="/admin"
+                className="inline-block mb-4 text-xs bg-white border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50 cursor-pointer"
+            >
+                ダッシュボードに戻る
+            </Link>
 
             {/* 🔍 検索エリア */}
             <div className="mb-4 flex gap-2">
@@ -65,7 +74,7 @@ export default function AdminUsersPage() {
                         }
                     }}
                     placeholder="名前・メールアドレス・電話番号で検索"
-                    className="border border-gray-300 rounded px-3 py-2 text-sm w-96"
+                    className="border border-gray-300 rounded bg-white px-3 py-2 text-sm w-96"
                 />
                 <button
                     onClick={() => setSearch(keyword)}
@@ -108,7 +117,7 @@ export default function AdminUsersPage() {
                             <th
                                 onClick={() => handleSort('status')}
                                 className="text-left px-3 py-2 font-semibold border-b cursor-pointer hover:bg-gray-100 w-16">
-                                ステータス{sortKey === 'id' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
+                                ステータス{sortKey === 'status' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
                             </th>
                             <th className="px-3 py-2 font-semibold border-b w-16">
                                 操作

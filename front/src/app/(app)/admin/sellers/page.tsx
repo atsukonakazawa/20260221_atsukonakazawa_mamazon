@@ -4,6 +4,8 @@ import useSWR from 'swr';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchSellers, SellerListItem, toggleSellerStatus } from '@/lib/api/adminSellerApi';
+import Link from 'next/link';
+
 
 export default function AdminSellersPage() {
     const router = useRouter();
@@ -51,7 +53,14 @@ export default function AdminSellersPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 p-5">
-            <h1 className="text-xl font-semibold mb-4">販売者 一覧</h1>
+            <h1 className="text-2xl font-semibold mb-4">販売者 一覧</h1>
+
+            <Link
+                href="/admin"
+                className="inline-block mb-4 text-xs bg-white border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50 cursor-pointer"
+            >
+                ダッシュボードに戻る
+            </Link>
 
             {/* 🔍 検索エリア */}
             <div className="mb-4 flex gap-2">
@@ -65,7 +74,7 @@ export default function AdminSellersPage() {
                         }
                     }}
                     placeholder="販売者名・住所・電話番号で検索"
-                    className="border border-gray-300 rounded px-3 py-2 text-sm w-96"
+                    className="border border-gray-300 rounded bg-white px-3 py-2 text-sm w-96"
                 />
                 <button
                     onClick={() => setSearch(keyword.trim())}
