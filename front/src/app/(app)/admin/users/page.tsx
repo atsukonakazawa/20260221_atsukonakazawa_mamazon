@@ -110,7 +110,7 @@ export default function AdminUsersPage() {
                                 className="text-left px-3 py-2 font-semibold border-b cursor-pointer hover:bg-gray-100 w-16">
                                 ステータス{sortKey === 'id' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
                             </th>
-                            <th className="text-left px-3 py-2 font-semibold border-b w-16">
+                            <th className="px-3 py-2 font-semibold border-b w-16">
                                 操作
                             </th>
                         </tr>
@@ -147,22 +147,24 @@ export default function AdminUsersPage() {
                                     </button>
                                 </td>
 
-                                <td className="px-3 py-2 w-16">
-                                    <button
-                                        onClick={async (e) => {
-                                            e.stopPropagation();
-                                            await toggleUserStatus(user.id);
-                                            mutate();
-                                        }}
-                                        className={`px-3 py-1 text-xs rounded text-white cursor-pointer
-                                            ${user.is_active
-                                                ? 'bg-red-500 hover:bg-red-600'
-                                                : 'bg-green-500 hover:bg-green-600'
-                                            }
-                                        `}
-                                    >
-                                        {user.is_active ? '停止' : '再開'}
-                                    </button>
+                                <td className="text-center px-3 py-2 w-16">
+                                    {user.status !== 'withdrawn' && (
+                                        <button
+                                            onClick={async (e) => {
+                                                e.stopPropagation();
+                                                await toggleUserStatus(user.id);
+                                                mutate();
+                                            }}
+                                            className={`px-3 py-1 mx-auto text-xs rounded text-white cursor-pointer
+                                                ${user.is_active
+                                                    ? 'bg-red-500 hover:bg-red-600'
+                                                    : 'bg-green-500 hover:bg-green-600'
+                                                }
+                                            `}
+                                        >
+                                            {user.is_active ? '停止' : '再開'}
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         ))}

@@ -118,10 +118,10 @@ export default function AdminSellersPage() {
                             </th>
                             <th
                                 onClick={() => handleSort('status')}
-                                className="text-left px-3 py-2 font-semibold border-b cursor-pointer hover:bg-gray-100 w-16">
+                                className="text-left px-3 py-2 font-semibold border-b cursor-pointer hover:bg-gray-100 w-24">
                                 ステータス{sortKey === 'status' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
                             </th>
-                            <th className="text-left px-3 py-2 font-semibold border-b w-16">
+                            <th className="px-3 py-2 font-semibold border-b w-24">
                                 操作
                             </th>
                         </tr>
@@ -141,7 +141,7 @@ export default function AdminSellersPage() {
                                 <td className="px-3 py-2">
                                     {new Date(seller.created_at).toLocaleDateString('ja-JP')}
                                 </td>
-                                <td className="px-3 py-2 w-16">
+                                <td className="px-3 py-2 w-24">
                                     <button className={`px-3 py-1 text-xs rounded
                                         ${seller.status === 'active' && 'text-green-700'}
                                         ${seller.status === 'suspended' && 'text-yellow-700'}
@@ -149,26 +149,28 @@ export default function AdminSellersPage() {
                                     `}>
                                         {seller.status === 'active' && '有効'}
                                         {seller.status === 'suspended' && '停止'}
-                                        {seller.status === 'withdrawn' && '削除'}
+                                        {seller.status === 'withdrawn' && '削除済'}
                                     </button>
                                 </td>
 
-                                <td className="px-3 py-2 w-16">
-                                    <button
-                                        onClick={async (e) => {
-                                            e.stopPropagation();
-                                            await toggleSellerStatus(seller.id);
-                                            mutate();
-                                        }}
-                                        className={`px-3 py-1 text-xs rounded text-white cursor-pointer
-                                            ${seller.is_active
-                                                ? 'bg-red-500 hover:bg-red-600'
-                                                : 'bg-green-500 hover:bg-green-600'
-                                            }
-                                        `}
-                                    >
-                                        {seller.is_active ? '停止' : '再開'}
-                                    </button>
+                                <td className="px-3 py-2 w-24">
+                                    {seller.status !== 'withdrawn' && (
+                                        <button
+                                            onClick={async (e) => {
+                                                e.stopPropagation();
+                                                await toggleSellerStatus(seller.id);
+                                                mutate();
+                                            }}
+                                            className={`px-3 py-1 mx-3 text-xs rounded text-white cursor-pointer
+                                                ${seller.is_active
+                                                    ? 'bg-red-500 hover:bg-red-600'
+                                                    : 'bg-green-500 hover:bg-green-600'
+                                                }
+                                            `}
+                                        >
+                                            {seller.is_active ? '停止' : '再開'}
+                                        </button>
+                                    )}
                                 </td>
                             </tr>
                         ))}
