@@ -8,7 +8,7 @@ import {
     updateAdminSeller,
     SellerDetail
 } from '@/lib/api/adminSellerApi';
-import { validateSellerForm } from '@/lib/utils/validation';
+import { validateSellerForm, normalizePhone } from '@/lib/utils/validation';
 
 export default function AdminSellerEditPage() {
     const { id } = useParams();
@@ -64,7 +64,10 @@ export default function AdminSellerEditPage() {
         }
 
         try {
-            await updateAdminSeller(Number(id), form);
+            await updateAdminSeller(Number(id), {
+                ...form,
+                tel: normalizePhone(form.tel),
+            });
             alert('更新しました');
             router.push(`/admin/sellers/${id}`);
         } catch {

@@ -71,7 +71,7 @@ export const validateUserForm = (data: {
     }
 
     if (!isValidPostcode(data.postcode)) {
-        return "郵便番号は7桁の半角数字で入力してください";
+        return "郵便番号は7桁の半角数字(ハイフンなし)で入力してください";
     }
 
     // パスワードは「ある時だけチェック」
@@ -122,7 +122,7 @@ export const validateSellerForm = (data: {
     }
 
     if (!isValidPostcode(data.postcode)) {
-        return "郵便番号は7桁の半角数字で入力してください";
+        return "郵便番号は7桁の半角数字(ハイフンなし)で入力してください";
     }
 
     return null;
