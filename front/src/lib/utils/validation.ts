@@ -4,7 +4,7 @@ export const isValidEmail = (input: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
 };
 
-// 電話番号（ハイフン・全角対応込み）
+// 電話番号（ハイフン除去・全角対応）
 export const normalizePhone = (input: string) => {
     return input
         .replace(/[０-９]/g, (s) =>
@@ -14,6 +14,7 @@ export const normalizePhone = (input: string) => {
         .replace(/\s/g, "");
 };
 
+//　電話番号（10~11桁の数字になっているかチェック)
 export const isValidPhone = (input: string) => {
     const phone = normalizePhone(input);
     return /^[0-9]{10,11}$/.test(phone);
@@ -85,4 +86,44 @@ export const validateUserForm = (data: {
     }
 
     return null; // OK
+};
+
+// 管理画面用バリデーション（販売者）
+export const validateSellerForm = (data: {
+    seller_name: string;
+    email?: string;
+    tel: string;
+    postcode: string;
+    address: string;
+}) => {
+    if (!data.seller_name) {
+        return "販売者名を入力してください";
+    }
+
+    if (!data.tel) {
+        return "電話番号を入力してください";
+    }
+
+    if (!data.postcode) {
+        return "郵便番号を入力してください";
+    }
+
+    if (!data.address) {
+        return "住所を入力してください";
+    }
+
+    // email がある場合だけチェック
+    if (data.email && !isValidEmail(data.email)) {
+        return "正しいメールアドレス形式で入力してください";
+    }
+
+    if (!isValidPhone(data.tel)) {
+        return "電話番号は10〜11桁の数字で入力してください";
+    }
+
+    if (!isValidPostcode(data.postcode)) {
+        return "郵便番号は7桁の半角数字で入力してください";
+    }
+
+    return null;
 };

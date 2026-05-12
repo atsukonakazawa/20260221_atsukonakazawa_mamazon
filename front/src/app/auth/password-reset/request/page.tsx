@@ -33,7 +33,7 @@ export default function RequestPage() {
                 onSubmit={handleSubmit}
             >
 
-            <h2 className="pb-1 text-[1.3rem]">電話番号にSMSを送信</h2>
+            <h2 className="pb-1 text-[1.3rem]">ご登録の電話番号を入力</h2>
 
             <input
                 className="w-full p-2 mb-3 rounded border border-[#888C8C] focus:outline-none focus:bg-[#F6FEFF] focus:shadow-[0_0_5px_5px_#C8F3FA] transition-all"
@@ -42,7 +42,7 @@ export default function RequestPage() {
 
             <button
                 className="w-full py-1.5 bg-[#FFD712] text-[#111111] font-medium rounded-full cursor-pointer"
-                type="submit">送信</button>
+                type="submit">SMS認証コードを送信</button>
 
             </form>
         </div>

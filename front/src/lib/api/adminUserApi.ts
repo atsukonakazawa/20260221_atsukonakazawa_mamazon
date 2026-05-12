@@ -33,13 +33,19 @@ export type UserDetail = {
 };
 
 //ユーザー一覧取得
-export async function fetchUsers(keyword?: string): Promise<UserListItem[]> {
-    const query = keyword ? `?keyword=${encodeURIComponent(keyword)}` : '';
+export async function fetchUsers(
+    keyword?: string
+): Promise<UserListItem[]> {
+    const query = keyword
+        ? `?keyword=${encodeURIComponent(keyword)}`
+        : '';
     return apiFetch(`/api/admin/users${query}`);
 }
 
 //ユーザー詳細取得
-export async function fetchUserDetail(id: number): Promise<UserDetail> {
+export async function fetchUserDetail(
+    id: number
+): Promise<UserDetail> {
     return apiFetch(`/api/admin/users/${id}`);
 }
 

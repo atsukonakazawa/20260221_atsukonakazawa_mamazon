@@ -10,6 +10,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\SellerController;
 
 
 /*
@@ -74,9 +75,17 @@ Route::get('/admin/users/{id}', [UserController::class, 'show']);
 Route::patch('/admin/users/{id}/status', [UserController::class, 'toggleStatus']);
 
 //管理画面 ユーザー詳細
-Route::patch('/admin/users/{id}/withdraw', [
-    UserController::class,
-    'withdraw'
-]);
+Route::patch('/admin/users/{id}/withdraw', [UserController::class, 'withdraw']);
 Route::put('/admin/users/{id}', [UserController::class, 'update']);
+
+//管理画面 販売者一覧
+Route::get('/admin/sellers', [SellerController::class, 'index']);
+Route::get('/admin/sellers/{id}', [SellerController::class, 'show']);
+Route::patch('/admin/sellers/{id}/status', [SellerController::class, 'toggleStatus']);
+
+//管理画面 販売者詳細
+Route::delete('/admin/sellers/{id}', [SellerController::class, 'delete']);
+Route::put('/admin/sellers/{id}', [SellerController::class, 'update']);
+
+
 //});

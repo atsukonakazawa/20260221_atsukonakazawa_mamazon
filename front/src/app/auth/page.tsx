@@ -59,7 +59,7 @@ export default function LoginPage() {
     const phoneCheck = isValidPhone(input);
 
     if (!emailCheck && !phoneCheck) {
-      setErrorMessage("正しいメールアドレスまたは電話番号を入力してください");
+      setErrorMessage("正しいメールアドレスまたは電話番号(ハイフンなし)を入力してください");
       return;
     }
 

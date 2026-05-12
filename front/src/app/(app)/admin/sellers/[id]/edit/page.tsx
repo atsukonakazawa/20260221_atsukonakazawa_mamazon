@@ -4,33 +4,27 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import {
-    fetchUserDetail,
-    updateAdminUser,
-    UserDetail
-} from '@/lib/api/adminUserApi';
-import { validateUserForm, normalizePhone } from '@/lib/utils/validation';
+    fetchSellerDetail,
+    updateAdminSeller,
+    SellerDetail
+} from '@/lib/api/adminSellerApi';
+import { validateSellerForm } from '@/lib/utils/validation';
 
-export default function AdminUserEditPage() {
+export default function AdminSellerEditPage() {
     const { id } = useParams();
     const router = useRouter();
     const [formError, setFormError] = useState<string>("");
 
-
-    const { data, isLoading, error } = useSWR<UserDetail>(
-        id ? `admin-user-${id}` : null,
-        () => fetchUserDetail(Number(id))
+    const { data, isLoading, error } = useSWR<SellerDetail>(
+        id ? `admin-seller-${id}` : null,
+        () => fetchSellerDetail(Number(id))
     );
 
     const [form, setForm] = useState({
-        last_name: '',
-        first_name: '',
-        email: '',
+        seller_name: '',
         tel: '',
         postcode: '',
         address: '',
-        date_of_birth: '',
-        placement: false,
-        place_of_placement: '',
     });
 
     // 初期値セット
@@ -38,15 +32,10 @@ export default function AdminUserEditPage() {
         if (!data) return;
 
         setForm({
-            last_name: data.last_name ?? '',
-            first_name: data.first_name ?? '',
-            email: data.email ?? '',
+            seller_name: data.seller_name ?? '',
             tel: data.tel ?? '',
             postcode: data.postcode ?? '',
             address: data.address ?? '',
-            date_of_birth: data.date_of_birth ?? '',
-            placement: data.placement,
-            place_of_placement: data.place_of_placement ?? '',
         });
     }, [data]);
 
@@ -62,26 +51,22 @@ export default function AdminUserEditPage() {
     };
 
     const handleSubmit = async () => {
-        const errorMessage = validateUserForm({
-        first_name: form.first_name,
-        last_name: form.last_name,
-        email: form.email ?? '',
-        tel: form.tel ?? '',
-        postcode: form.postcode ?? '',
-        address: form.address ?? '',
-    });
+        const errorMessage = validateSellerForm({
+            seller_name: form.seller_name,
+            tel: form.tel ?? '',
+            postcode: form.postcode ?? '',
+            address: form.address ?? '',
+        });
 
-    if (errorMessage) {
-        setFormError(errorMessage);
-        return;
-    }
+        if (errorMessage) {
+            setFormError(errorMessage);
+            return;
+        }
+
         try {
-            await updateAdminUser(Number(id), {
-                ...form,
-                tel: normalizePhone(form.tel),
-            });
+            await updateAdminSeller(Number(id), form);
             alert('更新しました');
-            router.push(`/admin/users/${id}`);
+            router.push(`/admin/sellers/${id}`);
         } catch {
             alert('更新失敗');
         }
@@ -94,35 +79,14 @@ export default function AdminUserEditPage() {
         <div className="min-h-screen bg-gray-100 p-5">
             <div className="bg-white max-w-2xl mx-auto rounded border p-6">
                 <h1 className="text-xl font-semibold mb-6">
-                    ユーザー情報 編集
+                    販売者情報　編集
                 </h1>
 
                 <div className="space-y-4">
-                    <input name="last_name" value={form.last_name} onChange={handleChange} placeholder="姓" className="w-full border p-2 rounded" />
-                    <input name="first_name" value={form.first_name} onChange={handleChange} placeholder="名" className="w-full border p-2 rounded" />
-                    <input name="email" value={form.email} onChange={handleChange} placeholder="メール" className="w-full border p-2 rounded" />
+                    <input name="last_name" value={form.seller_name} onChange={handleChange} placeholder="株式会社　ABC" className="w-full border p-2 rounded" />
                     <input name="tel" value={form.tel} onChange={handleChange} placeholder="電話番号" className="w-full border p-2 rounded" />
                     <input name="postcode" value={form.postcode} onChange={handleChange} placeholder="郵便番号" className="w-full border p-2 rounded" />
                     <input name="address" value={form.address} onChange={handleChange} placeholder="住所" className="w-full border p-2 rounded" />
-                    <input type="date" name="date_of_birth" value={form.date_of_birth} onChange={handleChange} className="w-full border p-2 rounded" />
-
-                    <label className="flex gap-2">
-                        <input
-                            type="checkbox"
-                            name="placement"
-                            checked={form.placement}
-                            onChange={handleChange}
-                        />
-                        置き配
-                    </label>
-
-                    <input
-                        name="place_of_placement"
-                        value={form.place_of_placement}
-                        onChange={handleChange}
-                        placeholder="置き配場所"
-                        className="w-full border p-2 rounded"
-                    />
 
                     {/* エラーメッセージ */}
                     {formError && (
