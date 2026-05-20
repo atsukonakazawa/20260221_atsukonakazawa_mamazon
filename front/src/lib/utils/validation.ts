@@ -127,3 +127,35 @@ export const validateSellerForm = (data: {
 
     return null;
 };
+
+// 管理画面用バリデーション（商品）
+export const validateProductForm = (data: {
+    category_id: string;
+    color_id?: string;
+    shipment_date_id: string;
+    size_id?: string;
+    seller_id: string;
+    product_name: string;
+    product_price: string;
+    product_description?: string;
+}) => {
+    if (!data.category_id) {
+        return "カテゴリーを入力してください";
+    }
+
+    if (!data.shipment_date_id) {
+        return "出荷予定日を入力してください";
+    }
+
+    if (!data.seller_id) {
+        return "販売者を入力してください";
+    }
+
+    if (!data.product_name) {
+        return "商品名を入力してください";
+    }
+    if (!data.product_price) {
+        return "価格を入力してください";
+    }
+    return null;
+};

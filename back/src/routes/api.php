@@ -11,6 +11,8 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SellerController;
+use App\Http\Controllers\Admin\AdminProductController;
+
 
 
 /*
@@ -69,23 +71,27 @@ Route::put('/user', [AuthController::class, 'update']);
 Route::post('/sms/send-for-reset', [SmsAuthController::class, 'sendForReset']);
 Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 
-//管理画面 ユーザー一覧
+//管理画面 ユーザー管理
 Route::get('/admin/users', [UserController::class, 'index']);
 Route::get('/admin/users/{id}', [UserController::class, 'show']);
 Route::patch('/admin/users/{id}/status', [UserController::class, 'toggleStatus']);
-
-//管理画面 ユーザー詳細
 Route::patch('/admin/users/{id}/withdraw', [UserController::class, 'withdraw']);
 Route::put('/admin/users/{id}', [UserController::class, 'update']);
 
-//管理画面 販売者一覧
+//管理画面 販売者管理
 Route::get('/admin/sellers', [SellerController::class, 'index']);
 Route::get('/admin/sellers/{id}', [SellerController::class, 'show']);
 Route::patch('/admin/sellers/{id}/status', [SellerController::class, 'toggleStatus']);
-
-//管理画面 販売者詳細
 Route::delete('/admin/sellers/{id}', [SellerController::class, 'delete']);
 Route::put('/admin/sellers/{id}', [SellerController::class, 'update']);
+
+//管理画面 商品管理
+Route::get('/admin/products', [AdminProductController::class, 'index']);
+Route::get('/admin/products/{id}', [AdminProductController::class, 'show']);
+Route::patch('/admin/products/{id}/status', [AdminProductController::class, 'toggleStatus']);
+Route::get('/admin/product-form-options', [AdminProductController::class, 'formOptions']);
+Route::delete('/admin/products/{id}', [AdminProductController::class, 'delete']);
+Route::put('/admin/products/{id}', [AdminProductController::class, 'update']);
 
 
 //});

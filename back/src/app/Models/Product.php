@@ -18,7 +18,6 @@ class Product extends Model
         'product_name',
         'product_price',
         'product_description',
-        'product_image',
     ];
 
     // ▼ リレーション
@@ -54,6 +53,7 @@ class Product extends Model
 
     public function images()
     {
-        return $this->hasMany(ProductImage::class);
+        return $this->hasMany(ProductImage::class)
+            ->orderBy('sort_order');
     }
 }
