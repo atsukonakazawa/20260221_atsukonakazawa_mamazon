@@ -58,8 +58,16 @@ export default function SmsVerifyForm({ tel, onVerify, errorMessage }: Props) {
             rounded-full
         "
         >
-        認証する
+            認証する
         </button>
+
+        <p className="mt-10 text-xs text-gray-500">
+            ・SMSが届かない場合は、入力内容をご確認ください。
+        </p>
+        <p className="mt-1 text-xs text-gray-500">
+            ・認証コードの有効期限は5分間です。
+        </p>
+
     </form>
     );
 }

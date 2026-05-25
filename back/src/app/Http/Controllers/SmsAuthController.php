@@ -39,19 +39,32 @@ class SmsAuthController extends Controller
             'code' => 'required|string',
         ]);
 
-        $record = SmsVerification::where('tel', $request->tel)
-            ->where('code', $request->code)
-            ->where('expires_at', '>=', now())
-            ->first();
+        // 電話番号のレコード取得
+        $record = SmsVerification::where('tel', $request->tel)->first();
 
+        // レコードなし
         if (!$record) {
             return response()->json([
                 'message' => '認証コードが正しくありません'
             ], 422);
         }
 
-        $user = User::where('tel', $request->tel)->first();
-        logger('USER FOUND?', ['user' => $user]);
+        // コード不一致
+        if ($record->code !== $request->code) {
+            return response()->json([
+                'message' => '認証コードが正しくありません'
+            ], 422);
+        }
+
+        // 有効期限切れ
+        if (now()->greaterThan($record->expires_at)) {
+            return response()->json([
+                'message' => '認証コードの有効期限が切れています'
+            ], 422);
+        }
+
+        //verify成功後に認証コードを削除
+        $record->delete();
 
         return response()->json([
             'success' => true,
@@ -68,6 +81,8 @@ class SmsAuthController extends Controller
 
         // ② ユーザー確認
         $user = User::where('tel', $request->tel)->first();
+        // ユーザーレコードなしの場合
+        $code = null;
 
         if ($user) {
             // ③ コード生成
@@ -78,7 +93,7 @@ class SmsAuthController extends Controller
                 ['tel' => $request->tel],
                 [
                     'code' => $code,
-                    'expires_at' => now()->addMinutes(5),
+                    'expires_at' => now()->addMinutes(1),
                 ]
             );
 

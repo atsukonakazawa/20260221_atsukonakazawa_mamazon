@@ -10,19 +10,11 @@ export default function RequestPage() {
     const handleSubmit = async (e: any) => {
         e.preventDefault();
 
-        try {
-            await sendSmsCodeForReset({ tel });
+        await sendSmsCodeForReset({ tel });
 
-            // 成功・失敗関係なく同じメッセージ
-            alert('認証コードを送信しました');
+        alert('認証コードを送信しました');
 
-            router.push(`/auth/password-reset/verify?tel=${tel}`);
-        } catch {
-            // エラーでも同じ
-            alert('認証コードを送信しました');
-
-            router.push(`/auth/password-reset/verify?tel=${tel}`);
-        }
+        router.push(`/auth/password-reset/verify?tel=${tel}`);
     };
 
     return (
