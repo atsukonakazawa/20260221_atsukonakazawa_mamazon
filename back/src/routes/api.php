@@ -12,7 +12,7 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SellerController;
 use App\Http\Controllers\Admin\AdminProductController;
-
+use App\Http\Controllers\ProductSubmissionController;
 
 
 /*
@@ -71,6 +71,12 @@ Route::put('/user', [AuthController::class, 'update']);
 Route::post('/sms/send-for-reset', [SmsAuthController::class, 'sendForReset']);
 Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 
+//商品仮登録
+Route::post(
+    '/product-submissions',
+    [ProductSubmissionController::class, 'store']
+);
+
 //管理画面 ユーザー管理
 Route::get('/admin/users', [UserController::class, 'index']);
 Route::get('/admin/users/{id}', [UserController::class, 'show']);
@@ -86,10 +92,13 @@ Route::delete('/admin/sellers/{id}', [SellerController::class, 'delete']);
 Route::put('/admin/sellers/{id}', [SellerController::class, 'update']);
 
 //管理画面 商品管理
+Route::get(
+    '/admin/products/form-options',
+    [AdminProductController::class, 'formOptions']
+);
 Route::get('/admin/products', [AdminProductController::class, 'index']);
 Route::get('/admin/products/{id}', [AdminProductController::class, 'show']);
 Route::patch('/admin/products/{id}/status', [AdminProductController::class, 'toggleStatus']);
-Route::get('/admin/product-form-options', [AdminProductController::class, 'formOptions']);
 Route::delete('/admin/products/{id}', [AdminProductController::class, 'delete']);
 Route::put('/admin/products/{id}', [AdminProductController::class, 'update']);
 

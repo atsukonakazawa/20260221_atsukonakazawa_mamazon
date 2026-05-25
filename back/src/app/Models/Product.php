@@ -15,9 +15,16 @@ class Product extends Model
         'shipment_date_id',
         'size_id',
         'seller_id',
+        'created_by',
         'product_name',
         'product_price',
         'product_description',
+        'status',
+        'approve_status',
+        'is_active',
+        'approved_at',
+        'approved_by',
+        'rejection_reason',
     ];
 
     // ▼ リレーション

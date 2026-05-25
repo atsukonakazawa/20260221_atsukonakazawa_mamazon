@@ -138,7 +138,7 @@ export type ProductFormOptions = {
 
 // 商品 情報編集時のセレクト候補取得
 export async function fetchProductFormOptions(): Promise<ProductFormOptions> {
-    return apiFetch('/api/admin/product-form-options');
+    return apiFetch('/api/admin/products/form-options');
 }
 
 // 商品 情報編集・更新
