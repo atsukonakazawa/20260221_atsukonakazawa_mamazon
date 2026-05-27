@@ -25,7 +25,8 @@ class ProductSubmissionController extends Controller
 
             'created_by' => 'required|string|max:255',
 
-            'image' => 'required|image|max:2048',
+            'images' => 'required|array|min:1',
+            'images.*' => 'image|max:2048',
         ]);
 
         // 商品作成
@@ -52,15 +53,17 @@ class ProductSubmissionController extends Controller
         ]);
 
         // 画像保存
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('images')) {
 
-            $path = $request->file('image')
-                ->store('products', 'public');
+            foreach ($request->file('images') as $index => $image) {
 
-            $product->images()->create([
-                'image_path' => $path,
-                'sort_order' => 1,
-            ]);
+                $path = $image->store('products', 'public');
+
+                $product->images()->create([
+                    'image_path' => $path,
+                    'sort_order' => $index + 1,
+                ]);
+            }
         }
 
         return response()->json([

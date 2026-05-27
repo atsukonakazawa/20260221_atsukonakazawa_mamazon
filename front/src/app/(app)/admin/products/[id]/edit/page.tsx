@@ -17,8 +17,8 @@ export default function AdminProductEditPage() {
     const router = useRouter();
 
     const [formError, setFormError] = useState<string>("");
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [newImages, setNewImages] = useState<File[]>([]);
+    const [deletedImageIds, setDeletedImageIds] = useState<number[]>([]);
     const [initialForm, setInitialForm] = useState({
         category_id: '',
         shipment_date_id: '',
@@ -90,7 +90,11 @@ export default function AdminProductEditPage() {
         const isChanged =
             JSON.stringify(form) !== JSON.stringify(initialForm);
 
-        if (!isChanged && !imageFile) {
+        if (
+            !isChanged &&
+            newImages.length === 0 &&
+            deletedImageIds.length === 0
+        ) {
             setFormError('変更箇所がありません');
             return;
         }
@@ -101,6 +105,9 @@ export default function AdminProductEditPage() {
             seller_id: form.seller_id ?? '',
             product_name: form.product_name ?? '',
             product_price: form.product_price ?? '',
+            created_by: 'admin',
+            images: [],
+            requireImage: false,
         });
 
         if (errorMessage) {
@@ -129,9 +136,13 @@ export default function AdminProductEditPage() {
                 formData.append('product_description', form.product_description);
             }
 
-            if (imageFile) {
-                formData.append('image', imageFile);
-            }
+            newImages.forEach((image) => {
+                formData.append('new_images[]', image);
+            });
+
+            deletedImageIds.forEach((id) => {
+                formData.append('deleted_image_ids[]', String(id));
+            });
 
             await updateAdminProduct(Number(id), formData);
             alert('更新しました');
@@ -177,7 +188,7 @@ export default function AdminProductEditPage() {
 
                     <label className="block mb-1 font-bold text-[0.9rem]">
                         <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
-                        出荷予定日
+                        配送予定日
                     </label>
                     <select
                         name="shipment_date_id"
@@ -291,57 +302,127 @@ export default function AdminProductEditPage() {
                         </label>
 
                         {/* 現在画像 */}
-                        <div className="flex gap-2 mb-3 flex-wrap">
-                            {data?.images?.map((image) => (
+                        <div className="flex gap-4 mb-3 flex-wrap">
+
+                        {data?.images
+                            ?.filter(
+                                (image) => !deletedImageIds.includes(image.id)
+                            )
+                            .map((image) => (
+
+                            <div key={image.id}>
+
                                 <img
-                                    key={image.id}
                                     src={`http://localhost/storage/${image.image_path}`}
                                     alt={data.product_name}
-                                    className="w-32 h-32 object-cover rounded"
+                                    className="w-32 h-32 object-cover rounded border"
                                 />
-                            ))}
-                        </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setDeletedImageIds((prev) => [
+                                            ...prev,
+                                            image.id,
+                                        ]);
+                                    }}
+                                    className="
+                                        mt-2
+                                        w-full
+                                        bg-red-500
+                                        text-white
+                                        text-sm
+                                        py-1
+                                        rounded
+                                        cursor-pointer
+                                    "
+                                >
+                                    削除
+                                </button>
+
+                            </div>
+                        ))}
+                    </div>
 
                         {/* カスタムファイルボタン */}
                         <label className="inline-block  hover:bg-blue-100 text-xs mt-1 px-3 py-1 rounded border cursor-pointer">
-                            画像を変更する
+                            画像を追加する
 
                             <input
                                 type="file"
+                                multiple
                                 accept="image/*"
                                 onChange={(e) => {
-                                    const file = e.target.files?.[0];
+                                    if (!e.target.files) return;
 
-                                    if (!file) return;
+                                    const files = Array.from(e.target.files);
 
-                                    setImageFile(file);
+                                    setNewImages((prev) => [
+                                        ...prev,
+                                        ...files,
+                                    ]);
 
-                                    const imageUrl = URL.createObjectURL(file);
-                                    setPreviewUrl(imageUrl);
+                                    e.target.value = '';
                                 }}
                                 className="hidden"
                             />
                         </label>
 
                         {/* 新画像プレビュー */}
-                        {previewUrl && (
-                            <div className="mt-5">
-                                <div className="flex justify-start mb-2">
-                                    <p className="text-sm font-bold">新しい画像</p>
-                                    {/* 選択ファイル名 */}
-                                    {imageFile && (
-                                        <p className="text-sm ml-5 text-gray-400">
-                                            選択中: {imageFile.name}
-                                        </p>
-                                    )}
+                        {newImages.length > 0 && (
 
+                            <div className="mt-5">
+
+                                <p className="text-sm font-bold mb-3">
+                                    新しく追加する画像
+                                </p>
+
+                                <div className="flex flex-wrap gap-4">
+
+                                    {newImages.map((image, index) => (
+
+                                        <div
+                                            key={`${image.name}-${index}`}
+                                            className="w-32"
+                                        >
+
+                                            <img
+                                                src={URL.createObjectURL(image)}
+                                                alt="新画像"
+                                                className="
+                                                    w-32
+                                                    h-32
+                                                    object-cover
+                                                    rounded
+                                                    border
+                                                "
+                                            />
+
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setNewImages((prev) =>
+                                                        prev.filter((_, i) => i !== index)
+                                                    );
+                                                }}
+                                                className="
+                                                    mt-2
+                                                    w-full
+                                                    bg-red-500
+                                                    text-white
+                                                    text-sm
+                                                    py-1
+                                                    rounded
+                                                    cursor-pointer
+                                                "
+                                            >
+                                                削除
+                                            </button>
+
+                                        </div>
+                                    ))}
                                 </div>
 
-                                <img
-                                    src={previewUrl}
-                                    alt="新画像プレビュー"
-                                    className="w-32 h-32 object-cover rounded"
-                                />
                             </div>
                         )}
                     </div>

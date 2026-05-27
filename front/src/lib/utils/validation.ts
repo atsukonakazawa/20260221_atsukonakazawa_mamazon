@@ -138,24 +138,36 @@ export const validateProductForm = (data: {
     product_name: string;
     product_price: string;
     product_description?: string;
+    created_by: string;
+    images?: File[];
+    requireImage?: boolean;
 }) => {
+    if (!data.product_name) {
+        return "商品名を入力してください";
+    }
+
+    if (!data.product_price) {
+        return "価格を入力してください";
+    }
+
     if (!data.category_id) {
         return "カテゴリーを入力してください";
+    }
+
+    if (!data.seller_id) {
+        return "販売会社を入力してください";
     }
 
     if (!data.shipment_date_id) {
         return "出荷予定日を入力してください";
     }
 
-    if (!data.seller_id) {
-        return "販売者を入力してください";
+    if (!data.created_by) {
+        return "登録担当者を入力してください";
     }
 
-    if (!data.product_name) {
-        return "商品名を入力してください";
-    }
-    if (!data.product_price) {
-        return "価格を入力してください";
+    if (data.requireImage && (!data.images || data.images.length === 0)) {
+        return "画像を追加してください";
     }
     return null;
 };

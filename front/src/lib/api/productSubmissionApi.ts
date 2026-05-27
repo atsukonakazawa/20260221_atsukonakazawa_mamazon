@@ -30,7 +30,7 @@ export type ProductSubmissionRequest = {
 
     created_by: string;
 
-    image: File;
+    images: File[];
 };
 
 // 商品仮登録時のオプション取得

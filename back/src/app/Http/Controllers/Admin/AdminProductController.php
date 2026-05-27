@@ -104,33 +104,59 @@ class AdminProductController extends Controller
             'product_name' => 'required|string|max:255',
             'product_price' => 'required|integer|min:0',
             'product_description' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
+            // 複数画像対応
+            'new_images.*' => 'nullable|image|max:2048',
+            // 削除画像ID
+            'deleted_image_ids' => 'nullable|array',
+            'deleted_image_ids.*' => 'integer',
         ]);
 
-        $product->update($validated);
-        if ($request->hasFile('image')) {
+        // 商品更新
+        $product->update([
+            'category_id' => $validated['category_id'],
+            'color_id' => $validated['color_id'] ?? null,
+            'shipment_date_id' => $validated['shipment_date_id'],
+            'size_id' => $validated['size_id'] ?? null,
+            'seller_id' => $validated['seller_id'],
+            'product_name' => $validated['product_name'],
+            'product_price' => $validated['product_price'],
+            'product_description' => $validated['product_description'] ?? null,
+        ]);
 
-            $path = $request->file('image')
-                ->store('products', 'public');
+        // 画像削除
+        if ($request->filled('deleted_image_ids')) {
 
-            // 既存画像をstorageから削除
-            foreach ($product->images as $image) {
+            $imagesToDelete = $product->images()
+                ->whereIn('id', $request->deleted_image_ids)
+                ->get();
+
+            foreach ($imagesToDelete as $image) {
+
+                // storage削除
                 Storage::disk('public')->delete($image->image_path);
+
+                // DB削除
+                $image->delete();
             }
+        }
 
-            // 既存画像をDBから削除
-            $product->images()->delete();
+        // 新画像追加
+        if ($request->hasFile('new_images')) {
 
-            // 新画像保存
-            $product->images()->create([
-                'image_path' => $path,
-                'sort_order' => 1,
-            ]);
+            foreach ($request->file('new_images') as $index => $file) {
+
+                $path = $file->store('products', 'public');
+
+                $product->images()->create([
+                    'image_path' => $path,
+                    'sort_order' => $product->images()->count() + $index + 1,
+                ]);
+            }
         }
 
         return response()->json([
             'message' => '更新しました',
-            'product' => $product,
+            'product' => $product->load('images'),
         ]);
     }
 }

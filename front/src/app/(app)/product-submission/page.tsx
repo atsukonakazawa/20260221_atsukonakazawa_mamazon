@@ -6,6 +6,7 @@ import {
     submitProduct,
     ProductFormOptions,
 } from '@/lib/api/productSubmissionApi';
+import { validateProductForm } from '@/lib/utils/validation';
 
 export default function ProductSubmissionPage() {
 
@@ -22,16 +23,23 @@ export default function ProductSubmissionPage() {
     const [productPrice, setProductPrice] = useState('');
     const [productDescription, setProductDescription] = useState('');
     const [createdBy, setCreatedBy] = useState('');
-    const [image, setImage] = useState<File | null>(null);
+    const [images, setImages] = useState<File[]>([]);
     const [message, setMessage] = useState('');
+    const handleRemoveImage = (index: number) => {
 
-    const imagePreview = useMemo(() => {
+        setImages((prev) =>
+            prev.filter((_, i) => i !== index)
+        );
+    };
 
-        if (!image) return null;
+    const imagePreviews = useMemo(() => {
 
-        return URL.createObjectURL(image);
+        return images.map((image) => ({
+                file: image,
+                url: URL.createObjectURL(image),
+            }));
 
-    }, [image]);
+    }, [images]);
 
     useEffect(() => {
 
@@ -53,6 +61,22 @@ export default function ProductSubmissionPage() {
         e.preventDefault();
 
         setMessage('');
+        const errorMessage = validateProductForm({
+            category_id: categoryId,
+            shipment_date_id: shipmentDateId,
+            seller_id: sellerId,
+            product_name: productName,
+            product_price: productPrice,
+            product_description: productDescription,
+            created_by: createdBy,
+            images,
+            requireImage: true,
+        });
+
+        if (errorMessage) {
+            setMessage(errorMessage);
+            return;
+        }
 
         try {
 
@@ -68,9 +92,9 @@ export default function ProductSubmissionPage() {
             formData.append('seller_id', sellerId);
             formData.append('shipment_date_id', shipmentDateId);
 
-            if (image) {
-                formData.append('image', image);
-            }
+            images.forEach((image) => {
+                formData.append('images[]', image);
+            });
 
             await submitProduct(formData);
 
@@ -84,7 +108,7 @@ export default function ProductSubmissionPage() {
             setCategoryId('');
             setSellerId('');
             setShipmentDateId('');
-            setImage(null);
+            setImages([]);
 
         } catch {
 
@@ -99,12 +123,6 @@ export default function ProductSubmissionPage() {
             <h1 className="text-2xl font-bold mb-6">
                 商品仮登録
             </h1>
-
-            {message && (
-                <p className="mb-4 text-sm">
-                    {message}
-                </p>
-            )}
 
             <form
                 onSubmit={handleSubmit}
@@ -203,7 +221,7 @@ export default function ProductSubmissionPage() {
 
                 <div>
                     <label className="block mb-1">
-                        発送日
+                        配送予定日
                     </label>
 
                     <select
@@ -250,24 +268,37 @@ export default function ProductSubmissionPage() {
                         <input
                             type="file"
                             accept="image/*"
+                            multiple
                             className="hidden"
                             onChange={(e) => {
 
-                                if (e.target.files?.[0]) {
-                                    setImage(e.target.files[0]);
-                                }
+                                if (!e.target.files) return;
+
+                                const files = Array.from(e.target.files);
+
+                                setImages((prev) => [
+                                    ...prev,
+                                    ...files,
+                                ]);
+
+                                // 同じ画像を再選択できるようにする
+                                e.target.value = '';
                             }}
                         />
                     </label>
 
-                    {image && (
-                        <p className="mt-2 text-sm text-gray-600">
-                            選択中: {image.name}
-                        </p>
+                    {images.length > 0 && (
+                        <div className="mt-2 text-sm text-gray-600">
+                            {images.map((image, index) => (
+                                <p key={`${image.name}-${index}`}>
+                                    選択中: {image.name}
+                                </p>
+                            ))}
+                        </div>
                     )}
                 </div>
 
-                {imagePreview && (
+                {imagePreviews.length > 0 && (
 
                     <div className="mt-4">
 
@@ -275,21 +306,56 @@ export default function ProductSubmissionPage() {
                             商品プレビュー
                         </p>
 
-                        <div className="
-                            w-48
-                            rounded-lg
-                            overflow-hidden
-                            bg-white
-                        ">
+                        <div className="flex flex-wrap gap-4">
 
-                            <img
-                                src={imagePreview}
-                                alt="商品プレビュー"
-                                className="w-full h-48 object-contain rounded-lg border"
-                            />
+                            {imagePreviews.map((preview, index) => (
 
+                                <div
+                                    key={`${preview.file.name}-${index}`}
+                                    className="w-48"
+                                >
+
+                                    <div
+                                        className="
+                                            rounded-lg
+                                            overflow-hidden
+                                            bg-white
+                                        "
+                                    >
+                                        <img
+                                            src={preview.url}
+                                            alt="商品プレビュー"
+                                            className="
+                                                w-full
+                                                h-48
+                                                object-contain
+                                                rounded-lg
+                                                border
+                                            "
+                                        />
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveImage(index)}
+                                        className="
+                                            mt-2
+                                            w-full
+                                            bg-red-500
+                                            text-white
+                                            text-sm
+                                            py-1
+                                            rounded
+                                            hover:bg-red-600
+                                            cursor-pointer
+                                        "
+                                    >
+                                        削除
+                                    </button>
+
+                                </div>
+                            ))}
                         </div>
-
                     </div>
                 )}
 
@@ -305,6 +371,12 @@ export default function ProductSubmissionPage() {
                         className="w-full border p-2 rounded"
                     />
                 </div>
+
+                {message && (
+                    <p className="my-2 text-red-500">
+                        {message}
+                    </p>
+                )}
 
                 <button
                     type="submit"
