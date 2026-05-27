@@ -7,6 +7,8 @@ import {
     ProductFormOptions,
 } from '@/lib/api/productSubmissionApi';
 import { validateProductForm } from '@/lib/utils/validation';
+import { useRouter } from 'next/navigation';
+import { useSeller } from '@/lib/context/SellerContext';
 
 export default function ProductSubmissionPage() {
 
@@ -25,12 +27,16 @@ export default function ProductSubmissionPage() {
     const [createdBy, setCreatedBy] = useState('');
     const [images, setImages] = useState<File[]>([]);
     const [message, setMessage] = useState('');
+
+    const { setSeller } = useSeller();
     const handleRemoveImage = (index: number) => {
 
         setImages((prev) =>
             prev.filter((_, i) => i !== index)
         );
     };
+
+    const router = useRouter();
 
     const imagePreviews = useMemo(() => {
 
@@ -98,7 +104,27 @@ export default function ProductSubmissionPage() {
 
             await submitProduct(formData);
 
-            setMessage('商品を仮登録しました!');
+            // 選択中の販売会社を取得
+            const selectedSeller = sellers.find(
+                (seller) => String(seller.id) === sellerId
+            );
+
+            // Contextに保存
+            if (selectedSeller) {
+                setSeller({
+                    id: selectedSeller.id,
+                    seller_name: selectedSeller.seller_name,
+                });
+            }
+
+            const sellerName =
+                sellers.find(
+                    (seller) => String(seller.id) === sellerId
+                )?.seller_name ?? '';
+
+            router.push(
+                `/product-submission/complete?product_name=${encodeURIComponent(productName)}&product_price=${productPrice}&seller_name=${encodeURIComponent(sellerName)}`
+            );
 
             // 初期化
             setProductName('');

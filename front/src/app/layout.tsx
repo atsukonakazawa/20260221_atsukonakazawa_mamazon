@@ -4,6 +4,7 @@ import { Roboto_Condensed } from 'next/font/google';
 import type { Metadata } from 'next';
 import { UserProvider } from '@/lib/context/UserContext';
 import { CartProvider } from '@/lib/context/CartContext';
+import { SellerProvider } from '@/lib/context/SellerContext';
 
 // Roboto_Condensed フォントの設定
 const robotoCondensed = Roboto_Condensed({
@@ -30,7 +31,9 @@ export default function RootLayout({
       <body className={robotoCondensed.className}>
         <UserProvider>
           <CartProvider>
-            {children}
+            <SellerProvider>
+              {children}
+            </SellerProvider>
           </CartProvider>
         </UserProvider>
       </body>
