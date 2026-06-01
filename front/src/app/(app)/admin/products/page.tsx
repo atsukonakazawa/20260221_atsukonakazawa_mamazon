@@ -165,10 +165,12 @@ export default function AdminProductsPage() {
                                 </td>
                                 <td className="px-3 py-2 w-16">
                                     <button className={`px-3 py-1 text-xs rounded
+                                        ${product.status === 'inactive' && 'text-blue-500'}
                                         ${product.status === 'active' && 'text-green-700'}
                                         ${product.status === 'suspended' && 'text-yellow-700'}
                                         ${product.status === 'withdrawn' && 'text-red-500'}
                                     `}>
+                                        {product.status === 'inactive' && '承認待ち'}
                                         {product.status === 'active' && '有効'}
                                         {product.status === 'suspended' && '停止'}
                                         {product.status === 'withdrawn' && '退会'}
@@ -176,7 +178,8 @@ export default function AdminProductsPage() {
                                 </td>
 
                                 <td className="text-center px-3 py-2 w-16">
-                                    {product.status !== 'withdrawn' && (
+                                    {product.status !== 'withdrawn' &&
+                                    product.status !== 'inactive' && (
                                         <button
                                             onClick={async (e) => {
                                                 e.stopPropagation();

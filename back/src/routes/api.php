@@ -99,6 +99,7 @@ Route::get(
 Route::get('/admin/products', [AdminProductController::class, 'index']);
 Route::get('/admin/products/{id}', [AdminProductController::class, 'show']);
 Route::patch('/admin/products/{id}/status', [AdminProductController::class, 'toggleStatus']);
+Route::patch('/admin/products/{id}/approve', [AdminProductController::class, 'approve']);
 Route::delete('/admin/products/{id}', [AdminProductController::class, 'delete']);
 Route::put('/admin/products/{id}', [AdminProductController::class, 'update']);
 

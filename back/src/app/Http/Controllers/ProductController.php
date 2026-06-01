@@ -19,6 +19,8 @@ class ProductController extends Controller
             'seller',
             'images'
         ])
+            ->where('status', 'active')
+            ->where('is_active', true)
             ->withAvg('reviews', 'score')
             ->withCount('reviews');
 
@@ -76,6 +78,8 @@ class ProductController extends Controller
             'shipmentDate',
             'images'
         ])
+            ->where('status', 'active')
+            ->where('is_active', true)
             ->withAvg('reviews', 'score')
             ->withCount('reviews')
             ->findOrFail($id);

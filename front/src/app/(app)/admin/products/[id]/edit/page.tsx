@@ -315,7 +315,7 @@ export default function AdminProductEditPage() {
                                 <img
                                     src={`http://localhost/storage/${image.image_path}`}
                                     alt={data.product_name}
-                                    className="w-32 h-32 object-cover rounded border"
+                                    className="w-32 h-32 object-scale-down rounded border"
                                 />
 
                                 <button
@@ -392,7 +392,7 @@ export default function AdminProductEditPage() {
                                                 className="
                                                     w-32
                                                     h-32
-                                                    object-cover
+                                                    object-scale-down
                                                     rounded
                                                     border
                                                 "

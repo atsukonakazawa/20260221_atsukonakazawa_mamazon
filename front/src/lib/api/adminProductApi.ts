@@ -55,6 +55,8 @@ export type ProductDetail = {
     product_description?: string;
     is_active: boolean;
     status: string;
+    approved_by?: string;
+    approved_at?: string;
     created_at: string;
     updated_at: string;
     images?: {
@@ -162,5 +164,17 @@ export async function createAdminProduct(
     });
 }
 
+// 商品 承認
+export async function approveProduct(
+    id: number,
+    approved_by: string
+) {
+    return apiFetch(`/api/admin/products/${id}/approve`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+            approved_by,
+        }),
+    });
+}
 
 

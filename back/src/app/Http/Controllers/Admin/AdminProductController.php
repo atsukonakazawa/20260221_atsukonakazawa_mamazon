@@ -159,4 +159,31 @@ class AdminProductController extends Controller
             'product' => $product->load('images'),
         ]);
     }
+
+    public function approve(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'approved_by' => 'required|string|max:255',
+        ]);
+
+        $product = Product::findOrFail($id);
+
+        // inactiveのみ承認可能
+        if ($product->status !== 'inactive') {
+            return response()->json([
+                'message' => '承認待ち商品ではありません'
+            ], 422);
+        }
+
+        $product->update([
+            'status' => 'active',
+            'is_active' => true,
+            'approved_by' => $validated['approved_by'],
+            'approved_at' => now(),
+        ]);
+
+        return response()->json([
+            'message' => '承認しました',
+        ]);
+    }
 }

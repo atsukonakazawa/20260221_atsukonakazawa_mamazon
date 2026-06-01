@@ -1,11 +1,15 @@
 'use client';
 
 import useSWR from 'swr';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { fetchProductDetail, ProductDetail, deleteProduct} from '@/lib/api/adminProductApi';
+import { fetchProductDetail, ProductDetail, deleteProduct, approveProduct } from '@/lib/api/adminProductApi';
 import Link from 'next/link';
 
 export default function AdminProductDetailPage() {
+    const [showApproveForm, setShowApproveForm] = useState(false);
+    const [approvedBy, setApprovedBy] = useState('');
+
     const { id } = useParams();
     const router = useRouter();
 
@@ -29,6 +33,24 @@ export default function AdminProductDetailPage() {
             router.push('/admin/products');
         } catch {
             alert('処理に失敗しました');
+        }
+    };
+
+    const handleApprove = async () => {
+
+        if (!approvedBy.trim()) {
+            alert('承認者名を入力してください');
+            return;
+        }
+
+        try {
+            await approveProduct(data.id, approvedBy);
+
+            alert('承認しました！');
+
+            router.push('/admin/products');
+        } catch {
+            alert('承認に失敗しました');
         }
     };
 
@@ -73,7 +95,7 @@ export default function AdminProductDetailPage() {
                                     key={image.id}
                                     src={`http://localhost/storage/${image.image_path}`}
                                     alt={data.product_name}
-                                    className="w-32 h-32 object-cover rounded"
+                                    className="w-32 h-32 object-scale-down rounded"
                                 />
                             ))}
                         </div>
@@ -88,13 +110,55 @@ export default function AdminProductDetailPage() {
                     編集
                 </button>
 
+                {data.status === 'inactive' && (
+                    <button
+                        onClick={() => setShowApproveForm(!showApproveForm)}
+                        className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 mx-4 rounded cursor-pointer"
+                    >
+                        承認
+                    </button>
+                )}
+
                 <button
                     onClick={handleDelete}
                     className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 mx-4 rounded cursor-pointer"
                 >
-                    削除処理
+                    削除
                 </button>
             </div>
+
+            {showApproveForm && (
+                <div className="mt-6 mx-auto max-w-2xl bg-white border border-gray-300 rounded p-4">
+
+                    <h2 className="font-semibold mb-3">
+                        承認処理
+                    </h2>
+
+                    <input
+                        type="text"
+                        value={approvedBy}
+                        onChange={(e) => setApprovedBy(e.target.value)}
+                        placeholder="承認者氏名"
+                        className="w-full border border-gray-300 rounded px-3 py-2"
+                    />
+
+                    <div className="mt-4 flex gap-3">
+                        <button
+                            onClick={handleApprove}
+                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded cursor-pointer"
+                        >
+                            承認実行
+                        </button>
+
+                        <button
+                            onClick={() => setShowApproveForm(false)}
+                            className="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded cursor-pointer"
+                        >
+                            キャンセル
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
