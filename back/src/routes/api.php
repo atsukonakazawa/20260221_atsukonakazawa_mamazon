@@ -90,6 +90,7 @@ Route::get('/admin/sellers/{id}', [SellerController::class, 'show']);
 Route::patch('/admin/sellers/{id}/status', [SellerController::class, 'toggleStatus']);
 Route::delete('/admin/sellers/{id}', [SellerController::class, 'delete']);
 Route::put('/admin/sellers/{id}', [SellerController::class, 'update']);
+Route::post('/admin/sellers', [SellerController::class, 'store']);
 
 //管理画面 商品管理
 Route::get(

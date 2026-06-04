@@ -1,6 +1,6 @@
 import { apiFetch } from './apiClient';
 
-// 販売者一覧画面用
+// 販売者一覧画面用型
 export type SellerListItem = {
     id: number;
     seller_name: string;
@@ -12,7 +12,7 @@ export type SellerListItem = {
     created_at: string;
 };
 
-// 販売者詳細画面用
+// 販売者詳細画面用型
 export type SellerDetail = {
     id: number;
     seller_name: string;
@@ -57,7 +57,7 @@ export async function deleteSeller(id: number) {
     });
 }
 
-// 販売者情報編集画面用
+// 販売者情報編集画面用型
 export type UpdateAdminSellerRequest = {
     seller_name: string;
     postcode: string;
@@ -76,13 +76,20 @@ export async function updateAdminSeller(
     });
 }
 
-// 新規作成
-export async function createAdminSeller(
-    data: UpdateAdminSellerRequest
+// 販売者 新規登録用型
+export type CreateSellerRequest = {
+    seller_name: string;
+    postcode: string;
+    address: string;
+    tel: string;
+};
+
+// 販売者 新規登録
+export async function createSeller(
+    data: CreateSellerRequest
 ) {
     return apiFetch('/api/admin/sellers', {
         method: 'POST',
         body: JSON.stringify(data),
     });
 }
-

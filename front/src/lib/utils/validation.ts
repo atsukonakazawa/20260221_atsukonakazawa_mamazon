@@ -10,7 +10,7 @@ export const normalizePhone = (input: string) => {
         .replace(/[０-９]/g, (s) =>
         String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
         )
-        .replace(/-/g, "")
+        .replace(/[-－−ー―‐ｰ]/g, "")
         .replace(/\s/g, "");
 };
 
@@ -25,9 +25,21 @@ export const isValidPassword = (input: string) => {
     return input.length >= 8;
 };
 
-// 郵便番号
+// 郵便番号の正規化
+export const normalizePostcode = (input: string) => {
+    return input
+        .replace(/[０-９]/g, (s) =>
+            String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
+        )
+        .replace(/[-－−ー―‐ｰ]/g, '')
+        .replace(/\s/g, '');
+};
+
+// 郵便番号バリデーション
 export const isValidPostcode = (input: string) => {
-    return /^[0-9]{7}$/.test(input);
+    const postcode = normalizePostcode(input);
+
+    return /^[0-9]{7}$/.test(postcode);
 };
 
 //エラーメッセージ
@@ -171,3 +183,5 @@ export const validateProductForm = (data: {
     }
     return null;
 };
+
+

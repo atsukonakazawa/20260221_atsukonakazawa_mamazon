@@ -83,4 +83,20 @@ class SellerController extends Controller
             'seller' => $seller,
         ]);
     }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'seller_name' => 'required|max:255',
+            'postcode' => 'required|max:255',
+            'address' => 'required|max:255',
+            'tel' => 'required|max:255',
+        ]);
+
+        Seller::create($validated);
+
+        return response()->json([
+            'message' => '販売会社を登録しました'
+        ]);
+    }
 }

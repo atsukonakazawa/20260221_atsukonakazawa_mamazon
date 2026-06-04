@@ -8,7 +8,7 @@ import {
     updateAdminSeller,
     SellerDetail
 } from '@/lib/api/adminSellerApi';
-import { validateSellerForm, normalizePhone } from '@/lib/utils/validation';
+import { validateSellerForm, normalizePhone, normalizePostcode } from '@/lib/utils/validation';
 
 export default function AdminSellerEditPage() {
     const { id } = useParams();
@@ -66,6 +66,7 @@ export default function AdminSellerEditPage() {
         try {
             await updateAdminSeller(Number(id), {
                 ...form,
+                postcode: normalizePostcode(form.postcode),
                 tel: normalizePhone(form.tel),
             });
             alert('更新しました');

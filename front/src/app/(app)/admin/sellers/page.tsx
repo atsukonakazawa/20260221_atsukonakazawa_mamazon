@@ -53,14 +53,26 @@ export default function AdminSellersPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 p-5">
-            <h1 className="text-2xl font-semibold mb-4">販売者 一覧</h1>
+            <h1 className="text-2xl font-semibold mb-4">
+                販売会社 一覧
+            </h1>
 
-            <Link
-                href="/admin"
-                className="inline-block mb-4 text-xs bg-white border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50 cursor-pointer"
-            >
-                ダッシュボードに戻る
-            </Link>
+            <div className="flex gap-2 mb-4 justify-between">
+                <Link
+                    href="/admin"
+                    className="inline-block text-xs bg-white border border-gray-300 rounded-md px-4 py-2 hover:bg-gray-50"
+                >
+                    ダッシュボードに戻る
+                </Link>
+
+                <Link
+                    href="/admin/sellers/create"
+                    className="inline-block text-xs bg-black text-white rounded-md px-4 py-2 hover:bg-gray-800"
+                >
+                    販売会社 新規登録
+                </Link>
+
+            </div>
 
             {/* 🔍 検索エリア */}
             <div className="mb-4 flex gap-2">
