@@ -77,7 +77,7 @@ class PaymentController extends Controller
             $limitDate = now()->addDays(3)->endOfDay();
 
             // 電話番号から確認番号を生成
-            $phoneNumber = $user->phone_number;
+            $phoneNumber = $user->tel;
 
             // 数字以外を削除
             $cleanPhoneNumber = preg_replace('/\D/', '', $phoneNumber);
@@ -124,6 +124,7 @@ class PaymentController extends Controller
             // フロントに返すレスポンス
             return response()->json([
                 'message' => '注文保存成功',
+                'order_id' => $order->id,
                 'payment_number' => $paymentNumber,
                 'confirmation_number' => $confirmationNumber,
                 'payment_limit' => $limitDate,

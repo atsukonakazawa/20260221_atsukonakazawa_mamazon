@@ -34,17 +34,16 @@ export default function Header() {
     router.push(`/mypage?keyword=${encodeURIComponent(word)}`);
   };
   const quickWords = [
-    "ネットスーパー",
+    "ボディクリーム",
     "リラックス",
-    "Prime Video",
-    "おむつ",
+    "おしゃぶり",
+    "オムツ",
     "ミルク",
-    "クリーム",
+    "おしりふき",
     "ハーブティー",
     "おやつ",
-    "おしりふき",
     "哺乳瓶",
-    "おしゃぶり"
+    "エプロン"
   ];
 
   //カート

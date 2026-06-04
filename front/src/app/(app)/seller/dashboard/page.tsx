@@ -13,13 +13,9 @@ export default function SellerDashboardPage() {
 
             <div className="mb-6">
 
-                <p className="text-sm text-gray-500">
-                    Mamazon Seller Console
-                </p>
-
-                <h1>
-                Mamazon {seller?.seller_name} ダッシュボード
-            </h1>
+                <h1 className="text-2xl font-semibold">
+                    Mamazon {seller?.seller_name} ダッシュボード
+                </h1>
 
             </div>
 

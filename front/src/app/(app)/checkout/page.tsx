@@ -95,7 +95,7 @@ export default function CheckoutPage() {
             const selectedWay = paymentWays.find(w => w.id === selectedPaymentWayId);
 
             if (selectedWay?.payment_way === 'コンビニ払い') {
-                router.push(`/checkout/complete?number=${res.payment_number}&limit=${res.payment_limit}`);
+                router.push(`/checkout/complete?orderId=${res.order_id}&number=${res.payment_number}&confirmation=${res.confirmation_number}&limit=${res.payment_limit}`);
             } else {
                 router.push('/checkout/complete');
             }
