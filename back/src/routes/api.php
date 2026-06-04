@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SellerController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\ProductSubmissionController;
-
+use App\Http\Controllers\Admin\AdminOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,5 +104,14 @@ Route::patch('/admin/products/{id}/approve', [AdminProductController::class, 'ap
 Route::delete('/admin/products/{id}', [AdminProductController::class, 'delete']);
 Route::put('/admin/products/{id}', [AdminProductController::class, 'update']);
 
+// 管理画面 注文管理
+Route::get(
+    '/admin/orders',
+    [AdminOrderController::class, 'index']
+);
+Route::get(
+    '/admin/orders/{order}',
+    [AdminOrderController::class, 'show']
+);
 
 //});

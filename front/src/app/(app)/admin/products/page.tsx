@@ -16,6 +16,9 @@ export default function AdminProductsPage() {
     //リレーションもソートをかけられるようにsortableな型を作る
     type SortableKey =
         | 'id'
+        | 'category_name'
+        | 'shipment_date'
+        | 'seller_name'
         | 'product_name'
         | 'product_price'
         | 'updated_at'
@@ -35,8 +38,24 @@ export default function AdminProductsPage() {
 
     //ソート関数
     const sortedProducts = [...(data ?? [])].sort((a, b) => {
-        const aValue = a[sortKey];
-        const bValue = b[sortKey];
+        const getValue = (product: ProductList, key: SortableKey) => {
+            switch (key) {
+                case 'category_name':
+                    return product.category?.category_name ?? '';
+
+                case 'shipment_date':
+                    return product.shipment_date?.shipment_date ?? '';
+
+                case 'seller_name':
+                    return product.seller?.seller_name ?? '';
+
+                default:
+                    return product[key as keyof ProductList];
+            }
+        };
+
+        const aValue = getValue(a, sortKey);
+        const bValue = getValue(b, sortKey);
 
         if (aValue == null) return 1;
         if (bValue == null) return -1;
@@ -101,16 +120,19 @@ export default function AdminProductsPage() {
                                 ID{sortKey === 'id' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
                             </th>
                             <th
+                                onClick={() => handleSort('category_name')}
                                 className="text-left px-3 py-2 font-semibold border-b cursor-pointer hover:bg-gray-100 w-32">
-                                カテゴリー
+                                カテゴリー{sortKey === 'category_name' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
                             </th>
                             <th
+                                onClick={() => handleSort('shipment_date')}
                                 className="text-left px-3 py-2 font-semibold border-b cursor-pointer hover:bg-gray-100 w-32">
-                                出荷予定日
+                                出荷予定日{sortKey === 'shipment_date' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
                             </th>
                             <th
+                                onClick={() => handleSort('seller_name')}
                                 className="text-left px-3 py-2 font-semibold border-b cursor-pointer hover:bg-gray-100 w-32">
-                                販売者
+                                販売者{sortKey === 'seller_name' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
                             </th>
                             <th
                                 onClick={() => handleSort('product_name')}
@@ -149,7 +171,7 @@ export default function AdminProductsPage() {
                                     {product.category?.category_name ?? '-'}
                                 </td>
                                 <td className="px-3 py-2 w-32">
-                                    {product.shipmentDate?.shipment_date ?? '-'}
+                                    {product.shipment_date?.shipment_date ?? '-'}
                                 </td>
                                 <td className="px-3 py-2 w-32">
                                     {product.seller?.seller_name ?? '-'}

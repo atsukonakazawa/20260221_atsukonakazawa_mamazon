@@ -7,7 +7,7 @@ export type ProductList = {
         id: number;
         category_name: string;
     };
-    shipmentDate?: {
+    shipment_date?: {
         id: number;
         shipment_date: string;
     };
@@ -34,7 +34,7 @@ export type ProductDetail = {
         id: number;
         category_name: string;
     };
-    shipmentDate?: {
+    shipment_date?: {
         id: number;
         shipment_date: string;
     };

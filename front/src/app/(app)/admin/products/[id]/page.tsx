@@ -69,7 +69,7 @@ export default function AdminProductDetailPage() {
                 <div className="space-y-3 text-sm">
                     <div><strong>ID:</strong> {data.id}</div>
                     <div><strong>カテゴリー:</strong> {data.category?.category_name ?? '-'}</div>
-                    <div><strong>出荷予定日:</strong> {data.shipmentDate?.shipment_date ?? '-'}</div>
+                    <div><strong>出荷予定日:</strong> {data.shipment_date?.shipment_date ?? '-'}</div>
                     <div><strong>販売者:</strong> {data.seller?.seller_name ?? '-'}</div>
                     <div><strong>商品名:</strong> {data.product_name ?? '-'}</div>
                     <div><strong>価格:</strong> {data.product_price ?? '-'}</div>

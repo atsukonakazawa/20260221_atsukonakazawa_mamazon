@@ -55,6 +55,20 @@ export default function AdminPage() {
                     </p>
                 </button>
 
+                {/* 注文管理 */}
+                <button
+                    onClick={() => router.push('/admin/orders')}
+                    className="bg-white border border-gray-300 rounded-lg p-6 text-left hover:bg-gray-50 transition cursor-pointer shadow-sm"
+                >
+                    <h2 className="text-lg font-semibold mb-2">
+                        注文管理
+                    </h2>
+
+                    <p className="text-sm text-gray-600">
+                        注文一覧の確認・検索・停止処理
+                    </p>
+                </button>
+
             </div>
         </div>
     );
