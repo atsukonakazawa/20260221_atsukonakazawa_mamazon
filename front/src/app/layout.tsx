@@ -1,15 +1,12 @@
 import './globals.css';
-// Google Fonts から Montserrat フォントを読み込む
-import { Roboto_Condensed } from 'next/font/google';
 import type { Metadata } from 'next';
-import { UserProvider } from '@/lib/context/UserContext';
-import { CartProvider } from '@/lib/context/CartContext';
-import { SellerProvider } from '@/lib/context/SellerContext';
+import { Roboto_Condensed } from 'next/font/google';
+import Providers from './providers';
 
 // Roboto_Condensed フォントの設定
 const robotoCondensed = Roboto_Condensed({
   subsets: ['latin'],
-  weight: ['400', '700', '800'], // 普通と太字を読み込み
+  weight: ['400', '700', '800'],
 });
 
 // サイト全体のメタデータ（タイトルなど）
@@ -29,13 +26,9 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className={robotoCondensed.className}>
-        <UserProvider>
-          <CartProvider>
-            <SellerProvider>
-              {children}
-            </SellerProvider>
-          </CartProvider>
-        </UserProvider>
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

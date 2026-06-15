@@ -3,9 +3,9 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { verifySmsCode } from '@/lib/api/authApi';
 import SmsVerifyForm from '@/app/components/login/SmsVerifyForm';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 
-export default function VerifyPage() {
+function VerifyPageContent() {
     const params = useSearchParams();
     const tel = params.get('tel')!;
     const router = useRouter();
@@ -38,5 +38,13 @@ export default function VerifyPage() {
             errorMessage={errorMessage}
             />
         </div>
+    );
+}
+
+export default function VerifyPage() {
+    return (
+        <Suspense fallback={<div>読み込み中...</div>}>
+            <VerifyPageContent />
+        </Suspense>
     );
 }

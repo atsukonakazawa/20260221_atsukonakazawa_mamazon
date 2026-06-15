@@ -1,10 +1,10 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { apiFetch } from '@/lib/api/apiClient';
 
-export default function NewPasswordPage() {
+function NewPasswordPageContent() {
     const params = useSearchParams();
     const tel = params.get('tel')!;
     const router = useRouter();
@@ -92,5 +92,13 @@ export default function NewPasswordPage() {
             </button>
         </form>
         </main>
+    );
+}
+
+export default function NewPasswordPage() {
+    return (
+        <Suspense fallback={<div>読み込み中...</div>}>
+            <NewPasswordPageContent />
+        </Suspense>
     );
 }

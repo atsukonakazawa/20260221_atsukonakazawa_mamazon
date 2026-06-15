@@ -2,11 +2,10 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useSeller } from '@/lib/context/SellerContext';
 
-export default function ProductSubmissionCompletePage() {
-
+function CompleteContent() {
     const searchParams = useSearchParams();
 
     const productName =
@@ -21,21 +20,16 @@ export default function ProductSubmissionCompletePage() {
     const { setSeller } = useSeller();
 
     useEffect(() => {
-
         if (sellerName) {
-
             setSeller({
                 id: 1,
                 seller_name: sellerName,
             });
         }
-
     }, [sellerName, setSeller]);
 
     return (
-
         <div className="max-w-2xl mx-auto p-6">
-
             <div className="bg-white border rounded-lg p-8">
 
                 <h1 className="text-2xl font-bold mb-4">
@@ -52,17 +46,9 @@ export default function ProductSubmissionCompletePage() {
                         登録内容
                     </h2>
 
-                    <p>
-                        商品名：{productName}
-                    </p>
-
-                    <p>
-                        価格：¥{productPrice}
-                    </p>
-
-                    <p>
-                        販売会社：{sellerName}
-                    </p>
+                    <p>商品名：{productName}</p>
+                    <p>価格：¥{productPrice}</p>
+                    <p>販売会社：{sellerName}</p>
 
                 </div>
 
@@ -70,25 +56,14 @@ export default function ProductSubmissionCompletePage() {
 
                     <Link
                         href="/product-submission"
-                        className="
-                            bg-black
-                            text-white
-                            px-4
-                            py-2
-                            rounded
-                        "
+                        className="bg-black text-white px-4 py-2 rounded"
                     >
                         続けて商品の登録をする
                     </Link>
 
                     <Link
                         href="/seller/dashboard"
-                        className="
-                            bg-gray-200
-                            px-4
-                            py-2
-                            rounded
-                        "
+                        className="bg-gray-200 px-4 py-2 rounded"
                     >
                         販売会社ダッシュボードに戻る
                     </Link>
@@ -96,7 +71,14 @@ export default function ProductSubmissionCompletePage() {
                 </div>
 
             </div>
-
         </div>
+    );
+}
+
+export default function ProductSubmissionCompletePage() {
+    return (
+        <Suspense fallback={<div>読み込み中...</div>}>
+            <CompleteContent />
+        </Suspense>
     );
 }

@@ -1,11 +1,12 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '../../../components/Header';
 import FooterLogin from '../../../components/FooterLogin';
 
-export default function ReviewCompletePage() {
+function ReviewCompleteContent() {
     const params = useSearchParams();
 
     const productName = params.get('product_name');
@@ -20,6 +21,7 @@ export default function ReviewCompletePage() {
                 <h1 className="text-2xl font-bold mb-4">
                     レビューの投稿が完了しました 🎉
                 </h1>
+
                 <p className="mb-6">
                     ありがとうございます。
                 </p>
@@ -42,7 +44,9 @@ export default function ReviewCompletePage() {
                         {'☆'.repeat(5 - score)}
                     </div>
 
-                    <p className="text-gray-700">{comment}</p>
+                    <p className="text-gray-700">
+                        {comment}
+                    </p>
                 </div>
 
                 <Link
@@ -52,7 +56,16 @@ export default function ReviewCompletePage() {
                     ホーム画面
                 </Link>
             </div>
+
             <FooterLogin />
         </>
+    );
+}
+
+export default function ReviewCompletePage() {
+    return (
+        <Suspense fallback={<div>読み込み中...</div>}>
+            <ReviewCompleteContent />
+        </Suspense>
     );
 }

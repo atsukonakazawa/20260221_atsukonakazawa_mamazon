@@ -1,11 +1,12 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from '../../../components/Header';
 import FooterLogin from "../../../components/FooterLogin";
 import Link from 'next/link';
 
-export default function OrderCompletePage() {
+function OrderCompletePageContent() {
     const searchParams = useSearchParams();
 
     const orderId = searchParams.get('orderId');
@@ -70,5 +71,13 @@ export default function OrderCompletePage() {
 
             <FooterLogin />
         </>
+    );
+}
+
+export default function OrderCompletePage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <OrderCompletePageContent />
+        </Suspense>
     );
 }
