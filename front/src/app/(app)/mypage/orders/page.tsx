@@ -156,14 +156,18 @@ export default function OrdersPage() {
 
                                 {/* 下段 */}
                                 <div className="p-2 flex items-center justify-between">
+
                                     {/* 下段・左側 */}
                                     <div className="p-2 items-center gap-4 max-w-sm">
-                                        {/* 下段・左側・ステータス */}
+
+                                        {/* ステータス */}
                                         <div className="p-2 flex items-center justify-start gap-4 max-w-sm">
+
                                             {/* 支払状況 */}
                                             <p className="text-xl font-bold">
                                                 {item.payment_status}
                                             </p>
+
                                             {/* 配送状況 */}
                                             <p className="text-xl font-bold">
                                                 {item.shipment_status}
@@ -193,22 +197,36 @@ export default function OrdersPage() {
 
                                     {/* 下段・右 */}
                                     <div className="py-4 items-center w-[200px]">
+
+                                        {/* テスト */}
                                         <button
                                             className="cursor-pointer  my-1 p-1 text-sm w-full rounded-full border border-black-100"
                                         >
                                             テスト
                                         </button>
+
+                                        {/* お支払い番号 */}
                                         <button
                                             onClick={() => handlePaymentInfo(item)}
-                                            className="cursor-pointer my-1 p-1 text-sm w-full rounded-full border border-black-100"
+                                            className="cursor-pointer my-1 p-1 text-sm w-full rounded-full border border-black-100 hover:bg-gray-100"
                                         >
                                             お支払い番号の確認
                                         </button>
-                                        <button
-                                            className="cursor-pointer my-1 p-1 text-sm w-full rounded-full border border-black-100"
-                                        >
-                                            商品レビューを書く
-                                        </button>
+
+                                        {/* 商品レビュー */}
+                                        <Link href={`/reviews/create/${item.product?.id}`}>
+                                            <button
+                                                disabled={item.shipment_status !== "お届け済み"}
+                                                className={`my-1 p-1 text-sm w-full rounded-full border
+                                                ${
+                                                    item.shipment_status === "お届け済み"
+                                                        ? "cursor-pointer border-black-100 hover:bg-gray-100"
+                                                        : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                                }`}
+                                            >
+                                                商品レビューを書く
+                                            </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>

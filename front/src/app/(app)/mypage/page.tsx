@@ -1,7 +1,8 @@
 'use client';
+
 import Header from '../../components/Header';
 import FooterLogin from "../../components/FooterLogin";
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser } from '@/lib/context/UserContext';
 import { fetchProducts } from '@/lib/api/productApi';
@@ -11,7 +12,7 @@ import Link from 'next/link';
 import ProductCard from "../../components/products/ProductCard";
 
 
-export default function MyPage() {
+function MyPageContent() {
     const { user } = useUser();
     const router = useRouter();
 
@@ -83,5 +84,13 @@ export default function MyPage() {
 
             <FooterLogin />
         </>
+    );
+}
+
+export default function MyPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <MyPageContent />
+        </Suspense>
     );
 }

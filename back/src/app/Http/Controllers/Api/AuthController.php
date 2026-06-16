@@ -24,6 +24,15 @@ class AuthController extends Controller
         ]);
     }
 
+    public function checkEmail(Request $request)
+    {
+        $exists = User::where('email', $request->email)->exists();
+
+        return response()->json([
+            'exists' => $exists,
+        ]);
+    }
+
     public function register(Request $request)
     {
         $request->validate([
@@ -36,11 +45,6 @@ class AuthController extends Controller
             'date_of_birth' => 'nullable|date',
             'placement' => 'boolean',
         ]);
-
-        // email / tel 判定
-        $field = filter_var($request->email, FILTER_VALIDATE_EMAIL)
-            ? 'email'
-            : 'tel';
 
         //bcryptをつけることでパスワードがハッシュ化
         $user = User::create([
@@ -86,9 +90,27 @@ class AuthController extends Controller
         }
 
         // ユーザー取得
-        $user = Auth::user();;
+        $user = Auth::user();
 
-        // 🚫 SMS未認証チェック
+        //ユーザーが利用停止中の場合ログイン不可
+        if ($user->status === 'suspended') {
+            Auth::logout();
+
+            return response()->json([
+                'message' => 'このアカウントは現在利用停止中です'
+            ], 403);
+        }
+
+        //ユーザーが退会済みの場合ログイン不可
+        if ($user->status === 'withdrawn') {
+            Auth::logout();
+
+            return response()->json([
+                'message' => 'このアカウントは退会済みです'
+            ], 403);
+        }
+
+        // SMS未認証チェック
         if (is_null($user->sms_verified_at)) {
             Auth::logout();
             return response()->json([
@@ -96,10 +118,66 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // ✅ ログイン成功
+        // ログイン成功
         return response()->json([
             'message' => 'ログイン成功',
             'user' => $user,
         ]);
+    }
+
+    public function update(Request $request)
+    {
+        $user = User::find($request->user_id);
+
+        if (!$user) {
+            return response()->json([
+                'message' => '未認証'
+            ], 401);
+        }
+
+        $request->validate([
+            'last_name'  => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'postcode'   => 'nullable|string|max:7',
+            'address'    => 'nullable|string|max:255',
+            'tel' => 'nullable|string|max:20',
+            'placement' => 'nullable|boolean',
+            'place_of_placement' => 'nullable|string|max:255',
+            'email' => 'nullable|string|max:255',
+        ]);
+
+        $user->update([
+            'last_name'  => $request->last_name,
+            'first_name' => $request->first_name,
+            'postcode'   => $request->postcode,
+            'address'    => $request->address,
+            'tel' => $request->tel,
+            'placement' => $request->placement,
+            'place_of_placement' => $request->place_of_placement,
+            'email' => $request->email,
+        ]);
+
+        if ($request->filled('password')) {
+            $user->update([
+                'password' => bcrypt($request->password),
+            ]);
+        }
+
+        return response()->json($user);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'tel' => 'required',
+            'password' => 'required|min:6',
+        ]);
+
+        $user = User::where('tel', $request->tel)->firstOrFail();
+
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        return response()->json(['message' => 'ok']);
     }
 }

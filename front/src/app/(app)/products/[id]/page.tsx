@@ -4,11 +4,14 @@ import Header from '../../../components/Header';
 import FooterLogin from "../../../components/FooterLogin";
 import ProductSwiper from "../../../components/products/ProductSwiper";
 import AddToCartButton from '../../../components/products/AddToCartButton';
+import StarRatingDisplay from '../../../components/review/StarRatingDisplay';
+import Link from "next/link";
+
 
 export default async function ProductDetail({
     params,
     }: {
-    params: Promise<{ id: string }>;
+    params: Promise<{ id: number }>;
     }) {
 
     const { id } = await params;
@@ -35,6 +38,19 @@ export default async function ProductDetail({
                             <h1 className="text-2xl font-bold mt-6">
                                 {product.product_name}
                             </h1>
+
+                        <div className="mt-3 flex">
+                            <StarRatingDisplay
+                                rating={product.reviews_avg_score ?? 0}
+                            />
+                            <Link
+                                href={`/products/${product.id}/reviews`}
+                                className="text-xs text-blue-400 pl-3 hover:underline"
+                            >
+                                ({product.reviews_count ?? 0}件)
+                            </Link>
+                        </div>
+
 
                             <div className="text-3xl mt-4">
                                 ¥{product.product_price.toLocaleString()}

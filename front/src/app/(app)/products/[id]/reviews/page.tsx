@@ -1,0 +1,76 @@
+'use client';
+
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Header from '../../../../components/Header';
+import FooterLogin from '../../../../components/FooterLogin';
+import StarRatingDisplay from '../../../../components/review/StarRatingDisplay';
+
+type Review = {
+    id: number;
+    score: number;
+    comment: string;
+    user: {
+        last_name: string;
+        first_name: string;
+    };
+};
+
+export default function ReviewListPage() {
+    const params = useParams();
+    const productId = params.id;
+
+    const [reviews, setReviews] = useState<Review[]>([]);
+
+    useEffect(() => {
+        const fetchReviews = async () => {
+            const res = await fetch(
+                `http://localhost/api/products/${productId}/reviews`
+            );
+            const data = await res.json();
+            setReviews(data);
+        };
+
+        fetchReviews();
+    }, [productId]);
+
+    return (
+        <>
+            <Header />
+
+            <div className="max-w-3xl mx-auto p-6">
+                <h1 className="text-2xl font-bold mb-6">
+                    レビュー
+                </h1>
+
+                {reviews.length === 0 ? (
+                    <p>レビューはまだありません</p>
+                ) : (
+                    <div className="space-y-6">
+                        {reviews.map((review) => (
+                            <div
+                                key={review.id}
+                                className="border p-4 rounded"
+                            >
+                                <p className="mb-5 text-sm text-gray-500 mt-1">
+                                    {review.user.last_name + review.user.first_name} さん
+                                </p>
+
+                                <StarRatingDisplay
+                                    rating={review.score}
+                                    showScore={false}
+                                />
+
+                                <p className="mt-2">
+                                    {review.comment}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            <FooterLogin />
+        </>
+    );
+}

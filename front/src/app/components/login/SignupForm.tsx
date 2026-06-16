@@ -1,5 +1,10 @@
 'use client';
 import React, { useState } from 'react';
+import { checkEmail } from '../../../lib/api/authApi';
+import {
+  normalizePhone,
+  validateUserForm
+} from '@/lib/utils/validation';
 
 /**
  * 親（LoginPage）や API に渡す正式データ型
@@ -22,7 +27,7 @@ export type SignupData = {
 * 確認用パスワードは API に渡さない
 */
 type SignupFormState = SignupData & {
-password_confirm: string;
+  password_confirm: string;
 };
 
 /**
@@ -31,16 +36,18 @@ password_confirm: string;
 type Props = {
   // すでに入力済みのメールアドレス or 電話番号（表示専用）
   emailOrPhone: string;
+  //メールアドレス形式になっているかどうか
+  isEmail: boolean;
   // 登録処理を親に委ねるための関数
   onSubmit: (data: SignupData) => void;
 };
 
 
+export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
 
-export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
-
-  // props が使えるのはここから
-  const isEmail = emailOrPhone.includes('@');
+  //メールアドレスの入力状態管理
+  const [emailError, setEmailError] = useState<string>('');
+  const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
 
   // useState はコンポーネント内で使う
   const [form, setForm] = useState<SignupFormState>({
@@ -57,6 +64,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
     place_of_placement: '',
   });
 
+  const [formError, setFormError] = useState<string>("");
 
   /**
    * フォーム送信時の処理
@@ -69,20 +77,35 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!form.tel) {
-      alert('SMS認証には電話番号が必要です');
+    const error = validateUserForm({
+      first_name: form.first_name,
+      last_name: form.last_name,
+      email: form.email ?? '',
+      tel: form.tel ?? '',
+      password: form.password,
+      password_confirm: form.password_confirm,
+      postcode: form.postcode ?? '',
+      address: form.address ?? '',
+    });
+
+    if (error) {
+      setFormError(error);
       return;
     }
 
-    if (form.password !== form.password_confirm) {
-      alert('パスワードが一致しません');
+    if (emailError) {
+      setFormError('メールアドレスを確認してください');
       return;
     }
 
+    // 正規化（重要）
+    const normalizedTel = normalizePhone(form.tel!);
     // password_confirm を除外して親へ渡す
     const { password_confirm, ...signupData } = form;
-
-    onSubmit(signupData);
+    onSubmit({
+      ...signupData,
+      tel: normalizedTel,
+    });
   };
 
   return (
@@ -103,6 +126,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       {/*  姓  */}
       {/* name 属性は FormData.get() のキーになる */}
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         姓
       </label>
       <input
@@ -125,6 +149,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
 
       {/*  名  */}
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         名
       </label>
       <input
@@ -146,6 +171,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       />
 
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         電話番号
       </label>
       <input
@@ -168,14 +194,12 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       />
 
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         メールアドレス
       </label>
       <input
         type="email"
         value={form.email}
-        onChange={(e) =>
-          setForm({ ...form, email: e.target.value })
-        }
         className="
           w-full
           p-2
@@ -185,12 +209,48 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
           focus:outline-none
           focus:bg-[#F6FEFF]
           focus:shadow-[0_0_5px_5px_#C8F3FA]
-          transition-all
-        "
+          transition-all"
+        onChange={(e) => {
+          const value = e.target.value;
+
+          // 入力値更新
+          setForm({ ...form, email: value });
+
+          // 前のタイマーを止める
+          if (timer) clearTimeout(timer);
+
+          // 0.5秒後にAPI実行
+          const newTimer = setTimeout(async () => {
+            if (!value) {
+              setEmailError('');
+              return;
+            }
+
+            try {
+              const res = await checkEmail(value);
+
+              if (res.exists) {
+                setEmailError('このメールアドレスはすでに使われています');
+              } else {
+                setEmailError('');
+              }
+            } catch {
+              setEmailError('');
+            }
+          }, 500);
+
+          setTimer(newTimer);
+        }}
       />
+      {emailError && (
+        <p className="text-red-500 text-sm mb-2">
+          {emailError}
+        </p>
+      )}
 
       {/* パスワード入力欄 */}
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         パスワード
       </label>
       <input
@@ -215,7 +275,10 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
         "
       />
 
-      <label className="block mb-1 font-bold text-[0.9rem]">パスワード（確認）</label>
+      <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
+        パスワード（確認）
+      </label>
         <input
         type="password"
         value={form.password_confirm}
@@ -235,6 +298,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       />
 
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         郵便番号
       </label>
       <input
@@ -258,6 +322,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       />
 
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         住所（番地まで）
       </label>
       <input
@@ -281,6 +346,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       />
 
       <label className="block mb-1 font-bold text-[0.9rem]">
+        <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
         生年月日
       </label>
       <input
@@ -339,6 +405,12 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
         "
       />
 
+      {formError && (
+        <p className="text-red-600 text-sm mb-2">
+          {formError}
+        </p>
+      )}
+
       {/* 送信ボタン */}
       <button
         type="submit"
@@ -356,7 +428,7 @@ export default function SignupForm({ emailOrPhone, onSubmit }: Props) {
       </button>
       <div className="mt-3 text-right">
         <a href="/auth"
-          className="text-sm text-[#2162A1] hover:underline">前の画面へ戻る</a>
+          className="text-sm text-[#2162A1] hover:underline">最初の画面へ戻る</a>
       </div>
     </form>
   );

@@ -1,13 +1,15 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from '../../../components/Header';
 import FooterLogin from "../../../components/FooterLogin";
 import Link from 'next/link';
 
-export default function OrderCompletePage() {
+function OrderCompletePageContent() {
     const searchParams = useSearchParams();
 
+    const orderId = searchParams.get('orderId');
     const paymentNumber = searchParams.get('number');
     const paymentLimit = searchParams.get('limit');
     const confirmationNumber = searchParams.get('confirmation');
@@ -37,8 +39,11 @@ export default function OrderCompletePage() {
                 {paymentNumber && (
                     <div className="bg-yellow-100 p-6 rounded mb-6">
                         <p className="font-bold">コンビニでお支払いください</p>
-
                         <p className="mt-2">
+                            注文番号：{orderId}
+                        </p>
+
+                        <p>
                             お支払い番号：{paymentNumber}
                         </p>
 
@@ -60,11 +65,19 @@ export default function OrderCompletePage() {
                     href="/mypage"
                     className="bg-yellow-400 px-6 py-3 rounded font-bold"
                 >
-                    商品一覧へ戻る
+                    ホーム
                 </Link>
             </div>
 
             <FooterLogin />
         </>
+    );
+}
+
+export default function OrderCompletePage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <OrderCompletePageContent />
+        </Suspense>
     );
 }

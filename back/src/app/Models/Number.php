@@ -12,4 +12,10 @@ class Number extends Model
     protected $fillable = [
         'quantity',
     ];
+
+    // リレーション
+    public function number()
+    {
+        return $this->belongsTo(Number::class);
+    }
 }

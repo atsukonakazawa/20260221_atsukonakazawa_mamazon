@@ -18,7 +18,11 @@ class ProductController extends Controller
             'size',
             'seller',
             'images'
-        ]);
+        ])
+            ->where('status', 'active')
+            ->where('is_active', true)
+            ->withAvg('reviews', 'score')
+            ->withCount('reviews');
 
         if ($keyword) {
             $query->where(function ($q) use ($keyword) {
@@ -73,6 +77,11 @@ class ProductController extends Controller
             'seller',
             'shipmentDate',
             'images'
-        ])->findOrFail($id);
+        ])
+            ->where('status', 'active')
+            ->where('is_active', true)
+            ->withAvg('reviews', 'score')
+            ->withCount('reviews')
+            ->findOrFail($id);
     }
 }

@@ -15,10 +15,16 @@ class Product extends Model
         'shipment_date_id',
         'size_id',
         'seller_id',
+        'created_by',
         'product_name',
         'product_price',
         'product_description',
-        'product_image',
+        'status',
+        'approve_status',
+        'is_active',
+        'approved_at',
+        'approved_by',
+        'rejection_reason',
     ];
 
     // ▼ リレーション
@@ -54,6 +60,7 @@ class Product extends Model
 
     public function images()
     {
-        return $this->hasMany(ProductImage::class);
+        return $this->hasMany(ProductImage::class)
+            ->orderBy('sort_order');
     }
 }

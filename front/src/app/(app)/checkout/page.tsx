@@ -4,7 +4,7 @@ import Header from '../../components/Header';
 import FooterLogin from "../../components/FooterLogin";
 import { useCart } from '@/lib/context/CartContext';
 import { useState, useEffect } from 'react';
-import { createPayment, getPaymentWays } from '@/lib/api/paymentApi';
+import { createPayment, getPaymentMethods } from '@/lib/api/paymentApi';
 import { createOrder } from '@/lib/api/orderApi';
 import { useUser } from '@/lib/context/UserContext';
 import { useRouter } from 'next/navigation';
@@ -22,7 +22,7 @@ export default function CheckoutPage() {
     const [paymentWays, setPaymentWays] = useState<any[]>([]);
     useEffect(() => {
         const fetchData = async () => {
-            const data = await getPaymentWays();
+            const data = await getPaymentMethods();
             setPaymentWays(data);
         };
         fetchData();
@@ -95,7 +95,7 @@ export default function CheckoutPage() {
             const selectedWay = paymentWays.find(w => w.id === selectedPaymentWayId);
 
             if (selectedWay?.payment_way === 'コンビニ払い') {
-                router.push(`/checkout/complete?number=${res.payment_number}&limit=${res.payment_limit}`);
+                router.push(`/checkout/complete?orderId=${res.order_id}&number=${res.payment_number}&confirmation=${res.confirmation_number}&limit=${res.payment_limit}`);
             } else {
                 router.push('/checkout/complete');
             }

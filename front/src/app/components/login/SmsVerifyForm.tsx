@@ -4,15 +4,17 @@ import { useState } from 'react';
 type Props = {
     tel: string;
     onVerify: (code: string) => void;
+    errorMessage?: string;
 };
 
-export default function SmsVerifyForm({ tel, onVerify }: Props) {
+export default function SmsVerifyForm({ tel, onVerify, errorMessage }: Props) {
     const [code, setCode] = useState('');
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onVerify(code);
     };
+
 
     return (
     <form
@@ -40,6 +42,11 @@ export default function SmsVerifyForm({ tel, onVerify }: Props) {
         "
         />
 
+        {errorMessage && (
+            <p className="text-red-600 text-sm mb-2">
+                {errorMessage}
+            </p>
+        )}
         <button
         type="submit"
         className="
@@ -51,8 +58,16 @@ export default function SmsVerifyForm({ tel, onVerify }: Props) {
             rounded-full
         "
         >
-        認証する
+            認証する
         </button>
+
+        <p className="mt-10 text-xs text-gray-500">
+            ・SMSが届かない場合は、入力内容をご確認ください。
+        </p>
+        <p className="mt-1 text-xs text-gray-500">
+            ・認証コードの有効期限は5分間です。
+        </p>
+
     </form>
     );
 }

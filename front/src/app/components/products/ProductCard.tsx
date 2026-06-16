@@ -6,6 +6,8 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Product } from "@/types/Product";
 import { useCart } from '@/lib/context/CartContext';
+import StarRatingDisplay from '../../components/review/StarRatingDisplay';
+
 
 type Props = {
     product: Product;
@@ -41,6 +43,15 @@ export default function ProductCard({ product }: Props) {
                 {product.product_name}
             </p>
 
+            <div className="my-1 flex">
+                <StarRatingDisplay
+                    rating={product.reviews_avg_score ?? 0}
+                />
+                <span className="text-xs text-blue-400 pl-3">
+                    ({product.reviews_count ?? 0}件)
+                </span>
+            </div>
+
             <p className="text-2xl">
                 ¥{product.product_price.toLocaleString()}
             </p>
@@ -69,7 +80,6 @@ export default function ProductCard({ product }: Props) {
                     className="cursor-pointer mt-3 flex items-center justify-between border-2 border-yellow-400 rounded-full px-2 py-2"
                 >
                     <button
-                        // 👇 修正③
                         onClick={() => decreaseQuantity(cartItem.id)}
                         className="cursor-pointer px-3 py-1 rounded-lg"
                     >
@@ -79,7 +89,6 @@ export default function ProductCard({ product }: Props) {
                     <span className="font-bold">{cartItem.quantity}</span>
 
                     <button
-                        // 👇 修正③
                         onClick={() => increaseQuantity(cartItem.id)}
                         className="cursor-pointer px-3 py-1 rounded-lg"
                     >

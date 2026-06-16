@@ -29,6 +29,7 @@ class User extends Authenticatable
         'email',
         'password',
         'sms_verified_at',
+        'is_active',
     ];
 
     /**
@@ -50,7 +51,7 @@ class User extends Authenticatable
     // 自動的にCarbon型にしたいカラム
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'date_of_birth' => 'date',
+        'date_of_birth' => 'string',
     ];
 
     // リレーション
