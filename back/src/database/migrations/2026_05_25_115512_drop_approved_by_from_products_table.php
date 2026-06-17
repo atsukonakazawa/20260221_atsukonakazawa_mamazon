@@ -15,11 +15,17 @@ class DropApprovedByFromProductsTable extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
 
-            // 外部キー削除
-            $table->dropForeign(['approved_by']);
+            // 外部キーが存在する場合だけ削除
+            try {
+                $table->dropForeign(['approved_by']);
+            } catch (\Exception $e) {
+                // 既に存在しない場合は何もしない
+            }
 
-            // カラム削除
-            $table->dropColumn('approved_by');
+            // カラムが存在する場合だけ削除
+            if (Schema::hasColumn('products', 'approved_by')) {
+                $table->dropColumn('approved_by');
+            }
         });
     }
 
