@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ProductSubmissionController extends Controller
 {
@@ -57,10 +58,17 @@ class ProductSubmissionController extends Controller
 
             foreach ($request->file('images') as $index => $image) {
 
-                $path = $image->store('products', 'public');
+                $uploaded = Cloudinary::upload(
+                    $image->getRealPath(),
+                    [
+                        'folder' => 'products',
+                    ]
+                );
+
+                $imageUrl = $uploaded->getSecurePath();
 
                 $product->images()->create([
-                    'image_path' => $path,
+                    'image_path' => $imageUrl,
                     'sort_order' => $index + 1,
                 ]);
             }
