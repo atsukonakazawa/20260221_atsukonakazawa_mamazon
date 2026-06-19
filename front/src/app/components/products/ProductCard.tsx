@@ -28,14 +28,25 @@ export default function ProductCard({ product }: Props) {
                 pagination={{ clickable: true }}
                 className="w-full"
             >
-                {product.images?.map((img) => (
-                    <SwiperSlide key={img.id}>
+                {product.images && product.images.length > 0 ? (
+                    product.images.map((img) => (
+                        <SwiperSlide key={img.id}>
+                            <img
+                                src={img.image_path}
+                                className="h-48 object-contain mx-auto"
+                                alt={product.product_name}
+                            />
+                        </SwiperSlide>
+                    ))
+                ) : (
+                    <SwiperSlide>
                         <img
-                            src={`http://localhost/storage/${img.image_path}`}
+                            src="/no-image.png"
                             className="h-48 object-contain mx-auto"
+                            alt="No image"
                         />
                     </SwiperSlide>
-                ))}
+                )}
             </Swiper>
 
             {/* 商品情報 */}
