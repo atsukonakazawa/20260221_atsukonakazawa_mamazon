@@ -36,7 +36,10 @@ return [
         | ※ route.ts を使わず、
         |   ブラウザ → Laravel 直接通信する場合にも必要
      */
-    'allowed_origins' => ['http://localhost:3000'],
+    'allowed_origins' => [
+        'http://localhost:3000',
+        'https://20260221-atsukonakazawa-mamazon.vercel.app',
+    ],
 
     /*
         | 正規表現でのオリジン指定
