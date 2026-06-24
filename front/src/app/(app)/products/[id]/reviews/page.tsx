@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import Header from '../../../../components/Header';
 import FooterLogin from '../../../../components/FooterLogin';
 import StarRatingDisplay from '../../../../components/review/StarRatingDisplay';
+import { fetchReviews } from '@/lib/api/reviewApi';
 
 type Review = {
     id: number;
@@ -23,16 +24,19 @@ export default function ReviewListPage() {
     const [reviews, setReviews] = useState<Review[]>([]);
 
     useEffect(() => {
-        const fetchReviews = async () => {
-            const res = await fetch(
-                `http://localhost/api/products/${productId}/reviews`
-            );
-            const data = await res.json();
+    const loadReviews = async () => {
+        try {
+            const data = await fetchReviews(Number(productId));
             setReviews(data);
-        };
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-        fetchReviews();
-    }, [productId]);
+    if (productId) {
+        loadReviews();
+    }
+}, [productId]);
 
     return (
         <>
