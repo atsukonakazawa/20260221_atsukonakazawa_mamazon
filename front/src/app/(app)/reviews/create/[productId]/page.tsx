@@ -112,7 +112,7 @@ export default function ReviewCreatePage() {
                 {product && (
                     <div className="flex items-center gap-4 mb-6 border p-4 rounded">
                         <img
-                            src={`http://localhost/storage/${product.images?.[0]?.image_path ?? ''}`}
+                            src={product.images?.[0]?.image_path || "/no-image.png"}
                             alt={product.product_name}
                             className="w-20 h-20 object-contain"
                         />
