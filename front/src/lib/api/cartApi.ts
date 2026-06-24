@@ -33,7 +33,7 @@ export async function updateCart(
 
 // 削除
 export const clearCartApi = async (userId: number) => {
-    const res = await fetch(`/api/cart/clear`,  {
+    const res = await apiFetch(`/api/cart/clear`,  {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json',
