@@ -90,14 +90,21 @@ export default function AdminProductDetailPage() {
                     <div>
                         <strong>商品画像:</strong>
                         <div className="flex gap-3 mt-2 flex-wrap">
-                            {data.images?.map((image) => (
+                            {data.images && data.images.length > 0 ? (
+                                data.images.map((img) => (
                                 <img
-                                    key={image.id}
-                                    src={`http://localhost/storage/${image.image_path}`}
+                                    key={img.id}
+                                    src={img.image_path}
                                     alt={data.product_name}
                                     className="w-32 h-32 object-scale-down rounded"
                                 />
-                            ))}
+                                ))
+                            ) : (
+                                <img
+                                    src="/no-image.png"
+                                    className="w-32 h-32 object-scale-down rounded"
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
