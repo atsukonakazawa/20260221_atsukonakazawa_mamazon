@@ -11,6 +11,7 @@ use App\Models\ShipmentDate;
 use App\Models\Size;
 use App\Models\Seller;
 use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class AdminProductController extends Controller
 {
@@ -133,7 +134,8 @@ class AdminProductController extends Controller
             foreach ($imagesToDelete as $image) {
 
                 // storage削除
-                Storage::disk('public')->delete($image->image_path);
+                //Storage::disk('public')->delete($image->image_path);
+                //Cloudinary画像の削除は後で対応
 
                 // DB削除
                 $image->delete();
@@ -145,10 +147,17 @@ class AdminProductController extends Controller
 
             foreach ($request->file('new_images') as $index => $file) {
 
-                $path = $file->store('products', 'public');
+                $uploaded = Cloudinary::upload(
+                    $file->getRealPath(),
+                    [
+                        'folder' => 'products',
+                    ]
+                );
+
+                $imageUrl = $uploaded->getSecurePath();
 
                 $product->images()->create([
-                    'image_path' => $path,
+                    'image_path' => $imageUrl,
                     'sort_order' => $product->images()->count() + $index + 1,
                 ]);
             }
