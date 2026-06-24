@@ -22,3 +22,8 @@ export async function createReview(data: {
         body: JSON.stringify(data),
     });
 }
+
+// レビュー一覧取得
+export async function fetchReviews(productId: number) {
+    return apiFetch(`/api/products/${productId}/reviews`);
+}
