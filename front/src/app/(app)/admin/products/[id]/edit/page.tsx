@@ -313,7 +313,7 @@ export default function AdminProductEditPage() {
                             <div key={image.id}>
 
                                 <img
-                                    src={`http://localhost/storage/${image.image_path}`}
+                                    src={image.image_path}
                                     alt={data.product_name}
                                     className="w-32 h-32 object-scale-down rounded border"
                                 />
