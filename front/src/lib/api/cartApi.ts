@@ -32,18 +32,12 @@ export async function updateCart(
 }
 
 // 削除
-export const clearCartApi = async (userId: number) => {
-    const res = await apiFetch(`/api/cart/clear`,  {
+// カート削除
+export async function clearCartApi(userId: number) {
+    return apiFetch('/api/cart/clear', {
         method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user_id: userId }),
+        body: JSON.stringify({
+            user_id: userId,
+        }),
     });
-
-    if (!res.ok) {
-        throw new Error('カート削除失敗');
-    }
-
-    return res.json();
-};
+}
