@@ -24,7 +24,7 @@ export default function CartPage() {
             <Header />
 
                 <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">カート</h1>
+                    <h1 className="text-2xl font-bold mb-4">カート</h1>
 
                     {cartItems.length === 0 ? (
                         <p>カートに商品がありません</p>
@@ -40,8 +40,9 @@ export default function CartPage() {
                                 >
                                     {/* 画像 */}
                                     <img
-                                        src={`http://localhost/storage/${item.image}`}
+                                        src={item.image || "/no-image.png"}
                                         className="w-20 h-20 object-contain"
+                                        alt={item.name}
                                     />
 
                                     {/* 商品情報 */}
@@ -72,34 +73,34 @@ export default function CartPage() {
                                     </div>
                                 </div>
                             ))}
-                    </div>
+                            </div>
 
-                    {/* 💰 小計エリア（右 / 上） */}
-                        <div className="md:w-1/3 border p-4 rounded h-fit order-1 md:order-2">
+                            {/* 💰 小計エリア（右 / 上） */}
+                            <div className="md:w-1/3 border p-4 rounded h-fit order-1 md:order-2">
 
-                            {/* モバイル用タイトル */}
-                            <p className="text-lg  md:hidden">
-                                小計 ¥{subtotal.toLocaleString()}
-                            </p>
+                                {/* モバイル用タイトル */}
+                                <p className="text-lg  md:hidden">
+                                    小計 ¥{subtotal.toLocaleString()}
+                                </p>
 
-                            {/* PC用タイトル */}
-                            <p className="hidden md:block text-lg mb-2">
-                                小計（{totalQuantity}個の商品）（税込）
-                            </p>
+                                {/* PC用タイトル */}
+                                <p className="hidden md:block text-lg mb-2">
+                                    小計（{totalQuantity}個の商品）（税込）
+                                </p>
 
-                            {/* PCのみ金額表示 */}
-                            <p className="hidden md:block text-2xl font-bold mb-4">
-                                ¥{subtotal.toLocaleString()}
-                            </p>
+                                {/* PCのみ金額表示 */}
+                                <p className="hidden md:block text-2xl font-bold mb-4">
+                                    ¥{subtotal.toLocaleString()}
+                                </p>
 
-                            <button
-                                onClick={() => router.push('/checkout')}className="cursor-pointer  w-full bg-yellow-400 hover:bg-yellow-400 py-2 rounded-full">
-                                レジに進む（{totalQuantity}個）（税込）
-                            </button>
+                                <button
+                                    onClick={() => router.push('/checkout')}className="cursor-pointer  w-full bg-yellow-400 hover:bg-yellow-400 py-2 rounded-full">
+                                    レジに進む（{totalQuantity}個）（税込）
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
 
             <FooterLogin />
         </>
