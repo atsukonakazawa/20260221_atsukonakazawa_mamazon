@@ -27,13 +27,11 @@ function ReviewCompleteContent() {
                 </p>
 
                 <div className="border rounded-lg p-6 bg-white shadow">
-                    {productImage && (
-                        <img
-                            src={`http://localhost/storage/${productImage}`}
-                            alt={productName || ''}
-                            className="w-40 mx-auto mb-4"
-                        />
-                    )}
+                    <img
+                        src={productImage || "/no-image.png"}
+                        alt={productName || "No image"}
+                        className="w-40 mx-auto mb-4"
+                    />
 
                     <h2 className="text-lg font-semibold mb-2">
                         {productName}
