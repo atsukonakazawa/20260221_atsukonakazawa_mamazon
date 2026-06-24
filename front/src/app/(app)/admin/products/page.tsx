@@ -195,7 +195,7 @@ export default function AdminProductsPage() {
                                         {product.status === 'inactive' && '承認待ち'}
                                         {product.status === 'active' && '有効'}
                                         {product.status === 'suspended' && '停止'}
-                                        {product.status === 'withdrawn' && '退会'}
+                                        {product.status === 'withdrawn' && '削除済み'}
                                     </button>
                                 </td>
 
