@@ -179,7 +179,7 @@ export default function OrdersPage() {
                                             {/* 商品画像 */}
                                             <Link href={`/products/${item.product?.id}`}>
                                                 <img
-                                                    src={`http://localhost/storage/${item.product.images[0]?.image_path}`}
+                                                    src={item.product?.images?.[0]?.image_path || "/no-image.png"}
                                                     className="w-25 h-25 object-contain cursor-pointer"
                                                     alt={item.product?.product_name}
                                                 />
