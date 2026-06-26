@@ -18,11 +18,9 @@ class CreateOrderItemsTable extends Migration
 
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('number_id')->constrained()->cascadeOnDelete();
-
-            // 注文時の価格（商品価格は変動するため）
+            $table->unsignedInteger('quantity');
+            //注文時の価格
             $table->integer('price');
-
             $table->timestamps();
         });
     }
