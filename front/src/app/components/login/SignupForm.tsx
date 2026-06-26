@@ -183,26 +183,9 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
         type="text"
         value={form.tel}
         required
-        onChange={async (e) => {
-          const postcode = e.target.value.replace("-", "");
-
-          setForm({
-              ...form,
-              postcode,
-          });
-
-          if (postcode.length === 7) {
-              const address = await fetchAddress(postcode);
-
-              if (address) {
-                  setForm((prev) => ({
-                      ...prev,
-                      postcode,
-                      address,
-                  }));
-              }
-          }
-      }}
+        onChange={(e) =>
+          setForm({ ...form, tel: e.target.value })
+        }
         className="
           w-full
           p-2
@@ -330,9 +313,26 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
         placeholder="(例)1231234"
         required
         value={form.postcode}
-        onChange={(e) =>
-          setForm({ ...form, postcode: e.target.value })
-        }
+        onChange={async (e) => {
+          const postcode = e.target.value.replace("-", "");
+
+          setForm({
+              ...form,
+              postcode,
+          });
+
+          if (postcode.length === 7) {
+              const address = await fetchAddress(postcode);
+
+              if (address) {
+                  setForm((prev) => ({
+                      ...prev,
+                      postcode,
+                      address,
+                  }));
+              }
+          }
+        }}
         className="
           w-full
           p-2
