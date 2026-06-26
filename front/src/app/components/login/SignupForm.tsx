@@ -6,6 +6,7 @@ import {
   normalizePostcode,
   validateUserForm
 } from '@/lib/utils/validation';
+import { fetchAddress } from "../../../lib/api/postcodeApi";
 
 /**
  * 親（LoginPage）や API に渡す正式データ型
@@ -182,9 +183,26 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
         type="text"
         value={form.tel}
         required
-        onChange={(e) =>
-          setForm({ ...form, tel: e.target.value })
-        }
+        onChange={async (e) => {
+          const postcode = e.target.value.replace("-", "");
+
+          setForm({
+              ...form,
+              postcode,
+          });
+
+          if (postcode.length === 7) {
+              const address = await fetchAddress(postcode);
+
+              if (address) {
+                  setForm((prev) => ({
+                      ...prev,
+                      postcode,
+                      address,
+                  }));
+              }
+          }
+      }}
         className="
           w-full
           p-2
