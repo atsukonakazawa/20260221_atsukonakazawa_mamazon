@@ -8,7 +8,11 @@ import {
     updateAdminUser,
     UserDetail
 } from '@/lib/api/adminUserApi';
-import { validateUserForm, normalizePhone } from '@/lib/utils/validation';
+import {
+    validateUserForm,
+    normalizePhone,
+    normalizePostcode
+} from '@/lib/utils/validation';
 
 export default function AdminUserEditPage() {
     const { id } = useParams();
@@ -75,17 +79,25 @@ export default function AdminUserEditPage() {
             setFormError(errorMessage);
             return;
         }
+
+        const requestData = {
+            ...form,
+            tel: normalizePhone(form.tel),
+            postcode: normalizePostcode(form.postcode),
+        };
+
+        console.log("form.postcode =", form.postcode);
+        console.log("normalizePostcode =", normalizePostcode(form.postcode));
+        console.log("requestData =", requestData);
+
         try {
-            await updateAdminUser(Number(id), {
-                ...form,
-                tel: normalizePhone(form.tel),
-            });
+            await updateAdminUser(Number(id), requestData);
             alert('更新しました');
             router.push(`/admin/users/${id}`);
         } catch {
             alert('更新失敗');
         }
-    };
+    }
 
     if (isLoading) return <div className="p-5">読み込み中...</div>;
     if (error) return <div className="p-5 text-red-500">エラー</div>;
@@ -99,11 +111,17 @@ export default function AdminUserEditPage() {
 
                 <div className="space-y-4">
                     <input name="last_name" value={form.last_name} onChange={handleChange} placeholder="姓" className="w-full border p-2 rounded" />
+
                     <input name="first_name" value={form.first_name} onChange={handleChange} placeholder="名" className="w-full border p-2 rounded" />
+
                     <input name="email" value={form.email} onChange={handleChange} placeholder="メール" className="w-full border p-2 rounded" />
+
                     <input name="tel" value={form.tel} onChange={handleChange} placeholder="電話番号" className="w-full border p-2 rounded" />
+
                     <input name="postcode" value={form.postcode} onChange={handleChange} placeholder="郵便番号" className="w-full border p-2 rounded" />
+
                     <input name="address" value={form.address} onChange={handleChange} placeholder="住所" className="w-full border p-2 rounded" />
+
                     <input type="date" name="date_of_birth" value={form.date_of_birth} onChange={handleChange} className="w-full border p-2 rounded" />
 
                     <label className="flex gap-2">
