@@ -64,6 +64,7 @@ export default function AccountEditPage() {
 
     // 保存処理
     const handleSave = async () => {
+        setFormError("");
 
         const error = validateUserForm({
             first_name: firstName,
@@ -119,6 +120,7 @@ export default function AccountEditPage() {
 
         // 電話番号の正規化
         const normalizedTel = normalizePhone(tel);
+        const normalizedPostcode = normalizePostcode(postcode);
 
         //apiに送信するデータを作成
         //passwordは安全のため入力時だけ追加し、空なら送らない
@@ -126,7 +128,7 @@ export default function AccountEditPage() {
             user_id: user.id,
             last_name: lastName,
             first_name: firstName,
-            postcode: postcode,
+            postcode: normalizedPostcode,
             address: address,
             tel: normalizedTel,
             placement: placement,
@@ -159,10 +161,32 @@ export default function AccountEditPage() {
 
         } else {
             // SMS認証必要ない時は即更新
-            const updatedUser = await updateUser(data);
-            setUser(updatedUser);
-            alert('更新しました！');
-            router.push('/mypage/account');
+            try {
+                const updatedUser = await updateUser(data);
+
+                setUser(updatedUser);
+                alert('更新しました！');
+                router.push('/mypage/account');
+            } catch (e: any) {
+                // Laravelのバリデーションエラー
+                if (e.errors) {
+                    const firstError = Object.values(e.errors)
+                        .flat()[0] as string;
+
+                    setFormError(firstError);
+                    return;
+                }
+
+                // APIがmessageを返している場合
+                if (e.message) {
+                    setFormError(e.message);
+                    return;
+                }
+
+                // それ以外
+                setFormError('更新に失敗しました');
+
+            }
         }
     };
 
@@ -208,12 +232,28 @@ export default function AccountEditPage() {
             setSmsError('通信エラーが発生しました');
         }
 
-        const updatedUser = await updateUser(pendingData);
+        try {
+            const updatedUser = await updateUser(pendingData);
 
-        setUser(updatedUser);
+            setUser(updatedUser);
+            alert('更新しました！');
+            router.push('/mypage/account');
+        } catch (e: any) {
+            if (e.errors) {
+                const firstError = Object.values(e.errors)
+                    .flat()[0] as string;
 
-        alert('更新しました！');
-        router.push('/mypage/account');
+                setFormError(firstError);
+                return;
+            }
+
+            if (e.message) {
+                setFormError(e.message);
+                return;
+            }
+
+            setFormError('更新に失敗しました');
+        }
     };
 
     return (
