@@ -87,6 +87,7 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
       password_confirm: form.password_confirm,
       postcode: form.postcode ?? '',
       address: form.address ?? '',
+      date_of_birth: form.date_of_birth ?? '',
     });
 
     if (error) {
@@ -180,6 +181,7 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
       <input
         type="text"
         value={form.tel}
+        required
         onChange={(e) =>
           setForm({ ...form, tel: e.target.value })
         }
@@ -203,6 +205,7 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
       <input
         type="email"
         value={form.email}
+        required
         className="
           w-full
           p-2
@@ -307,6 +310,7 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
       <input
         name="postcode"
         placeholder="(例)1231234"
+        required
         value={form.postcode}
         onChange={(e) =>
           setForm({ ...form, postcode: e.target.value })
@@ -331,6 +335,7 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
       <input
         name="address"
         placeholder="住所(例)東京都中野区東中野1-1-1"
+        required
         value={form.address}
         onChange={(e) =>
           setForm({ ...form, address: e.target.value })
@@ -356,6 +361,7 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
         type="date"//カレンダーアイコンから日付選択
         name="date_of_birth"
         placeholder="例)19880401"
+        required
         value={form.date_of_birth}
         onChange={(e) =>
           setForm({ ...form, date_of_birth: e.target.value })
