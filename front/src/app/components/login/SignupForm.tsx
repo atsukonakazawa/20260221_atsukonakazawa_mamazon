@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { checkEmail } from '../../../lib/api/authApi';
 import {
   normalizePhone,
+  normalizePostcode,
   validateUserForm
 } from '@/lib/utils/validation';
 
@@ -100,11 +101,13 @@ export default function SignupForm({ emailOrPhone, isEmail, onSubmit }: Props) {
 
     // 正規化（重要）
     const normalizedTel = normalizePhone(form.tel!);
+    const normalizedPostcode = normalizePostcode(form.postcode!);
     // password_confirm を除外して親へ渡す
     const { password_confirm, ...signupData } = form;
     onSubmit({
       ...signupData,
       tel: normalizedTel,
+      postcode: normalizedPostcode,
     });
   };
 
