@@ -63,18 +63,18 @@ export default function AdminUserEditPage() {
 
     const handleSubmit = async () => {
         const errorMessage = validateUserForm({
-        first_name: form.first_name,
-        last_name: form.last_name,
-        email: form.email ?? '',
-        tel: form.tel ?? '',
-        postcode: form.postcode ?? '',
-        address: form.address ?? '',
-    });
+            first_name: form.first_name,
+            last_name: form.last_name,
+            email: form.email ?? '',
+            tel: form.tel ?? '',
+            postcode: form.postcode ?? '',
+            address: form.address ?? '',
+        });
 
-    if (errorMessage) {
-        setFormError(errorMessage);
-        return;
-    }
+        if (errorMessage) {
+            setFormError(errorMessage);
+            return;
+        }
         try {
             await updateAdminUser(Number(id), {
                 ...form,
