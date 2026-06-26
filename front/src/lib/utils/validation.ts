@@ -52,6 +52,7 @@ export const validateUserForm = (data: {
     password_confirm?: string;
     postcode: string;
     address: string;
+    date_of_birth: string;
 }) => {
 
     if (!data.first_name || !data.last_name) {
@@ -72,6 +73,10 @@ export const validateUserForm = (data: {
 
     if (!data.address) {
         return "住所を入力してください";
+    }
+
+    if (!data.date_of_birth) {
+        return "生年月日を入力してください";
     }
 
     if (!isValidEmail(data.email)) {
