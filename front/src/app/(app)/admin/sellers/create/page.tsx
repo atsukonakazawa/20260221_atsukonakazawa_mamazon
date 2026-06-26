@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSeller } from '@/lib/api/adminSellerApi';
 import { normalizePostcode, normalizePhone } from '@/lib/utils/validation';
+import { fetchAddress } from "@/lib/api/postcodeApi";
 
 
 export default function AdminSellerCreatePage() {
@@ -85,7 +86,19 @@ export default function AdminSellerCreatePage() {
                     <input
                         type="text"
                         value={postcode}
-                        onChange={(e) => setPostcode(e.target.value)}
+                        onChange={async (e) => {
+                            const postcode = e.target.value.replace("-", "");
+
+                            setPostcode(postcode);
+
+                            if (postcode.length === 7) {
+                                const addressResult = await fetchAddress(postcode);
+
+                                if (addressResult) {
+                                    setAddress(addressResult);
+                                }
+                            }
+                        }}
                         className="w-full border p-2 rounded"
                     />
                 </div>
