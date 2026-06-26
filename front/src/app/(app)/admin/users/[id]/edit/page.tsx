@@ -13,6 +13,7 @@ import {
     normalizePhone,
     normalizePostcode
 } from '@/lib/utils/validation';
+import { fetchAddress } from "@/lib/api/postcodeApi";
 
 export default function AdminUserEditPage() {
     const { id } = useParams();
@@ -54,15 +55,39 @@ export default function AdminUserEditPage() {
         });
     }, [data]);
 
-    const handleChange = (
+    const handleChange = async (
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
         const { name, value, type, checked } = e.target;
 
+        // 通常の入力
+        if (name !== "postcode") {
+            setForm(prev => ({
+                ...prev,
+                [name]: type === "checkbox" ? checked : value,
+            }));
+            return;
+        }
+
+        // 郵便番号だけ特別処理
+        const postcode = value.replace("-", "");
+
         setForm(prev => ({
             ...prev,
-            [name]: type === 'checkbox' ? checked : value,
+            postcode,
         }));
+
+        if (postcode.length === 7) {
+            const address = await fetchAddress(postcode);
+
+            if (address) {
+                setForm(prev => ({
+                    ...prev,
+                    postcode,
+                    address,
+                }));
+            }
+        }
     };
 
     const handleSubmit = async () => {

@@ -13,6 +13,7 @@ import {
     normalizePhone,
     normalizePostcode
 } from '@/lib/utils/validation';
+import { fetchAddress } from "@/lib/api/postcodeApi";
 
 
 export default function AccountEditPage() {
@@ -285,7 +286,19 @@ export default function AccountEditPage() {
                     {/* 郵便番号 */}
                     <input
                     value={postcode}
-                    onChange={(e) => setPostcode(e.target.value)}
+                    onChange={async (e) => {
+                        const postcode = e.target.value.replace("-", "");
+
+                        setPostcode(postcode);
+
+                        if (postcode.length === 7) {
+                            const addressResult = await fetchAddress(postcode);
+
+                            if (addressResult) {
+                                setAddress(addressResult);
+                            }
+                        }
+                    }}
                     placeholder="郵便番号"
                     className="w-full border p-2 rounded"
                     />
