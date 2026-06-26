@@ -8,7 +8,11 @@ import {
     updateAdminUser,
     UserDetail
 } from '@/lib/api/adminUserApi';
-import { validateUserForm, normalizePhone } from '@/lib/utils/validation';
+import {
+    validateUserForm,
+    normalizePhone,
+    normalizePostcode
+} from '@/lib/utils/validation';
 
 export default function AdminUserEditPage() {
     const { id } = useParams();
@@ -79,6 +83,7 @@ export default function AdminUserEditPage() {
             await updateAdminUser(Number(id), {
                 ...form,
                 tel: normalizePhone(form.tel),
+                postcode: normalizePostcode(form.postcode)
             });
             alert('更新しました');
             router.push(`/admin/users/${id}`);
