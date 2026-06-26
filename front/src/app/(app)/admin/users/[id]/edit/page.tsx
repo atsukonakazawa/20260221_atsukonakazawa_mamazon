@@ -86,10 +86,6 @@ export default function AdminUserEditPage() {
             postcode: normalizePostcode(form.postcode),
         };
 
-        console.log("form.postcode =", form.postcode);
-        console.log("normalizePostcode =", normalizePostcode(form.postcode));
-        console.log("requestData =", requestData);
-
         try {
             await updateAdminUser(Number(id), requestData);
             alert('更新しました');

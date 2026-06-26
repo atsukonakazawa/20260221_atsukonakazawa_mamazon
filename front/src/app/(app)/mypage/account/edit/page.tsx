@@ -8,7 +8,11 @@ import { useEffect, useState } from 'react';
 import { updateUser, type UpdateUserRequest } from '@/lib/api/userApi';
 import { sendSmsCode, verifySmsCode } from '../../../../../lib/api/authApi';
 import SmsVerifyForm from '../../../../components/login/SmsVerifyForm';
-import { validateUserForm, normalizePhone } from '@/lib/utils/validation';
+import {
+    validateUserForm,
+    normalizePhone,
+    normalizePostcode
+} from '@/lib/utils/validation';
 
 
 export default function AccountEditPage() {
@@ -90,8 +94,8 @@ export default function AccountEditPage() {
         const isNameChanged =
             safe(lastName) !== safe(user.last_name) ||
             safe(firstName) !== safe(user.first_name);
+        const isPostcodeChanged = normalizePostcode(postcode) !== normalizePostcode(safe(user.postcode));
         const isAddressChanged =
-            safe(postcode) !== safe(user.postcode) ||
             safe(address) !== safe(user.address);
 
         const isPlacementChanged =
@@ -104,6 +108,7 @@ export default function AccountEditPage() {
             !isEmailChanged &&
             !isPasswordChanged &&
             !isNameChanged &&
+            !isPostcodeChanged &&
             !isAddressChanged &&
             !isPlacementChanged;
 
