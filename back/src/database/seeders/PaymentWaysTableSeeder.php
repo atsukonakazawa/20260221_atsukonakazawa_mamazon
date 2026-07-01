@@ -15,13 +15,8 @@ class PaymentWaysTableSeeder extends Seeder
     public function run()
     {
         $paymentWays = [
-            'Amazonポイント',
             'クレジット',
-            'PayPay',
-            'オリコ分割払い',
             'コンビニ払い',
-            '携帯電話会社請求払い',
-            'メルペイ',
         ];
 
         foreach ($paymentWays as $way) {
