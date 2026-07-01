@@ -25,9 +25,4 @@ class Cart extends Model
     {
         return $this->belongsTo(Product::class);
     }
-
-    public function number()
-    {
-        return $this->belongsTo(Number::class);
-    }
 }
