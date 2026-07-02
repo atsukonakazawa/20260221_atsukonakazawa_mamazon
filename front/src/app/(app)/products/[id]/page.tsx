@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { fetchProductById } from "@/lib/api/productApi";
+import { useUser } from '@/lib/context/UserContext';
 import GuestHeader from "@/app/components/GuestHeader";
+import Header from "@/app/components/GuestHeader";
 import FooterLogin from "../../../components/FooterLogin";
 import ProductSwiper from "../../../components/products/ProductSwiper";
 import AddToCartButton from '../../../components/products/AddToCartButton';
@@ -15,13 +17,14 @@ export default async function ProductDetail({
     }) {
 
     const { id } = await params;
+    const { user } = useUser();
 
     try {
         const product = await fetchProductById(id);
 
         return (
             <>
-                <GuestHeader />
+                {user ? <Header /> : <GuestHeader />}
 
                 <div className="max-w-6xl mx-auto p-6">
 
