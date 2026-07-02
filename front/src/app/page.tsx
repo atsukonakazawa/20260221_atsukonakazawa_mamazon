@@ -2,6 +2,7 @@
 
 import { Roboto_Condensed } from 'next/font/google';
 import { useSearchParams } from "next/navigation";
+import GuestHeader from "@/app/components/GuestHeader";
 import FooterLogin from "@/app/components/FooterLogin";
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
@@ -74,113 +75,7 @@ function HomeContent() {
 
   return (
     <>
-      <header
-        className={`${robotoCondensed.className}  pt-0 p-4 px-0`}
-      >
-        {/* PC用ヘッダー */}
-        <div className="hidden sm:flex flex-col">
-          <div className="flex w-full p-3 items-center bg-[#8B82B6] ">
-
-              {/* ロゴ */}
-            <Link href="/">
-              <h1 className="text-white font-extrabold text-xl sm:text-2xl flex leading-none whitespace-nowrap">
-                mamazon
-                <span className="ml-1 text-xs sm:text-sm font-normal self-end">
-                  .co.jp
-                </span>
-              </h1>
-            </Link>
-
-              {/* 検索フォーム */}
-            <div className="ml-5 flex flex-1 mx-2">
-              <input
-                type="text"
-                placeholder="mamazonで検索"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleSearch();
-                  }
-                }}
-                className="max-w-lg px-3 py-2 rounded-l-md bg-white text-black outline-none"
-              />
-              <button
-                onClick={handleSearch}
-                className="bg-yellow-400 px-4 rounded-r-md cursor-pointer active:scale-95 transition">
-                🔍
-              </button>
-            </div>
-
-              {/* ログインボタン */}
-            <Link href="/auth">
-              <div className="ml-5 text-white text-xs sm:text-sm cursor-pointer whitespace-nowrap">
-                <div className="text-xs">ログイン・アカウント登録</div>
-              </div>
-            </Link>
-
-          </div>
-
-          {/* 下段：横スクロール可能エリア */}
-          <div className="flex gap-3 m-3 overflow-x-auto whitespace-nowrap no-scrollbar">
-
-            {/* クイックサーチ */}
-            <div className="flex gap-3 overflow-x-auto whitespace-nowrap no-scrollbar">
-              {quickWords.map((word) => (
-                <button
-                  key={word}
-                  onClick={() => handleQuickSearch(word)}
-                  className="px-3 py-1 border rounded-full text-sm cursor-pointer active:scale-95 transition bg-white"
-                >
-                  {word}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* モバイル用ヘッダー */}
-        <div className="sm:hidden px-4 py-2 space-y-2 bg-white">
-
-          {/* 上段：検索フォーム */}
-          <div className="flex">
-            <input
-              type="text"
-              placeholder="mamazonで検索"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleSearch();
-                }
-              }}
-              className="w-full px-3 py-2 border rounded-l-md outline-none"
-            />
-            <button
-              onClick={handleSearch}
-              className="bg-yellow-400 px-4 rounded-r-md cursor-pointer active:scale-95 transition">
-              🔍
-            </button>
-          </div>
-
-          {/* 下段：横スクロール可能エリア */}
-          <div className="flex gap-3 overflow-x-auto whitespace-nowrap no-scrollbar">
-
-            {/* クイックサーチ */}
-            <div className="flex gap-3 overflow-x-auto whitespace-nowrap no-scrollbar">
-              {quickWords.map((word) => (
-                <button
-                  key={word}
-                  onClick={() => handleQuickSearch(word)}
-                  className="px-3 py-1 border rounded-full text-sm cursor-pointer active:scale-95 transition"
-                >
-                  {word}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </header>
+      <GuestHeader />
 
       <div className="p-4 sm:p-8">
         <h2 className="text-xl mb-4 font-bold">
