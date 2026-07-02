@@ -103,7 +103,7 @@ function HomeContent() {
                     handleSearch();
                   }
                 }}
-                className="w-full px-3 py-2 rounded-l-md bg-white text-black outline-none"
+                className="max-w-lg px-3 py-2 rounded-l-md bg-white text-black outline-none"
               />
               <button
                 onClick={handleSearch}
@@ -115,7 +115,7 @@ function HomeContent() {
               {/* ログインボタン */}
             <Link href="/auth">
               <div className="ml-5 text-white text-xs sm:text-sm cursor-pointer whitespace-nowrap">
-                <div className="font-bold">ログイン・アカウント登録</div>
+                <div className="text-xs">ログイン・アカウント登録</div>
               </div>
             </Link>
 
@@ -211,7 +211,10 @@ function HomeContent() {
               href={`/products/${product.id}`}
               className="w-full max-w-xs cursor-pointer hover:opacity-80 active:scale-95 transition"
               >
-              <ProductCard product={product} />
+              <ProductCard
+                product={product}
+                guestMode
+              />
               </Link>
           ))}
           </div>

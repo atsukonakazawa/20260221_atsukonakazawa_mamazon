@@ -7,14 +7,21 @@ import "swiper/css/pagination";
 import { Product } from "@/types/Product";
 import { useCart } from '@/lib/context/CartContext';
 import StarRatingDisplay from '../../components/review/StarRatingDisplay';
-
+import { useRouter } from "next/navigation";
 
 type Props = {
     product: Product;
+    guestMode?: boolean;
 };
 
-export default function ProductCard({ product }: Props) {
+export default function ProductCard({
+    product,
+    guestMode = false,
+}: Props) {
     const { addToCart, cartItems, increaseQuantity, decreaseQuantity } = useCart();
+
+    // routerを取得
+    const router = useRouter();
 
     const cartItem = cartItems.find((item) => item.product_id === product.id);
 
@@ -67,45 +74,64 @@ export default function ProductCard({ product }: Props) {
                 ¥{product.product_price.toLocaleString()}
             </p>
 
-            {/* 👇 分岐UI */}
-            {!cartItem ? (
-                // 未追加
+            {/* 👇 ログイン前かログイン後か */}
+            {guestMode ? (
+
+                // ログイン前の場合
                 <button
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
 
-                        addToCart(product.id);
+                        router.push("/auth");
                     }}
                     className="cursor-pointer mt-3 w-full bg-yellow-400 py-2 rounded-full hover:bg-yellow-500"
                 >
-                    カートに入れる
+                    ログインしてカートに入れる
                 </button>
             ) : (
-                // 追加済み
-                <div
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                    }}
-                    className="cursor-pointer mt-3 flex items-center justify-between border-2 border-yellow-400 rounded-full px-2 py-2"
-                >
-                    <button
-                        onClick={() => decreaseQuantity(cartItem.id)}
-                        className="cursor-pointer px-3 py-1 rounded-lg"
-                    >
-                        −
-                    </button>
 
-                    <span className="font-bold">{cartItem.quantity}</span>
+                // ログイン後の場合
+                !cartItem ? (
 
+                    // カートに未追加の場合
                     <button
-                        onClick={() => increaseQuantity(cartItem.id)}
-                        className="cursor-pointer px-3 py-1 rounded-lg"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            addToCart(product.id);
+                        }}
+                        className="cursor-pointer mt-3 w-full bg-yellow-400 py-2 rounded-full hover:bg-yellow-500"
                     >
-                        ＋
+                        カートに入れる
                     </button>
-                </div>
+                ) : (
+                    // カートに追加済みの場合
+                    <div
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }}
+                        className="cursor-pointer mt-3 flex items-center justify-between border-2 border-yellow-400 rounded-full px-2 py-2"
+                    >
+                        <button
+                            onClick={() => decreaseQuantity(cartItem.id)}
+                            className="cursor-pointer px-3 py-1 rounded-lg"
+                        >
+                            −
+                        </button>
+
+                        <span className="font-bold">{cartItem.quantity}</span>
+
+                        <button
+                            onClick={() => increaseQuantity(cartItem.id)}
+                            className="cursor-pointer px-3 py-1 rounded-lg"
+                        >
+                            ＋
+                        </button>
+                    </div>
+                )
             )}
         </div>
     );
