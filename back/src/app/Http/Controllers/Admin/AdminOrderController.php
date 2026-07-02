@@ -51,7 +51,6 @@ class AdminOrderController extends Controller
             'paymentStatus',
             'shipmentStatus',
             'items.product',
-            'items.number',
         ]);
 
         return response()->json([
