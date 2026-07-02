@@ -47,6 +47,9 @@ export default function AdminOrderDetailPage() {
             </h1>
 
             <div className="bg-white border rounded-lg p-5 mb-6">
+                <h2 className="font-semibold mb-3">
+                    基本情報
+                </h2>
                 <p>注文番号：{order.id}</p>
                 <p>注文日時：{order.created_at}</p>
                 <p>購入者：{order.user_name}</p>
@@ -64,8 +67,11 @@ export default function AdminOrderDetailPage() {
                 <p>〒{order.shipping_postcode}</p>
                 <p>{order.shipping_address}</p>
                 <p>{order.shipping_name}</p>
-                <p>送り主：{order.sender}</p>
             </div>
+
+            <h1 className="text-2xl font-semibold mt-4 mb-6">
+                同時注文商品一覧
+            </h1>
 
             <div className="bg-white border rounded-lg overflow-hidden">
                 <table className="w-full text-sm">
