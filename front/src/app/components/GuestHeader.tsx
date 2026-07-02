@@ -103,7 +103,7 @@ function GuestHeaderContent() {
                         handleSearch();
                     }
                     }}
-                    className="max-w-lg px-3 py-2 ml-10 rounded-l-md bg-white text-black outline-none"
+                    className="max-w-2xl px-3 py-2 ml-10 rounded-l-md bg-white text-black outline-none"
                 />
                 <button
                     onClick={handleSearch}

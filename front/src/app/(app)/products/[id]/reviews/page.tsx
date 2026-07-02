@@ -2,6 +2,8 @@
 
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useUser } from '@/lib/context/UserContext';
+import GuestHeader from '../../../../components/GuestHeader';
 import Header from '../../../../components/Header';
 import FooterLogin from '../../../../components/FooterLogin';
 import StarRatingDisplay from '../../../../components/review/StarRatingDisplay';
@@ -20,6 +22,7 @@ type Review = {
 export default function ReviewListPage() {
     const params = useParams();
     const productId = params.id;
+    const { user } = useUser();
 
     const [reviews, setReviews] = useState<Review[]>([]);
 
@@ -40,7 +43,7 @@ export default function ReviewListPage() {
 
     return (
         <>
-            <Header />
+            {user ? <Header /> : <GuestHeader />}
 
             <div className="max-w-3xl mx-auto p-6">
                 <h1 className="text-2xl font-bold mb-6">
