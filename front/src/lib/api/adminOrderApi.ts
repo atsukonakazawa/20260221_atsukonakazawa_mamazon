@@ -26,20 +26,15 @@ export async function fetchOrders(
 export type OrderDetail = {
     id: number;
     created_at: string;
-
     user_name: string;
-
     payment_way: string;
     payment_status: string;
     shipment_status: string;
-
     shipping_postcode: string;
     shipping_address: string;
     shipping_name: string;
     sender: string;
-
     total_price: number;
-
     items: {
         product_name: string;
         price: number;

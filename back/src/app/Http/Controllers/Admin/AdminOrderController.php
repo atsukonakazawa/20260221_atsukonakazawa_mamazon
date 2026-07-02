@@ -56,11 +56,11 @@ class AdminOrderController extends Controller
         return response()->json([
             'id' => $order->id,
             'created_at' => $order->created_at?->format('Y-m-d H:i'),
-            'user_name' => $order->user->full_name,
+            'user_name' => $order->user->last_name . ' ' . $order->user->first_name,
 
-            'payment_way' => $order->paymentWay->name,
-            'payment_status' => $order->paymentStatus->name,
-            'shipment_status' => $order->shipmentStatus->name,
+            'payment_way' => $order->paymentWay->payment_way,
+            'payment_status' => $order->paymentStatus->payment_status,
+            'shipment_status' => $order->shipmentStatus->shipment_status,
 
             'shipping_postcode' => $order->shipping_postcode,
             'shipping_address' => $order->shipping_address,
