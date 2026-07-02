@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { fetchProductById } from "@/lib/api/productApi";
-import Header from '../../../components/Header';
+import GuestHeader from "@/app/components/GuestHeader";
 import FooterLogin from "../../../components/FooterLogin";
 import ProductSwiper from "../../../components/products/ProductSwiper";
 import AddToCartButton from '../../../components/products/AddToCartButton';
@@ -21,7 +21,7 @@ export default async function ProductDetail({
 
         return (
             <>
-                <Header />
+                <GuestHeader />
 
                 <div className="max-w-6xl mx-auto p-6">
 
@@ -57,7 +57,10 @@ export default async function ProductDetail({
                             </div>
 
                             <div className="md:hidden mt-4">
-                                <AddToCartButton product={product} />
+                                <AddToCartButton
+                                    product={product}
+                                    guestMode
+                                />
                             </div>
 
                             <div className="mt-4">
@@ -92,7 +95,10 @@ export default async function ProductDetail({
                             <h2 className="text-xl font-bold">
                                 カート
                             </h2>
-                            <AddToCartButton product={product} />
+                            <AddToCartButton
+                                product={product}
+                                guestMode
+                            />
                         </div>
                     </div>
                 </div>

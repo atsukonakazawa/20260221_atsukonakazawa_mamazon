@@ -2,10 +2,34 @@
 
 import { useCart } from '@/lib/context/CartContext';
 import { useUser } from '@/lib/context/UserContext';
+import { useRouter } from 'next/navigation';
+import { Product } from '@/types/Product';
 
-export default function AddToCartButton({ product }: any) {
+type Props = {
+    product: Product;
+    guestMode?: boolean;
+};
+
+export default function AddToCartButton({
+    product,
+    guestMode = false,
+}: Props) {
+
     const { addToCart, cartItems, increaseQuantity, decreaseQuantity } = useCart();
     const { user } = useUser();
+    const router = useRouter();
+
+    // 👇 ゲストモードならログインへ
+    if (guestMode) {
+        return (
+            <button
+                onClick={() => router.push('/auth')}
+                className="w-full bg-yellow-400 py-3 rounded-full mt-4 hover:bg-yellow-500"
+            >
+                ログインしてカートに入れる
+            </button>
+        );
+    }
 
     // 👇 カート内の該当商品を取得
     const item = cartItems.find(i => i.product_id === product.id);
@@ -37,7 +61,11 @@ export default function AddToCartButton({ product }: any) {
     return (
         <button
         onClick={async () => {
-            if (!user) return;
+            if (!user) {
+                router.push('/auth');
+                return;
+            }
+
             await addToCart(product.id);
         }}
         className="w-full bg-yellow-400 py-3 rounded-full mt-4 hover:bg-yellow-500"
