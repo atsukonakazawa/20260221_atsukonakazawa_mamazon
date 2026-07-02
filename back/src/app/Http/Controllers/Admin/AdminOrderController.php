@@ -73,8 +73,8 @@ class AdminOrderController extends Controller
             'items' => $order->items->map(fn ($item) => [
                 'product_name' => $item->product->product_name,
                 'price' => $item->price,
-                'quantity' => $item->number->quantity,
-                'subtotal' => $item->price * $item->number->quantity,
+                'quantity' => $item->quantity,
+                'subtotal' => $item->price * $item->quantity,
             ]),
         ]);
     }
