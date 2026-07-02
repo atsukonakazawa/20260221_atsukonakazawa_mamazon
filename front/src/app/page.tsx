@@ -1,6 +1,5 @@
 'use client';
 
-import { Roboto_Condensed } from 'next/font/google';
 import { useSearchParams } from "next/navigation";
 import GuestHeader from "@/app/components/GuestHeader";
 import FooterLogin from "@/app/components/FooterLogin";
@@ -12,10 +11,6 @@ import { Product } from '@/types/Product';
 import Link from 'next/link';
 import ProductCard from "@/app/components/products/ProductCard";
 
-const robotoCondensed = Roboto_Condensed({
-    subsets: ['latin'],
-    weight: ['400', '700'],
-});
 
 export default function Home() {
   return (
@@ -45,33 +40,9 @@ function HomeContent() {
       fetcher,
   );
 
-  //検索実行関数
-  const handleSearch = () => {
-    if (!keyword) return;
-    router.push(`/?keyword=${encodeURIComponent(keyword)}`);
-  };
-
-  //よく使われるワードで検索(クイック検索)
-  const handleQuickSearch = (word: string) => {
-    router.push(`/?keyword=${encodeURIComponent(word)}`);
-  };
-
-  const quickWords = [
-    "ボディクリーム",
-    "リラックス",
-    "おしゃぶり",
-    "オムツ",
-    "ミルク",
-    "おしりふき",
-    "ハーブティー",
-    "おやつ",
-    "哺乳瓶",
-    "エプロン"
-  ];
-
-    if (isLoading) return <p>Loading...</p>;
-    if (!products) return <div>読み込み中...</div>;
-    if (error) return <p>Error...</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (!products) return <div>読み込み中...</div>;
+  if (error) return <p>Error...</p>;
 
   return (
     <>
@@ -108,7 +79,6 @@ function HomeContent() {
               >
               <ProductCard
                 product={product}
-                guestMode
               />
               </Link>
           ))}

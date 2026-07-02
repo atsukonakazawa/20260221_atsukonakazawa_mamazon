@@ -1,10 +1,7 @@
-'use client';
 
 import { notFound } from "next/navigation";
 import { fetchProductById } from "@/lib/api/productApi";
-import { useUser } from '@/lib/context/UserContext';
-import GuestHeader from "@/app/components/GuestHeader";
-import Header from "@/app/components/GuestHeader";
+import AppHeader from "@/app/components/AppHeader";
 import FooterLogin from "../../../components/FooterLogin";
 import ProductSwiper from "../../../components/products/ProductSwiper";
 import AddToCartButton from '../../../components/products/AddToCartButton';
@@ -19,14 +16,13 @@ export default async function ProductDetail({
     }) {
 
     const { id } = await params;
-    const { user } = useUser();
 
     try {
         const product = await fetchProductById(id);
 
         return (
             <>
-                {user ? <Header /> : <GuestHeader />}
+                <AppHeader />
 
                 <div className="max-w-6xl mx-auto p-6">
 
@@ -64,7 +60,6 @@ export default async function ProductDetail({
                             <div className="md:hidden mt-4">
                                 <AddToCartButton
                                     product={product}
-                                    guestMode
                                 />
                             </div>
 
@@ -102,7 +97,6 @@ export default async function ProductDetail({
                             </h2>
                             <AddToCartButton
                                 product={product}
-                                guestMode
                             />
                         </div>
                     </div>
