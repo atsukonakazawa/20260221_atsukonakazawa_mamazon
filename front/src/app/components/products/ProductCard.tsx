@@ -6,22 +6,21 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { Product } from "@/types/Product";
 import { useCart } from '@/lib/context/CartContext';
+import { useUser } from '@/lib/context/UserContext';
 import StarRatingDisplay from '../../components/review/StarRatingDisplay';
 import { useRouter } from "next/navigation";
 
 type Props = {
     product: Product;
-    guestMode?: boolean;
 };
 
-export default function ProductCard({
-    product,
-    guestMode = false,
-}: Props) {
+export default function ProductCard({ product }: Props) {
     const { addToCart, cartItems, increaseQuantity, decreaseQuantity } = useCart();
 
     // routerを取得
     const router = useRouter();
+    // userを取得
+    const { user } = useUser();
 
     const cartItem = cartItems.find((item) => item.product_id === product.id);
 
@@ -75,7 +74,7 @@ export default function ProductCard({
             </p>
 
             {/* 👇 ログイン前かログイン後か */}
-            {guestMode ? (
+            {!user ? (
 
                 // ログイン前の場合
                 <button

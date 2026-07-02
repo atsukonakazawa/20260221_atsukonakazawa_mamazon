@@ -7,29 +7,25 @@ import { Product } from '@/types/Product';
 
 type Props = {
     product: Product;
-    guestMode?: boolean;
 };
 
-export default function AddToCartButton({
-    product,
-    guestMode = false,
-}: Props) {
+export default function AddToCartButton({ product }: Props) {
 
     const { addToCart, cartItems, increaseQuantity, decreaseQuantity } = useCart();
     const { user } = useUser();
     const router = useRouter();
 
     // 👇 ゲストモードならログインへ
-    if (guestMode) {
-        return (
-            <button
-                onClick={() => router.push('/auth')}
-                className="w-full bg-yellow-400 py-3 rounded-full mt-4 hover:bg-yellow-500"
-            >
-                ログインしてカートに入れる
-            </button>
-        );
-    }
+    if (!user) {
+    return (
+        <button
+            onClick={() => router.push('/auth')}
+            className="w-full bg-yellow-400 py-3 rounded-full mt-4 hover:bg-yellow-500"
+        >
+            ログインしてカートに入れる
+        </button>
+    );
+}
 
     // 👇 カート内の該当商品を取得
     const item = cartItems.find(i => i.product_id === product.id);
