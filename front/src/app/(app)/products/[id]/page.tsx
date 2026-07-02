@@ -1,3 +1,5 @@
+'use client';
+
 import { notFound } from "next/navigation";
 import { fetchProductById } from "@/lib/api/productApi";
 import { useUser } from '@/lib/context/UserContext';
