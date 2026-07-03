@@ -8,6 +8,13 @@ export async function apiFetch(
     options: RequestInit = {}
 ) {
     const isFormData = options.body instanceof FormData;
+
+    // 保存したトークンを取得
+    const token =
+        typeof window !== 'undefined'
+            ? localStorage.getItem('token')
+            : null;
+
     const res = await fetch(`${API_BASE}${path}`, {
         ...options,
         headers: {
@@ -15,6 +22,11 @@ export async function apiFetch(
             ...(isFormData
                 ? {}
                 : { 'Content-Type': 'application/json' }),
+
+            // トークンがある場合だけ Authorization ヘッダーを付与
+            ...(token
+                ? { Authorization: `Bearer ${token}` }
+                : {}),
 
             ...(options.headers || {}),
         },
@@ -24,8 +36,8 @@ export async function apiFetch(
 
     if (!res.ok) {
         throw {
-        status: res.status,
-        message: data.message,
+            status: res.status,
+            message: data.message,
         };
     }
 
