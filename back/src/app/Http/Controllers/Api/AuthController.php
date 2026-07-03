@@ -188,4 +188,23 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'ok']);
     }
+
+    public function logout(Request $request)
+    {
+        /** @var \App\Models\User|null $user */
+        $user = $request->user();
+
+        if ($user) {
+            /** @var \Laravel\Sanctum\PersonalAccessToken|null $token */
+            $token = $user->currentAccessToken();
+
+            if ($token) {
+                $token->delete();
+            }
+        }
+
+        return response()->json([
+            'message' => 'ログアウトしました',
+        ]);
+    }
 }

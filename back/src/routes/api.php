@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 //以下、ログイン前のルート
-////チェックユーザー、アカウント登録、ログイン
+////チェックユーザー、アカウント登録
 Route::post('/check-user', [AuthController::class, 'checkUser']);
 Route::post('/check-email', [AuthController::class, 'checkEmail']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -52,9 +52,13 @@ Route::get('/products/{id}', [ProductController::class, 'show']);
 Route::get('/products/{id}/reviews', [ReviewController::class, 'index']);
 
 //以下、ログイン後のルート
-////カート機能
 ////機能を完成させてから認証を追加する
 ////Route::middleware('auth:sanctum')->group(function () {
+
+////ログアウト
+Route::post('/logout', [AuthController::class, 'logout']);
+
+////カート機能
 Route::get('/cart', [CartController::class, 'index']);
 Route::post('/cart', [CartController::class, 'store']);
 Route::patch('/cart/{id}', [CartController::class, 'update']);
