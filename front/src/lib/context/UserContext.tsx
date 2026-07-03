@@ -1,5 +1,6 @@
 'use client';
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { logoutUser } from '@/lib/api/authApi';
 
 // ① ユーザーの型
 type User = {
@@ -18,14 +19,14 @@ type User = {
 type UserContextType = {
     user: User;
     setUser: React.Dispatch<React.SetStateAction<User>>;
-    logout: () => void;
+    logout: () => Promise<void>;
 };
 
 //③ Contextを作る
 const UserContext = createContext<UserContextType>({
     user: null,
     setUser: () => { },
-    logout: () => {},
+    logout: async () => {},
 });
 
 // ④ Provider（アプリ全体を包む）
@@ -33,8 +34,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User>(null);
 
     //logout
-    const logout = () => {
-        localStorage.removeItem('token'); // トークン削除（あれば）
+    const logout = async () => {
+        try {
+            // Laravel側のトークン削除
+            await logoutUser();
+        } catch (e) {
+            console.error(e);
+        }
+
+        // フロント側の情報を削除
+        localStorage.removeItem('token');
         setUser(null);
     };
 
@@ -47,3 +56,4 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
 // ⑤ 使いやすくするためのHook
 export const useUser = () => useContext(UserContext);
+
