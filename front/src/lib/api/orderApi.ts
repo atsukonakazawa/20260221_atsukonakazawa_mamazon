@@ -7,6 +7,6 @@ export async function createOrder(data: any) {
     });
 }
 
-export async function fetchOrders(userId: number) {
-    return apiFetch(`/api/orders?user_id=${userId}`);
+export async function fetchOrders() {
+    return apiFetch(`/api/orders`);
 }
