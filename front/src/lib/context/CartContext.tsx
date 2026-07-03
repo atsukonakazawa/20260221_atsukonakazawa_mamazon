@@ -37,7 +37,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
     const loadCart = async () => {
         if (!user) return;
-        const data = await fetchCart(user.id);
+        const data = await fetchCart();
 
         // Laravelのレスポンスに合わせて整形
         const formatted = data.map((item: any) => ({
@@ -55,28 +55,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // カート追加
     const addToCart = async (productId: number) => {
         if (!user) return;
-        await addCart(productId, user.id);
+        await addCart(productId);
         await loadCart(); // 👈 再取得
     };
 
     // ＋
     const increaseQuantity = async (cartId: number) => {
         if (!user) return;
-        await updateCart(cartId, 'increase', user.id);
+        await updateCart(cartId, 'increase');
         await loadCart();
     };
 
     // −
     const decreaseQuantity = async (cartId: number) => {
         if (!user) return;
-        await updateCart(cartId, 'decrease', user.id);
+        await updateCart(cartId, 'decrease');
         await loadCart();
     };
 
     //カートを空にする
     const clearCart = async () => {
         if (!user) return;
-        await clearCartApi(user.id);
+        await clearCartApi();
         setCartItems([]); // ← これ重要（画面更新）
     };
 
