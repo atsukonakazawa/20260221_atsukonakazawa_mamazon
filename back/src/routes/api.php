@@ -63,17 +63,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/cart', [CartController::class, 'store']);
     Route::patch('/cart/{id}', [CartController::class, 'update']);
     Route::delete('/cart/clear', [CartController::class, 'clear']);
+
+    ////購入
+    Route::get('/payment-ways', [PaymentController::class, 'getPaymentWays']);
+    Route::post('/payment', [PaymentController::class, 'pay']);
+    Route::post('/order', [PaymentController::class, 'storeOrder']);
+    Route::get('/orders', [OrderController::class, 'index']);
 });
 
 ////レビュー投稿
 Route::get('/reviews/create/{productId}', [ReviewController::class, 'create']);
 Route::post('/reviews', [ReviewController::class, 'store']);
 
-////購入
-Route::get('/payment-ways', [PaymentController::class, 'getPaymentWays']);
-Route::post('/payment', [PaymentController::class, 'pay']);
-Route::post('/order', [PaymentController::class, 'storeOrder']);
-Route::get('/orders', [OrderController::class, 'index']);
 
 ////アカウント情報の変更
 Route::put('/user', [AuthController::class, 'update']);
