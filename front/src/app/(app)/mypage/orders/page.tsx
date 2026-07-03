@@ -18,8 +18,8 @@ export default function OrdersPage() {
     const messageRef = useRef<HTMLDivElement | null>(null);
 
     const { data: orders, isLoading } = useSWR(
-        user ? ['orders', user.id] : null,
-        () => fetchOrders(user!.id)
+        user ? 'orders' : null,
+        fetchOrders
     );
 
     if (!user) return null;
