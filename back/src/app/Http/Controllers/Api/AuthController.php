@@ -90,6 +90,7 @@ class AuthController extends Controller
         }
 
         // ユーザー取得
+        /** @var \App\Models\User $user */
         $user = Auth::user();
 
         //ユーザーが利用停止中の場合ログイン不可
@@ -118,10 +119,17 @@ class AuthController extends Controller
             ], 403);
         }
 
+        // 古いトークンを削除（任意ですがおすすめ）
+        $user->tokens()->delete();
+
+        // 新しいトークンを発行
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         // ログイン成功
         return response()->json([
             'message' => 'ログイン成功',
             'user' => $user,
+            'token' => $token,
         ]);
     }
 
