@@ -102,6 +102,9 @@ export default function LoginPage() {
         password,
       });
 
+      // APIトークンを保存
+      localStorage.setItem('token', res.token);
+
       setUser(res.user);
       router.push('/mypage');
 
