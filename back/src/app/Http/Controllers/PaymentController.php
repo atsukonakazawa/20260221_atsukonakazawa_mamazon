@@ -9,7 +9,6 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\PaymentWay;
 use App\Models\PaymentStatus;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
@@ -48,6 +47,9 @@ class PaymentController extends Controller
     {
         DB::beginTransaction();
 
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
         // 支払い方法取得
         $paymentWay = PaymentWay::find($request->payment_way_id);
 
@@ -64,9 +66,6 @@ class PaymentController extends Controller
         $paymentNumber = null;
         $confirmationNumber = null;
         $limitDate = null;
-
-        // ユーザー情報取得
-        $user = User::findOrFail($request->user_id);
 
         // コンビニのときだけ生成
         if ($paymentWay->payment_way === 'コンビニ払い') {
@@ -93,7 +92,7 @@ class PaymentController extends Controller
 
         try {
             $order = Order::create([
-                'user_id' => $request->user_id,
+                'user_id' => $user->id,
                 'payment_way_id' => $paymentWay->id,
                 'payment_status_id' => $paymentStatus->id,
                 'shipment_status_id' => 1,

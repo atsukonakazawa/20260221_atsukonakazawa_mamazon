@@ -76,7 +76,6 @@ export default function CheckoutPage() {
 
             // 🧾 注文作成（クレカでもコンビニでも共通）
             const res = await createOrder({
-                user_id: user ? user.id : null,
                 payment_way_id: selectedPaymentWayId,
                 total_price: total,
                 items: cartItems.map(item => ({
