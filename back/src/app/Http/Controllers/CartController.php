@@ -10,10 +10,11 @@ class CartController extends Controller
     // カート一覧取得
     public function index(Request $request)
     {
-        $userId = $request->user_id;
+        /** @var \App\Models\User $user */
+        $user = $request->user();
 
         $carts = Cart::with('product', 'product.images')
-            ->where('user_id', $userId)
+            ->where('user_id', $user->id)
             ->get();
 
         return response()->json($carts);
@@ -22,9 +23,10 @@ class CartController extends Controller
     // カート追加
     public function store(Request $request)
     {
-        $userId = $request->user_id;
+        /** @var \App\Models\User $user */
+        $user = $request->user();
 
-        $cart = Cart::where('user_id', $userId)
+        $cart = Cart::where('user_id', $user->id)
             ->where('product_id', $request->product_id)
             ->first();
 
@@ -32,7 +34,7 @@ class CartController extends Controller
             $cart->increment('quantity');
         } else {
             $cart = Cart::create([
-                'user_id' => $userId,
+                'user_id' => $user->id,
                 'product_id' => $request->product_id,
                 'quantity' => 1,
             ]);
@@ -44,8 +46,11 @@ class CartController extends Controller
     // 数量更新（+ / -）
     public function update(Request $request, $id)
     {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
         $cart = Cart::where('id', $id)
-            ->where('user_id', $request->user_id)
+            ->where('user_id', $user->id)
             ->firstOrFail();
 
         if ($request->type === 'increase') {
@@ -65,8 +70,11 @@ class CartController extends Controller
     // 削除
     public function destroy(Request $request, $id)
     {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
         $cart = Cart::where('id', $id)
-            ->where('user_id', $request->user_id)
+            ->where('user_id', $user->id)
             ->firstOrFail();
         $cart->delete();
 
@@ -75,7 +83,10 @@ class CartController extends Controller
 
     public function clear(Request $request)
     {
-        \App\Models\Cart::where('user_id', $request->user_id)->delete();
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        \App\Models\Cart::where('user_id', $user->id)->delete();
 
         return response()->json([
             'message' => 'カートを空にしました'

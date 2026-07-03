@@ -53,16 +53,17 @@ Route::get('/products/{id}/reviews', [ReviewController::class, 'index']);
 
 //以下、ログイン後のルート
 ////機能を完成させてから認証を追加する
-////Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
 
-////ログアウト
-Route::post('/logout', [AuthController::class, 'logout']);
+    ////ログアウト
+    Route::post('/logout', [AuthController::class, 'logout']);
 
-////カート機能
-Route::get('/cart', [CartController::class, 'index']);
-Route::post('/cart', [CartController::class, 'store']);
-Route::patch('/cart/{id}', [CartController::class, 'update']);
-Route::delete('/cart/clear', [CartController::class, 'clear']);
+    ////カート機能
+    Route::get('/cart', [CartController::class, 'index']);
+    Route::post('/cart', [CartController::class, 'store']);
+    Route::patch('/cart/{id}', [CartController::class, 'update']);
+    Route::delete('/cart/clear', [CartController::class, 'clear']);
+});
 
 ////レビュー投稿
 Route::get('/reviews/create/{productId}', [ReviewController::class, 'create']);
@@ -122,5 +123,3 @@ Route::get(
     '/admin/orders/{order}',
     [AdminOrderController::class, 'show']
 );
-
-//});
