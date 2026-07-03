@@ -101,3 +101,10 @@ export async function sendSmsCodeForReset(payload: { tel: string }) {
     });
 }
 
+// ログアウト
+export async function logoutUser() {
+    return apiFetch("/api/logout", {
+        method: "POST",
+    });
+}
+
