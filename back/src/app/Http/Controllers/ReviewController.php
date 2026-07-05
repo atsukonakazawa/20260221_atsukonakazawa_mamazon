@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\OrderItem;
 use App\Models\Review;
-use App\Models\User;
 
 class ReviewController extends Controller
 {
@@ -24,8 +23,8 @@ class ReviewController extends Controller
     public function create(Request $request, $productId)
     {
         try {
-            // user_idをリクエストから取得
-            $user = User::findOrFail($request->user_id);
+            /** @var \App\Models\User $user */
+            $user = $request->user();
 
             $hasDeliveredOrder = OrderItem::where('product_id', $productId)
                 ->whereHas('order', function ($query) use ($user) {
@@ -57,14 +56,13 @@ class ReviewController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'user_id'   => 'required|exists:users,id',
             'product_id' => 'required|exists:products,id',
             'score'     => 'required|integer|min:1|max:5',
             'comment'   => 'required|string|max:1000',
         ]);
 
-        // user_idをリクエストから取得
-        $user = User::findOrFail($request->user_id);
+        /** @var \App\Models\User $user */
+        $user = $request->user();
 
         // お届け済み商品のみ投稿可能
         $hasDeliveredOrder = OrderItem::where('product_id', $request->product_id)
