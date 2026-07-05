@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchProductDetail, ProductDetail, deleteProduct, approveProduct } from '@/lib/api/adminProductApi';
 import Link from 'next/link';
+import { useToast } from '@/lib/context/ToastContext';
 
 export default function AdminProductDetailPage() {
     const [showApproveForm, setShowApproveForm] = useState(false);
@@ -12,6 +13,7 @@ export default function AdminProductDetailPage() {
 
     const { id } = useParams();
     const router = useRouter();
+    const { showToast } = useToast();
 
     const { data, error, isLoading } = useSWR<ProductDetail>(
         id ? `adminProduct-${id}` : null,
@@ -23,34 +25,34 @@ export default function AdminProductDetailPage() {
     if (!data) return null;
 
     const handleDelete = async () => {
-        const ok = confirm('この販売者を削除処理しますか？');
+        const ok = confirm('この商品を削除処理しますか？');
 
         if (!ok) return;
 
         try {
             await deleteProduct(data.id);
-            alert('削除処理しました');
+            showToast('削除処理しました', 'success');
             router.push('/admin/products');
         } catch {
-            alert('処理に失敗しました');
+            showToast('処理に失敗しました', 'error');
         }
     };
 
     const handleApprove = async () => {
 
         if (!approvedBy.trim()) {
-            alert('承認者名を入力してください');
+            showToast('承認者名を入力してください', 'error');
             return;
         }
 
         try {
             await approveProduct(data.id, approvedBy);
 
-            alert('承認しました！');
+            showToast('承認しました！', 'success');
 
             router.push('/admin/products');
         } catch {
-            alert('承認に失敗しました');
+            showToast('承認に失敗しました', 'error');
         }
     };
 
