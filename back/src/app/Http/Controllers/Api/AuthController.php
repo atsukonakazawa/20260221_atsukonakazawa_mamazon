@@ -135,7 +135,8 @@ class AuthController extends Controller
 
     public function update(Request $request)
     {
-        $user = User::find($request->user_id);
+        /** @var \App\Models\User $user */
+        $user = $request->user();
 
         if (!$user) {
             return response()->json([

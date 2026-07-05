@@ -73,21 +73,24 @@ Route::middleware('auth:sanctum')->group(function () {
     ////レビュー投稿
     Route::get('/reviews/create/{productId}', [ReviewController::class, 'create']);
     Route::post('/reviews', [ReviewController::class, 'store']);
+
+    ////アカウント情報の変更
+    Route::put('/user', [AuthController::class, 'update']);
 });
 
 
-////アカウント情報の変更
-Route::put('/user', [AuthController::class, 'update']);
+////パスワード忘れ対応
 Route::post('/sms/send-for-reset', [SmsAuthController::class, 'sendForReset']);
 Route::post('/password/reset', [AuthController::class, 'resetPassword']);
 
+//以下、販売会社管理画面
 ////商品仮登録
 Route::post(
     '/product-submissions',
     [ProductSubmissionController::class, 'store']
 );
 
-//以下、管理画面
+//以下、Mamazon管理画面
 ////ユーザー管理
 Route::get('/admin/users', [UserController::class, 'index']);
 Route::get('/admin/users/{id}', [UserController::class, 'show']);

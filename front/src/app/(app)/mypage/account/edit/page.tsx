@@ -126,7 +126,6 @@ export default function AccountEditPage() {
         //apiに送信するデータを作成
         //passwordは安全のため入力時だけ追加し、空なら送らない
         const data: UpdateUserRequest = {
-            user_id: user.id,
             last_name: lastName,
             first_name: firstName,
             postcode: normalizedPostcode,

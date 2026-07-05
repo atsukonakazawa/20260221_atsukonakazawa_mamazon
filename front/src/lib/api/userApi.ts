@@ -1,7 +1,6 @@
 import { apiFetch } from "./apiClient";
 
 export type UpdateUserRequest = {
-    user_id: number;
     last_name: string;
     first_name: string;
     postcode: string;
