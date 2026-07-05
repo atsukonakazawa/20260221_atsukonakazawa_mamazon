@@ -15,7 +15,6 @@ import StarRating from '../../../../components/review/StarRating';
 
 export default function ReviewCreatePage() {
     const { user } = useUser();
-    const userId = user?.id;
     const params = useParams();
     const router = useRouter();
 
@@ -31,11 +30,11 @@ export default function ReviewCreatePage() {
 
     // レビュー投稿可否チェック
     useEffect(() => {
-        if (!userId) return;
+        if (!user) return;
 
         const verifyPermission = async () => {
             try {
-                await checkReviewPermission(productId, userId);
+                await checkReviewPermission(productId);
             } catch {
                 alert('この商品はお届け後にレビュー可能です。');
                 router.push('/orders');
@@ -44,7 +43,7 @@ export default function ReviewCreatePage() {
 
         verifyPermission();
 
-    }, [productId, userId, router]);
+    }, [productId, user, router]);
 
     //商品情報を取得
     useEffect(() => {
@@ -65,7 +64,7 @@ export default function ReviewCreatePage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!userId) {
+        if (!user) {
             alert('ログインしてください。');
             return;
         }
@@ -77,7 +76,6 @@ export default function ReviewCreatePage() {
 
         try {
             await createReview({
-                user_id: userId,
                 product_id: productId,
                 score,
                 comment,

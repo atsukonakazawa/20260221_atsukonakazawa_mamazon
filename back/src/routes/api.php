@@ -69,11 +69,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/payment', [PaymentController::class, 'pay']);
     Route::post('/order', [PaymentController::class, 'storeOrder']);
     Route::get('/orders', [OrderController::class, 'index']);
-});
 
-////レビュー投稿
-Route::get('/reviews/create/{productId}', [ReviewController::class, 'create']);
-Route::post('/reviews', [ReviewController::class, 'store']);
+    ////レビュー投稿
+    Route::get('/reviews/create/{productId}', [ReviewController::class, 'create']);
+    Route::post('/reviews', [ReviewController::class, 'store']);
+});
 
 
 ////アカウント情報の変更
