@@ -2,7 +2,7 @@
 
 type ToastProps = {
     message: string;
-    type: 'success' | 'error';
+    type: 'success' | 'error' | 'info';
     isVisible: boolean;
     isClosing: boolean;
 };

@@ -10,7 +10,7 @@ import {
 } from 'react';
 import Toast from '@/app/components/Toast';
 
-type ToastType = 'success' | 'error';
+type ToastType = 'success' | 'error' | 'info';
 
 type ToastContextType = {
     showToast: (message: string, type: ToastType) => void;
@@ -48,8 +48,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
             timerRef.current = setTimeout(() => {
                 setIsVisible(false);
-            }, 1500);
-        }, 1000);
+            }, 2000);
+        }, 2000);
     };
 
     return (
