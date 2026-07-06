@@ -32,8 +32,8 @@ export default function Toast({
 
                 ${
                     visible
-                        ? 'opacity-100 translate-y-0'
-                        : 'opacity-0 -translate-y-2 pointer-events-none'
+                        ? 'opacity-100'
+                        : 'opacity-0 pointer-events-none'
                 }
 
                 ${
