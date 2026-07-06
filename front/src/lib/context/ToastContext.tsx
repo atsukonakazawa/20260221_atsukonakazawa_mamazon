@@ -43,7 +43,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
         timerRef.current = setTimeout(() => {
             setVisible(false);
-        }, 3000);
+        }, 2000);
     };
 
     return (
