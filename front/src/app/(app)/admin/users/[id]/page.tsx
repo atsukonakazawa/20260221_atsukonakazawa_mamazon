@@ -1,13 +1,19 @@
 'use client';
 
 import useSWR from 'swr';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchUserDetail, UserDetail, withdrawUser } from '@/lib/api/adminUserApi';
 import Link from 'next/link';
+import { useToast } from '@/lib/context/ToastContext';
+import ConfirmDialog from '@/app/components/ConfirmDialog';
 
 export default function AdminUserDetailPage() {
+    const [showWithdrawConfirmDialog, setShowWithdrawConfirmDialog] = useState(false);
+
     const { id } = useParams();
     const router = useRouter();
+    const { showToast } = useToast();
 
     const { data, error, isLoading } = useSWR<UserDetail>(
         id ? `adminUser-${id}` : null,
@@ -19,16 +25,23 @@ export default function AdminUserDetailPage() {
     if (!data) return null;
 
     const handleWithdraw = async () => {
-        const ok = confirm('このユーザーを退会処理しますか？');
-
-        if (!ok) return;
-
         try {
             await withdrawUser(data.id);
-            alert('退会処理しました');
-            router.push('/admin/users');
+
+            // ダイアログを閉じる
+            setShowWithdrawConfirmDialog(false);
+            // 成功メッセージ
+            showToast('退会処理しました', 'success');
+            //少し待ってから画面遷移
+            setTimeout(() => {
+                router.push('/admin/users');
+            }, 200);
+
         } catch {
-            alert('処理に失敗しました');
+            // ダイアログを閉じる
+            setShowWithdrawConfirmDialog(false);
+            // エラーメッセージ
+            showToast('処理に失敗しました', 'error');
         }
     };
 
@@ -87,12 +100,22 @@ export default function AdminUserDetailPage() {
                 </button>
 
                 <button
-                    onClick={handleWithdraw}
+                    onClick={() => setShowWithdrawConfirmDialog(true)}
                     className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 mx-4 rounded cursor-pointer"
                 >
                     退会処理
                 </button>
             </div>
+
+            <ConfirmDialog
+                open={showWithdrawConfirmDialog}
+                title="ユーザー退会"
+                message="このユーザーを退会処理しますか？"
+                confirmText="退会"
+                cancelText="キャンセル"
+                onConfirm={handleWithdraw}
+                onCancel={() => setShowWithdrawConfirmDialog(false)}
+            />
         </div>
     );
 }
