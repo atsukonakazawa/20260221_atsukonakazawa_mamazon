@@ -6,9 +6,11 @@ import { useParams, useRouter } from 'next/navigation';
 import { fetchProductDetail, ProductDetail, deleteProduct, approveProduct } from '@/lib/api/adminProductApi';
 import Link from 'next/link';
 import { useToast } from '@/lib/context/ToastContext';
+import ConfirmDialog from '@/app/components/ConfirmDialog';
 
 export default function AdminProductDetailPage() {
     const [showApproveForm, setShowApproveForm] = useState(false);
+    const [showDeleteConfirmDialog, setShowDeleteConfirmDialog] = useState(false);
     const [approvedBy, setApprovedBy] = useState('');
 
     const { id } = useParams();
@@ -25,15 +27,22 @@ export default function AdminProductDetailPage() {
     if (!data) return null;
 
     const handleDelete = async () => {
-        const ok = confirm('この商品を削除処理しますか？');
-
-        if (!ok) return;
-
         try {
             await deleteProduct(data.id);
+
+            //削除確認ダイアログを閉じる
+            setShowDeleteConfirmDialog(false);
+            //成功メッセージを表示
             showToast('削除処理しました', 'success');
-            router.push('/admin/products');
+
+            //少し待ってから画面遷移
+            setTimeout(() => {
+                router.push('/admin/products');
+            }, 300);
         } catch {
+            //削除確認ダイアログを閉じる
+            setShowDeleteConfirmDialog(false);
+            //エラーメッセージを表示
             showToast('処理に失敗しました', 'error');
         }
     };
@@ -50,7 +59,11 @@ export default function AdminProductDetailPage() {
 
             showToast('承認しました！', 'success');
 
-            router.push('/admin/products');
+            //少し待ってから画面遷移
+            setTimeout(() => {
+                router.push('/admin/products');
+            }, 300);
+
         } catch {
             showToast('承認に失敗しました', 'error');
         }
@@ -129,7 +142,7 @@ export default function AdminProductDetailPage() {
                 )}
 
                 <button
-                    onClick={handleDelete}
+                    onClick={() => setShowDeleteConfirmDialog(true)}
                     className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 mx-4 rounded cursor-pointer"
                 >
                     削除
@@ -168,6 +181,16 @@ export default function AdminProductDetailPage() {
                     </div>
                 </div>
             )}
+
+            <ConfirmDialog
+                open={showDeleteConfirmDialog}
+                title="商品削除"
+                message="この商品を削除処理しますか？"
+                confirmText="削除"
+                cancelText="キャンセル"
+                onConfirm={handleDelete}
+                onCancel={() => setShowDeleteConfirmDialog(false)}
+            />
         </div>
     );
 }
