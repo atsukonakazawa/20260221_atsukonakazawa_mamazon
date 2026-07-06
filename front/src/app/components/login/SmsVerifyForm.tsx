@@ -9,10 +9,20 @@ type Props = {
 
 export default function SmsVerifyForm({ tel, onVerify, errorMessage }: Props) {
     const [code, setCode] = useState('');
+    const [localError, setLocalError] = useState('');
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onVerify(code);
+        e.preventDefault();
+
+        if (!code.trim()) {
+            setLocalError('認証コードを入力してください');
+            return;
+        }
+
+        // 入力されたのでローカルエラーを消す
+        setLocalError('');
+
+        onVerify(code);
     };
 
 
@@ -31,7 +41,10 @@ export default function SmsVerifyForm({ tel, onVerify, errorMessage }: Props) {
         type="text"
         placeholder="6桁の認証コード"
         value={code}
-        onChange={(e) => setCode(e.target.value)}
+        onChange={(e) => {
+            setCode(e.target.value);
+            setLocalError('');
+        }}
         className="
             w-full
             p-2
@@ -42,11 +55,12 @@ export default function SmsVerifyForm({ tel, onVerify, errorMessage }: Props) {
         "
         />
 
-        {errorMessage && (
+        {(localError || errorMessage) && (
             <p className="text-red-600 text-sm mb-2">
-                {errorMessage}
+                {localError || errorMessage}
             </p>
         )}
+
         <button
         type="submit"
         className="
