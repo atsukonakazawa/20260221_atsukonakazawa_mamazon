@@ -3,33 +3,37 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createSeller } from '@/lib/api/adminSellerApi';
-import { normalizePostcode, normalizePhone } from '@/lib/utils/validation';
+import { validateSellerForm, normalizePostcode, normalizePhone } from '@/lib/utils/validation';
 import { fetchAddress } from "@/lib/api/postcodeApi";
+import { useToast } from '@/lib/context/ToastContext';
 
 
 export default function AdminSellerCreatePage() {
-
-    const router = useRouter();
-
     const [sellerName, setSellerName] = useState('');
     const [postcode, setPostcode] = useState('');
     const [address, setAddress] = useState('');
     const [tel, setTel] = useState('');
-    const [message, setMessage] = useState('');
+    const [formError, setFormError] = useState('');
+
+    const router = useRouter();
+    const { showToast } = useToast();
 
     async function handleSubmit(e: React.FormEvent) {
 
         e.preventDefault();
 
-        setMessage('');
+        //前回のエラーメッセージを消す
+        setFormError('');
 
-        if (
-            !sellerName.trim() ||
-            !postcode.trim() ||
-            !address.trim() ||
-            !tel.trim()
-        ) {
-            setMessage('すべての項目を入力してください');
+        const errorMessage = validateSellerForm({
+            seller_name: sellerName,
+            tel,
+            postcode,
+            address,
+        });
+
+        if (errorMessage) {
+            setFormError(errorMessage);
             return;
         }
 
@@ -42,13 +46,17 @@ export default function AdminSellerCreatePage() {
                 tel: normalizePhone(tel),
             });
 
-            alert('販売会社の登録に成功しました');
-
-            router.push('/admin/sellers');
+            //成功メッセージ
+            showToast('販売会社の登録に成功しました', 'success');
+            //少し待ってから画面遷移
+            setTimeout(() => {
+                router.push('/admin/sellers');
+            }, 200);
 
         } catch {
 
-            setMessage('販売会社の登録に失敗しました');
+            //エラーメッセージ
+            showToast('販売会社の登録に失敗しました', 'error');
         }
     }
 
@@ -129,9 +137,9 @@ export default function AdminSellerCreatePage() {
                     />
                 </div>
 
-                {message && (
+                {formError && (
                     <p className="my-2 text-red-500">
-                        {message}
+                        {formError}
                     </p>
                 )}
 
