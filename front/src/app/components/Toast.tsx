@@ -11,7 +11,6 @@ export default function Toast({
     type,
     visible,
 }: ToastProps) {
-    if (!visible) return null;
 
     return (
         <div
@@ -26,15 +25,28 @@ export default function Toast({
                 shadow-lg
                 text-white
                 font-medium
-                transition-all
+                transition-opacity transform
                 duration-300
+                flex
+                items-center
+
+                ${
+                    visible
+                        ? 'opacity-100 translate-y-0'
+                        : 'opacity-0 -translate-y-2 pointer-events-none'
+                }
+
                 ${
                     type === 'success'
-                        ? 'bg-green-600'
+                        ? 'bg-green-500'
                         : 'bg-red-600'
                 }
             `}
         >
+            <span className="mr-2">
+                {type === 'success' ? '✓' : '✕'}
+            </span>
+
             {message}
         </div>
     );
