@@ -2,19 +2,46 @@
 import { useState } from 'react';
 import { sendSmsCodeForReset } from '@/lib/api/authApi';
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/lib/context/ToastContext';
+import { isValidPhone, normalizePhone } from '@/lib/utils/validation';
 
 export default function RequestPage() {
     const [tel, setTel] = useState('');
     const router = useRouter();
+    const { showToast } = useToast();
 
-    const handleSubmit = async (e: any) => {
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        await sendSmsCodeForReset({ tel });
+        const input = tel.trim();
 
-        alert('認証コードを送信しました');
+        if (!input) {
+            showToast('電話番号を入力してください', 'error');
+            return;
+        }
 
-        router.push(`/auth/password-reset/verify?tel=${tel}`);
+        if (!isValidPhone(input)) {
+            showToast('正しい電話番号（ハイフンなし）を入力してください', 'error');
+            return;
+        }
+
+        const normalizedTel = normalizePhone(input);
+
+        try {
+            await sendSmsCodeForReset({ tel: normalizedTel });
+
+            // 成功メッセージ
+            showToast('認証コードを送信しました', 'success');
+            // 少し待って画面遷移
+            setTimeout(() => {
+                router.push(`/auth/password-reset/verify?tel=${normalizedTel}`);
+            }, 200);
+
+        } catch {
+            //エラーメッセージ
+            showToast('認証コードの送信に失敗しました', 'error');
+        }
     };
 
     return (
