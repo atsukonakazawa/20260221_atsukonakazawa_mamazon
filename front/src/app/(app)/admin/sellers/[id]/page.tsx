@@ -10,6 +10,7 @@ import ConfirmDialog from '@/app/components/ConfirmDialog';
 
 export default function AdminSellerDetailPage() {
     const [showDeleteConfirmDialog, setShowDeleteConfirmDialog] = useState(false);
+
     const { id } = useParams();
     const router = useRouter();
     const { showToast } = useToast();

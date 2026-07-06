@@ -14,12 +14,15 @@ import {
     normalizePostcode
 } from '@/lib/utils/validation';
 import { fetchAddress } from "@/lib/api/postcodeApi";
+import { useToast } from '@/lib/context/ToastContext';
+
 
 export default function AdminUserEditPage() {
-    const { id } = useParams();
-    const router = useRouter();
     const [formError, setFormError] = useState<string>("");
 
+    const { id } = useParams();
+    const router = useRouter();
+    const { showToast } = useToast();
 
     const { data, isLoading, error } = useSWR<UserDetail>(
         id ? `admin-user-${id}` : null,
@@ -91,6 +94,10 @@ export default function AdminUserEditPage() {
     };
 
     const handleSubmit = async () => {
+
+        // 前回のエラーメッセージを消す
+        setFormError('');
+
         const errorMessage = validateUserForm({
             first_name: form.first_name,
             last_name: form.last_name,
@@ -113,10 +120,17 @@ export default function AdminUserEditPage() {
 
         try {
             await updateAdminUser(Number(id), requestData);
-            alert('更新しました');
-            router.push(`/admin/users/${id}`);
+
+            // 成功メッセージ
+            showToast('更新しました', 'success');
+            // 少し待って画面遷移
+            setTimeout(() => {
+                router.push(`/admin/users/${id}`);
+            }, 200);
+
         } catch {
-            alert('更新失敗');
+            // エラーメッセージ
+            showToast('更新に失敗しました', 'error');
         }
     }
 
