@@ -1,10 +1,12 @@
 'use client';
 
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useToast } from '@/lib/context/ToastContext';
 
 export default function CheckoutForm({ setPaymentMethodId }: any) {
     const stripe = useStripe();
     const elements = useElements();
+    const { showToast } = useToast();
 
     const handleSaveCard = async () => {
         if (!stripe || !elements) return;
@@ -17,9 +19,13 @@ export default function CheckoutForm({ setPaymentMethodId }: any) {
         });
 
         if (error) {
-            alert(error.message);
+            //エラーメッセージ
+            showToast(error.message ?? 'カード情報の保存に失敗しました', 'error');
+
         } else {
-            alert('カード情報を保存しました');
+            //成功メッセージ
+            showToast('カード情報を保存しました', 'success');
+
             setPaymentMethodId(paymentMethod.id); // ← 親に渡す🔥
         }
     };

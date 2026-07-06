@@ -3,11 +3,15 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, Suspense } from 'react';
 import { apiFetch } from '@/lib/api/apiClient';
+import { useToast } from '@/lib/context/ToastContext';
+
 
 function NewPasswordPageContent() {
     const params = useSearchParams();
     const tel = params.get('tel')!;
     const router = useRouter();
+    const { showToast } = useToast();
+
 
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -16,41 +20,47 @@ function NewPasswordPageContent() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        //古いエラーメッセージを削除
+        setError('');
+
         // バリデーション
         if (!password || !passwordConfirm) {
-        setError('パスワードを入力してください');
-        return;
+            setError('パスワードを入力してください');
+            return;
         }
 
         if (password !== passwordConfirm) {
-        setError('パスワードが一致しません');
-        return;
+            setError('パスワードが一致しません');
+            return;
         }
 
         if (password.length < 6) {
-        setError('パスワードは6文字以上で入力してください');
-        return;
+            setError('パスワードは6文字以上で入力してください');
+            return;
         }
 
         try {
-        await apiFetch('/api/password/reset', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-            tel,
-            password,
-            }),
-        });
+            await apiFetch('/api/password/reset', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                tel,
+                password,
+                }),
+            });
 
-        alert('パスワードを変更しました');
+            // 成功メッセージ
+            showToast('パスワードを変更しました', 'success');
+            // 少し待って画面遷移
+            setTimeout(() => {
+                router.push('/auth');
+            }, 200);
 
-        // ログイン画面へ
-            router.push('/auth');
-
-        } catch (e) {
-        setError('パスワード変更に失敗しました');
+        } catch {
+            // エラーメッセージ
+            showToast('パスワード変更に失敗しました', 'error');
         }
     };
 
