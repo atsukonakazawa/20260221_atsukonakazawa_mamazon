@@ -12,11 +12,11 @@ import PaymentMethodSelector from '../../components/purchase/PaymentMethodSelect
 import { loadStripe } from '@stripe/stripe-js';
 import OrderSummary from '../../components/purchase/OrderSummary';
 import ShippingInfo from '../../components/purchase/ShippingInfo';
+import { useToast } from '@/lib/context/ToastContext';
 
 
 export default function CheckoutPage() {
-    //カートの中身取得
-    const { cartItems, clearCart } = useCart();
+    const [paymentError, setPaymentError] = useState('');
 
     //支払い方法
     const [paymentWays, setPaymentWays] = useState<any[]>([]);
@@ -34,16 +34,25 @@ export default function CheckoutPage() {
     //カード情報保存
     const [paymentMethodId, setPaymentMethodId] = useState<string | null>(null);
 
+    //カートの中身取得
+    const { cartItems, clearCart } = useCart();
+
     //stripeを初期化
     const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY!);
 
     //paymentApiからデータを受け取り注文確定
     const { user } = useUser();
     const router = useRouter();
+    const { showToast } = useToast();
+
     const handleOrder = async (total: number) => {
 
+        // 前回のStripeエラーを消す
+        setPaymentError('');
+
         if (!selectedPaymentWayId) {
-            alert('支払い方法を選択してください');
+            // エラーメッセージ
+            showToast('支払い方法を選択してください', 'error');
             return;
         }
 
@@ -53,7 +62,8 @@ export default function CheckoutPage() {
             if (paymentWays.find(w => w.id === selectedPaymentWayId)?.payment_way === 'クレジット') {
 
                 if (!paymentMethodId) {
-                    alert('カード情報を入力してください');
+                    // エラーメッセージ
+                    showToast('カード情報を入力してください', 'error');
                     return;
                 }
 
@@ -64,12 +74,13 @@ export default function CheckoutPage() {
                 });
 
                 if (result.error) {
-                    alert(result.error.message);
+                    setPaymentError(result.error.message ?? '決済に失敗しました');
                     return;
                 }
 
                 if (result.paymentIntent.status !== 'succeeded') {
-                    alert('決済に失敗しました');
+                    // エラーメッセージ
+                    showToast('決済に失敗しました', 'error');
                     return;
                 }
             }
@@ -102,7 +113,8 @@ export default function CheckoutPage() {
 
         } catch (error) {
             console.error(error);
-            alert('エラーが発生しました');
+            // エラーメッセージ
+            showToast('エラーが発生しました', 'error');
         }
     };
 
@@ -117,36 +129,42 @@ export default function CheckoutPage() {
         <>
             <Header />
 
-            <div className="p-6 max-w-2xl mx-auto">
-                <h1 className="text-2xl font-bold mb-6">注文確認</h1>
+                <div className="p-6 max-w-2xl mx-auto">
+                    <h1 className="text-2xl font-bold mb-6">注文確認</h1>
 
-                {/* 💰 金額エリアと確定ボタン */}
-                <OrderSummary
-                    cartItems={cartItems}
-                    onOrder={handleOrder}
-                />
+                    {/* 💰 金額エリアと確定ボタン */}
+                    <OrderSummary
+                        cartItems={cartItems}
+                        onOrder={handleOrder}
+                    />
 
-                {/* 💳 支払い方法 */}
-                <PaymentMethodSelector
-                    paymentWays={paymentWays}
-                    selectedPaymentWayId={selectedPaymentWayId}
-                    setSelectedPaymentWayId={setSelectedPaymentWayId}
-                    setPaymentMethodId={setPaymentMethodId}
-                />
+                    {/* 💳 支払い方法 */}
+                    <PaymentMethodSelector
+                        paymentWays={paymentWays}
+                        selectedPaymentWayId={selectedPaymentWayId}
+                        setSelectedPaymentWayId={setSelectedPaymentWayId}
+                        setPaymentMethodId={setPaymentMethodId}
+                    />
 
-                {/* 📮 配送情報 */}
-                <ShippingInfo
-                    initialPostcode={user?.postcode || ''}
-                    initialAddress={user?.address || ''}
-                    initialShippingName={
-                        user ? `${user.last_name}${user.first_name}` : ''
-                    }
-                    initialSender={
-                        user ? `${user.last_name}${user.first_name}` : ''
-                    }
-                    onChange={setShippingInfo}
-                />
-            </div>
+                    {paymentError && (
+                        <p className="mt-3 text-sm text-red-600">
+                            {paymentError}
+                        </p>
+                    )}
+
+                    {/* 📮 配送情報 */}
+                    <ShippingInfo
+                        initialPostcode={user?.postcode || ''}
+                        initialAddress={user?.address || ''}
+                        initialShippingName={
+                            user ? `${user.last_name}${user.first_name}` : ''
+                        }
+                        initialSender={
+                            user ? `${user.last_name}${user.first_name}` : ''
+                        }
+                        onChange={setShippingInfo}
+                    />
+                </div>
             <FooterLogin />
         </>
     );
