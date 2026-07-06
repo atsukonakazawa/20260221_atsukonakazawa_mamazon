@@ -10,11 +10,13 @@ import {
     fetchProductFormOptions,
     ProductFormOptions,
 } from '@/lib/api/adminProductApi';
-import { validateProductForm }  from '@/lib/utils/validation';
+import { validateProductForm } from '@/lib/utils/validation';
+import { useToast } from '@/lib/context/ToastContext';
 
 export default function AdminProductEditPage() {
     const { id } = useParams();
     const router = useRouter();
+    const { showToast } = useToast();
 
     const [formError, setFormError] = useState<string>("");
     const [newImages, setNewImages] = useState<File[]>([]);
@@ -145,10 +147,17 @@ export default function AdminProductEditPage() {
             });
 
             await updateAdminProduct(Number(id), formData);
-            alert('更新しました');
-            router.push(`/admin/products/${id}`);
+
+            //成功メッセージ
+            showToast('更新しました', 'success');
+            //少し待ってから画面遷移
+            setTimeout(() => {
+                router.push(`/admin/products/${id}`);
+            }, 300);
+
         } catch {
-            alert('更新失敗');
+            //エラーメッセージ
+            showToast('更新に失敗しました', 'error');
         }
     };
 
