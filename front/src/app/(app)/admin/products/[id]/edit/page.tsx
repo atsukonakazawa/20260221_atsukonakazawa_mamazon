@@ -153,7 +153,7 @@ export default function AdminProductEditPage() {
             //少し待ってから画面遷移
             setTimeout(() => {
                 router.push(`/admin/products/${id}`);
-            }, 300);
+            }, 200);
 
         } catch {
             //エラーメッセージ

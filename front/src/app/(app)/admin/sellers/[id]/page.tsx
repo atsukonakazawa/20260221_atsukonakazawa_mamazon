@@ -1,13 +1,18 @@
 'use client';
 
 import useSWR from 'swr';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchSellerDetail, SellerDetail, deleteSeller} from '@/lib/api/adminSellerApi';
 import Link from 'next/link';
+import { useToast } from '@/lib/context/ToastContext';
+import ConfirmDialog from '@/app/components/ConfirmDialog';
 
 export default function AdminSellerDetailPage() {
+    const [showDeleteConfirmDialog, setShowDeleteConfirmDialog] = useState(false);
     const { id } = useParams();
     const router = useRouter();
+    const { showToast } = useToast();
 
     const { data, error, isLoading } = useSWR<SellerDetail>(
         id ? `adminSeller-${id}` : null,
@@ -19,16 +24,23 @@ export default function AdminSellerDetailPage() {
     if (!data) return null;
 
     const handleDelete = async () => {
-        const ok = confirm('この販売者を削除処理しますか？');
-
-        if (!ok) return;
-
         try {
             await deleteSeller(data.id);
-            alert('削除処理しました');
-            router.push('/admin/sellers');
+
+            // ダイアログを閉じる
+            setShowDeleteConfirmDialog(false);
+            // 成功メッセージ
+            showToast('削除処理しました', 'success');
+            //少し待ってから画面遷移
+            setTimeout(() => {
+                router.push('/admin/sellers');
+            }, 200);
+
         } catch {
-            alert('処理に失敗しました');
+            // ダイアログを閉じる
+            setShowDeleteConfirmDialog(false);
+            // エラーメッセージ
+            showToast('処理に失敗しました', 'error');
         }
     };
 
@@ -72,12 +84,22 @@ export default function AdminSellerDetailPage() {
                 </button>
 
                 <button
-                    onClick={handleDelete}
+                    onClick={() => setShowDeleteConfirmDialog(true)}
                     className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 mx-4 rounded cursor-pointer"
                 >
                     削除処理
                 </button>
             </div>
+
+            <ConfirmDialog
+                open={showDeleteConfirmDialog}
+                title="販売者削除"
+                message="この販売者を削除処理しますか？"
+                confirmText="削除"
+                cancelText="キャンセル"
+                onConfirm={handleDelete}
+                onCancel={() => setShowDeleteConfirmDialog(false)}
+            />
         </div>
     );
 }

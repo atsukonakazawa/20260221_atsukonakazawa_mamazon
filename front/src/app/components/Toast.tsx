@@ -3,14 +3,18 @@
 type ToastProps = {
     message: string;
     type: 'success' | 'error';
-    visible: boolean;
+    isVisible: boolean;
+    isClosing: boolean;
 };
 
 export default function Toast({
     message,
     type,
-    visible,
+    isVisible,
+    isClosing,
 }: ToastProps) {
+
+    if (!isVisible) return null;
 
     return (
         <div
@@ -25,15 +29,15 @@ export default function Toast({
                 shadow-lg
                 text-white
                 font-medium
-                transition-opacity transform
+                transition-opacity
                 duration-500
                 flex
                 items-center
 
                 ${
-                    visible
-                        ? 'opacity-100'
-                        : 'opacity-0 pointer-events-none'
+                    isClosing
+                    ? 'opacity-0'
+                    : 'opacity-100'
                 }
 
                 ${
