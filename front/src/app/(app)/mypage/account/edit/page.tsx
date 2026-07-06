@@ -14,11 +14,9 @@ import {
     normalizePostcode
 } from '@/lib/utils/validation';
 import { fetchAddress } from "@/lib/api/postcodeApi";
-
+import { useToast } from '@/lib/context/ToastContext';
 
 export default function AccountEditPage() {
-    const { user, setUser } = useUser();
-    const router = useRouter();
 
     //フォーム入力の状態管理
     const [lastName, setLastName] = useState('');
@@ -42,6 +40,10 @@ export default function AccountEditPage() {
 
     //一時データ保存（２段階処理をするために重要）
     const [pendingData, setPendingData] = useState<UpdateUserRequest | null>(null);
+
+    const { user, setUser } = useUser();
+    const router = useRouter();
+    const { showToast } = useToast();
 
     // UserContextから初期値を持ってきてセット
     useEffect(() => {
@@ -155,8 +157,10 @@ export default function AccountEditPage() {
             setPendingData(data);
             //authApiに値を送りSMS送信
             await sendSmsCode({ tel: targetTel });
-            alert('認証コードを送信しました');
-            //画面遷移
+
+            // 成功メッセージ
+            showToast('認証コードを送信しました', 'success');
+            // SMS認証画面へ
             setStep('smsVerify');
 
         } else {
@@ -165,8 +169,14 @@ export default function AccountEditPage() {
                 const updatedUser = await updateUser(data);
 
                 setUser(updatedUser);
-                alert('更新しました！');
-                router.push('/mypage/account');
+
+                // 成功メッセージ
+                showToast('更新しました', 'success');
+                // 少し待って画面遷移
+                setTimeout(() => {
+                    router.push('/mypage/account');
+                }, 200);
+
             } catch (e: any) {
                 // Laravelのバリデーションエラー
                 if (e.errors) {
@@ -193,7 +203,7 @@ export default function AccountEditPage() {
     // 認証後の処理
     const handleVerify = async (code: string) => {
         if (!pendingData) {
-            alert('データがありません');
+            showToast('データがありません', 'error');
             return;
         }
 
@@ -236,8 +246,13 @@ export default function AccountEditPage() {
             const updatedUser = await updateUser(pendingData);
 
             setUser(updatedUser);
-            alert('更新しました！');
-            router.push('/mypage/account');
+            // 成功メッセージ
+            showToast('更新しました', 'success');
+            // 少し待って画面遷移
+            setTimeout(() => {
+                router.push('/mypage/account');
+            }, 200);
+
         } catch (e: any) {
             if (e.errors) {
                 const firstError = Object.values(e.errors)

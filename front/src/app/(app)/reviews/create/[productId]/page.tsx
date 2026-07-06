@@ -12,20 +12,20 @@ import {
     createReview,
 } from '@/lib/api/reviewApi';
 import StarRating from '../../../../components/review/StarRating';
+import { useToast } from '@/lib/context/ToastContext';
 
 export default function ReviewCreatePage() {
-    const { user } = useUser();
-    const params = useParams();
-    const router = useRouter();
-
     //商品情報取得
-    const productId = Number(params.productId);
     const [product, setProduct] = useState<Product | null>(null);
 
     const [score, setScore] = useState(5);
     const [comment, setComment] = useState('');
-    const [message, setMessage] = useState('');
-    const [error, setError] = useState('');
+
+    const { user } = useUser();
+    const params = useParams();
+    const router = useRouter();
+    const { showToast } = useToast();
+    const productId = Number(params.productId);
 
 
     // レビュー投稿可否チェック
@@ -36,14 +36,20 @@ export default function ReviewCreatePage() {
             try {
                 await checkReviewPermission(productId);
             } catch {
-                alert('この商品はお届け後にレビュー可能です。');
-                router.push('/orders');
+
+                //エラーメッセージ
+                showToast('この商品はお届け後にレビュー可能です。', 'error');
+                //少し待ってから画面遷移
+                setTimeout(() => {
+                    router.push('/orders');
+                }, 200);
+
             }
         };
 
         verifyPermission();
 
-    }, [productId, user, router]);
+    }, [productId, user, router, showToast]);
 
     //商品情報を取得
     useEffect(() => {
@@ -65,14 +71,14 @@ export default function ReviewCreatePage() {
         e.preventDefault();
 
         if (!user) {
-            alert('ログインしてください。');
+            //エラーメッセージ
+            showToast('ログインしてください。', 'error');
             return;
         }
 
         if (!product) {
-        alert('商品情報を取得中です。');
-        return;
-    }
+            return;
+        }
 
         try {
             await createReview({
@@ -88,7 +94,8 @@ export default function ReviewCreatePage() {
                 `/reviews/complete?product_name=${encodeURIComponent(productName)}&product_image=${encodeURIComponent(productImage)}&score=${score}&comment=${encodeURIComponent(comment)}`
             );
         } catch {
-            alert('レビューの投稿に失敗しました。');
+            //エラーメッセージ
+            showToast('レビューの投稿に失敗しました。', 'error');
         }
     };
 
@@ -99,13 +106,6 @@ export default function ReviewCreatePage() {
                 <h1 className="text-2xl font-bold mb-4">
                     商品レビューを書く
                 </h1>
-
-                {message && (
-                    <p className="text-green-600 mb-2">{message}</p>
-                )}
-                {error && (
-                    <p className="text-red-600 mb-2">{error}</p>
-                )}
 
                 {product && (
                     <div className="flex items-center gap-4 mb-6 border p-4 rounded">
