@@ -38,7 +38,7 @@ export default function AdminProductDetailPage() {
             //少し待ってから画面遷移
             setTimeout(() => {
                 router.push('/admin/products');
-            }, 300);
+            }, 200);
         } catch {
             //削除確認ダイアログを閉じる
             setShowDeleteConfirmDialog(false);
@@ -62,7 +62,7 @@ export default function AdminProductDetailPage() {
             //少し待ってから画面遷移
             setTimeout(() => {
                 router.push('/admin/products');
-            }, 300);
+            }, 200);
 
         } catch {
             showToast('承認に失敗しました', 'error');

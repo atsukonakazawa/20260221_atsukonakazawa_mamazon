@@ -21,7 +21,8 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export function ToastProvider({ children }: { children: ReactNode }) {
     const [message, setMessage] = useState('');
     const [type, setType] = useState<ToastType>('success');
-    const [visible, setVisible] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
 
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     useEffect(() => {
@@ -35,14 +36,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     const showToast = (message: string, type: ToastType) => {
         setMessage(message);
         setType(type);
-        setVisible(true);
+        setIsClosing(false);
+        setIsVisible(true);
 
         if (timerRef.current) {
             clearTimeout(timerRef.current);
         }
 
         timerRef.current = setTimeout(() => {
-            setVisible(false);
+            setIsClosing(true);
+
+            timerRef.current = setTimeout(() => {
+                setIsVisible(false);
+            }, 1000);
         }, 2000);
     };
 
@@ -53,7 +59,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <Toast
                 message={message}
                 type={type}
-                visible={visible}
+                isVisible={isVisible}
+                isClosing={isClosing}
             />
         </ToastContext.Provider>
     );
