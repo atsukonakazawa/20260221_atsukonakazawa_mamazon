@@ -48,7 +48,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
             timerRef.current = setTimeout(() => {
                 setIsVisible(false);
-            }, 1000);
+            }, 1500);
         }, 1000);
     };
 
