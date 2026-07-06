@@ -16,12 +16,14 @@ import type { SignupData } from '../components/login/SignupForm';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/lib/context/UserContext';
 import { isValidPhone, isValidEmail, normalizePhone } from '@/lib/utils/validation';
+import { useToast } from '@/lib/context/ToastContext';
 
 
 export default function LoginPage() {
   const [userInput, setUserInput] = useState<string>("");
   const [normalizedInput, setNormalizedInput] = useState("");
   const [isEmail, setIsEmail] = useState(false);
+  const [smsError, setSmsError] = useState('');
 
   //一時データ保存（２段階処理をするために重要）
   const [pendingSignup, setPendingSignup] =
@@ -35,6 +37,7 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const { setUser } = useUser();
   const router = useRouter();
+  const { showToast } = useToast();
 
 
   //===========================
@@ -119,16 +122,6 @@ export default function LoginPage() {
         return;
       }
 
-      // 🔑 SMS未認証
-      if (
-        err.status === 403 &&
-        err.message === 'SMS認証が完了していません'
-      ) {
-        alert('SMS認証が必要です');
-        setStep('smsVerify');
-        return;
-      }
-
       // ❌ パスワード不一致（401）
       if (err.status === 401) {
         setErrorMessage("パスワードが一致しません");
@@ -136,7 +129,7 @@ export default function LoginPage() {
       }
 
       //その他
-      alert(err.message ?? 'ログイン失敗');
+      showToast(err.message ?? 'ログインに失敗しました', 'error');
     }
   };
 
@@ -146,20 +139,28 @@ export default function LoginPage() {
 
   const handleSignup = async (data: SignupData) => {
     if (!data.tel) {
-      alert('電話番号がありません');
-      return;
+      return
     }
 
     // ①仮登録データを保存（まだDBには入れない）
     setPendingSignup(data);
 
-    // ②SMS送信APIを呼ぶ
-    await sendSmsCode({ tel: data.tel });
+    try {
+      // ②SMS送信APIを呼ぶ
+      await sendSmsCode({ tel: data.tel });
 
-    alert('認証コードを送信しました');
+      //成功メッセージ
+      showToast('認証コードを送信しました', 'success');
 
-    // ③SMS認証画面へ
-    setStep('smsVerify');
+      //③少し待ってからSMS認証画面へ
+      setTimeout(() => {
+        setStep('smsVerify');
+      }, 200);
+    } catch {
+
+      //エラーメッセージ
+      showToast('認証コードの送信に失敗しました', 'error');
+    }
 
   };
 
@@ -178,15 +179,18 @@ export default function LoginPage() {
       });
 
       if (!result.success) {
-        alert('認証コードが正しくありません');
+        setSmsError('認証コードが正しくありません');
         return;
       }
 
       // 必須チェック（ここ超重要）
       if (!pendingSignup.email || !pendingSignup.tel) {
-        alert('メールアドレスと電話番号は必須です');
+        setSmsError('メールアドレスと電話番号は必須です')
         return;
       }
+
+      //古いエラーメッセージを消す
+      setSmsError('');
 
       // 型を確定させる（RegisterPayloadに合わせる）
       const payload = {
@@ -198,11 +202,20 @@ export default function LoginPage() {
       // 本登録
       await registerUser(payload);
 
-      alert('アカウント登録が完了しました');
-      setStep('password');
+      //成功メッセージ
+      showToast('アカウント登録が完了しました', 'success');
+      //少し待ってから画面遷移
+      setTimeout(() => {
+        setStep('password');
+      }, 200);
 
-    } catch(e) {
-      alert('通信エラーが発生しました。もう一度お試しください');
+    } catch (e: any) {
+      if (e.status === 422) {
+        setSmsError(e.message ?? '認証コードが正しくありません');
+        return;
+      }
+      //エラーメッセージ
+      showToast('通信エラーが発生しました。もう一度お試しください', 'error');
     }
   };
 
@@ -216,6 +229,7 @@ export default function LoginPage() {
           <SmsVerifyForm
             tel={pendingSignup.tel!}
             onVerify={handleVerify}
+            errorMessage={smsError}
           />
         )}
 
