@@ -10,12 +10,15 @@ import {
 } from '@/lib/api/adminSellerApi';
 import { validateSellerForm, normalizePhone, normalizePostcode } from '@/lib/utils/validation';
 import { fetchAddress } from "@/lib/api/postcodeApi";
+import { useToast } from '@/lib/context/ToastContext';
 
 
 export default function AdminSellerEditPage() {
+    const [formError, setFormError] = useState<string>("");
+
     const { id } = useParams();
     const router = useRouter();
-    const [formError, setFormError] = useState<string>("");
+    const { showToast } = useToast();
 
     const { data, isLoading, error } = useSWR<SellerDetail>(
         id ? `admin-seller-${id}` : null,
@@ -77,6 +80,10 @@ export default function AdminSellerEditPage() {
     };
 
     const handleSubmit = async () => {
+
+        //前回のエラーメッセージを消す
+        setFormError('');
+
         const errorMessage = validateSellerForm({
             seller_name: form.seller_name,
             tel: form.tel ?? '',
@@ -95,10 +102,17 @@ export default function AdminSellerEditPage() {
                 postcode: normalizePostcode(form.postcode),
                 tel: normalizePhone(form.tel),
             });
-            alert('更新しました');
-            router.push(`/admin/sellers/${id}`);
+
+            // 成功メッセージ
+            showToast('更新しました', 'success');
+            // 少し待って画面遷移
+            setTimeout(() => {
+                router.push(`/admin/sellers/${id}`);
+            }, 200);
+
         } catch {
-            alert('更新失敗');
+            // エラーメッセージ
+            showToast('更新に失敗しました', 'error');
         }
     };
 
@@ -113,7 +127,7 @@ export default function AdminSellerEditPage() {
                 </h1>
 
                 <div className="space-y-4">
-                    <input name="last_name" value={form.seller_name} onChange={handleChange} placeholder="株式会社　ABC" className="w-full border p-2 rounded" />
+                    <input name="seller_name" value={form.seller_name} onChange={handleChange} placeholder="株式会社　ABC" className="w-full border p-2 rounded" />
                     <input name="tel" value={form.tel} onChange={handleChange} placeholder="電話番号" className="w-full border p-2 rounded" />
                     <input name="postcode" value={form.postcode} onChange={handleChange} placeholder="郵便番号" className="w-full border p-2 rounded" />
                     <input name="address" value={form.address} onChange={handleChange} placeholder="住所" className="w-full border p-2 rounded" />
