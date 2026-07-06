@@ -26,7 +26,7 @@ export default function Toast({
                 text-white
                 font-medium
                 transition-opacity transform
-                duration-300
+                duration-500
                 flex
                 items-center
 
