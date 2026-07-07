@@ -198,13 +198,6 @@ export default function OrdersPage() {
                                     {/* 下段・右 */}
                                     <div className="py-4 items-center w-[200px]">
 
-                                        {/* テスト */}
-                                        <button
-                                            className="cursor-pointer  my-1 p-1 text-sm w-full rounded-full border border-black-100"
-                                        >
-                                            テスト
-                                        </button>
-
                                         {/* お支払い番号 */}
                                         <button
                                             onClick={() => handlePaymentInfo(item)}
