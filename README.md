@@ -26,7 +26,7 @@ EC サイトで一般的な商品管理、注文管理、レビュー、画像�
 
 ## URL
 
-- **アプリ（ユーザートップ画面）** : https://20260221-atsukonakazawa-mamazon.vercel.app
+- **アプリ（トップページ）** : https://20260221-atsukonakazawa-mamazon.vercel.app
 
 - **アプリ（販売会社ダッシュボード）** : https://20260221-atsukonakazawa-mamazon.vercel.app/seller/dashboard
 
