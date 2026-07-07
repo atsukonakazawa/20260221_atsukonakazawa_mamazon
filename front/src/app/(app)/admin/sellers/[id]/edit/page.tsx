@@ -123,7 +123,7 @@ export default function AdminSellerEditPage() {
         <div className="min-h-screen bg-gray-100 p-5">
             <div className="bg-white max-w-2xl mx-auto rounded border p-6">
                 <h1 className="text-xl font-semibold mb-6">
-                    販売者情報　編集
+                    販売会社情報　編集
                 </h1>
 
                 <div className="space-y-4">

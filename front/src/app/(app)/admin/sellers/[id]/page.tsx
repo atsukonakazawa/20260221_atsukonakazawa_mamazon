@@ -55,11 +55,11 @@ export default function AdminSellerDetailPage() {
             </Link>
 
             <div className="bg-white border border-gray-300 rounded-md mx-auto p-6 max-w-2xl">
-                <h1 className="text-xl font-semibold mb-4">販売者　詳細</h1>
+                <h1 className="text-xl font-semibold mb-4">販売会社　詳細</h1>
 
                 <div className="space-y-3 text-sm">
                     <div><strong>ID:</strong> {data.id}</div>
-                    <div><strong>販売者名:</strong> {data.seller_name}</div>
+                    <div><strong>販売会社名:</strong> {data.seller_name}</div>
                     <div><strong>電話番号:</strong> {data.tel ?? '-'}</div>
                     <div><strong>郵便番号:</strong> {data.postcode ?? '-'}</div>
                     <div><strong>住所:</strong> {data.address ?? '-'}</div>
@@ -94,8 +94,8 @@ export default function AdminSellerDetailPage() {
 
             <ConfirmDialog
                 open={showDeleteConfirmDialog}
-                title="販売者削除"
-                message="この販売者を削除処理しますか？"
+                title="販売会社削除"
+                message="この販売会社を削除処理しますか？"
                 confirmText="削除"
                 cancelText="キャンセル"
                 onConfirm={handleDelete}
