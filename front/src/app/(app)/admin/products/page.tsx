@@ -132,7 +132,7 @@ export default function AdminProductsPage() {
                             <th
                                 onClick={() => handleSort('seller_name')}
                                 className="text-left px-3 py-2 font-semibold border-b cursor-pointer hover:bg-gray-100 w-32">
-                                販売者{sortKey === 'seller_name' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
+                                販売会社{sortKey === 'seller_name' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
                             </th>
                             <th
                                 onClick={() => handleSort('product_name')}

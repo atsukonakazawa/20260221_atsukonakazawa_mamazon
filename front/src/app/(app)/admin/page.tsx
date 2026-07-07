@@ -27,17 +27,17 @@ export default function AdminPage() {
                     </p>
                 </button>
 
-                {/* 販売者管理 */}
+                {/* 販売会社管理 */}
                 <button
                     onClick={() => router.push('/admin/sellers')}
                     className="bg-white border border-gray-300 rounded-lg px-6 py-10 text-left hover:bg-gray-50 transition cursor-pointer shadow-sm"
                 >
                     <h2 className="text-lg font-semibold mb-2">
-                        販売者管理
+                        販売会社管理
                     </h2>
 
                     <p className="text-sm text-gray-600">
-                        販売者一覧の確認・検索・停止処理
+                        販売会社一覧の確認・検索・停止処理
                     </p>
                 </button>
 

@@ -85,7 +85,7 @@ export default function AdminSellersPage() {
                             setSearch(keyword.trim());
                         }
                     }}
-                    placeholder="販売者名・住所・電話番号で検索"
+                    placeholder="販売会社名・住所・電話番号で検索"
                     className="border border-gray-300 rounded bg-white px-3 py-2 text-sm w-96"
                 />
                 <button
@@ -111,7 +111,7 @@ export default function AdminSellersPage() {
                                 onClick={() => handleSort('seller_name')}
                                 className="text-left px-3 py-2 font-semibold border-b cursor-pointer hover:bg-gray-100 w-48"
                             >
-                                販売者名{sortKey === 'seller_name' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
+                                販売会社名{sortKey === 'seller_name' && (sortOrder === 'asc' ? ' ↑' : ' ↓')}
                             </th>
                             <th
                                 onClick={() => handleSort('postcode')}

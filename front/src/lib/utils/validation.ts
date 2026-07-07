@@ -108,7 +108,7 @@ export const validateUserForm = (data: {
     return null; // OK
 };
 
-// 管理画面用バリデーション（販売者）
+// 管理画面用バリデーション（販売会社）
 export const validateSellerForm = (data: {
     seller_name: string;
     email?: string;
@@ -117,7 +117,7 @@ export const validateSellerForm = (data: {
     address: string;
 }) => {
     if (!data.seller_name) {
-        return "販売者名を入力してください";
+        return "販売会社名を入力してください";
     }
 
     if (!data.tel) {

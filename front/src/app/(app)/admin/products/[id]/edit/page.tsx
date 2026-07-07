@@ -219,7 +219,7 @@ export default function AdminProductEditPage() {
 
                     <label className="block mb-1 font-bold text-[0.9rem]">
                         <span className="mr-3 px-2 py-1 bg-red-500 text-xs text-white round rounded-sm">必須</span>
-                        販売者
+                        販売会社
                     </label>
                     <select
                         name="seller_id"
@@ -227,7 +227,7 @@ export default function AdminProductEditPage() {
                         onChange={handleChange}
                         className="w-full border p-2 rounded bg-white"
                     >
-                        <option value="">販売者を選択</option>
+                        <option value="">販売会社を選択</option>
 
                         {options?.sellers.map((seller) => (
                             <option
