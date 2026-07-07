@@ -67,8 +67,6 @@ export default function BottomNav() {
                 {/* メニューボタン */}
                 {navItem('/menu', 'メニュー', Menu)}
 
-                {/* AIボタン */}
-                {navItem('/ai', 'AI', Bot)}
             </div>
 
         </>
