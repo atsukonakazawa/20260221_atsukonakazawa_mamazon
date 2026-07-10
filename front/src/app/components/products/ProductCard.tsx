@@ -84,7 +84,7 @@ export default function ProductCard({ product }: Props) {
 
                         router.push("/auth");
                     }}
-                    className="cursor-pointer mt-3 w-full bg-yellow-400 py-2 rounded-full hover:bg-yellow-500 text-sm"
+                    className="cursor-pointer mt-3 w-full bg-yellow-400 py-2 rounded-full hover:bg-yellow-500 text-xs"
                 >
                     ログインしてカートに入れる
                 </button>

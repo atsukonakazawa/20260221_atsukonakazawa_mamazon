@@ -95,9 +95,9 @@ export default function OrdersPage() {
                             <div key={item.id} className="border rounded-lg">
 
                                 {/* 上段 */}
-                                <div className="flex justify-between rounded-t-lg bg-[rgb(239,242,242)]">
+                                <div className="flex flex-col md:flex-row md:justify-between rounded-t-lg bg-[rgb(239,242,242)]">
                                     {/* 上段・左 */}
-                                    <div className="flex justify-start">
+                                    <div className="flex flex-col sm:flex-row">
 
                                         {/* 注文日 */}
                                         <div className="px-6 py-2 mb-2">
@@ -130,12 +130,19 @@ export default function OrdersPage() {
                                                     {item.shipping_name}
                                                 </p>
                                                 {/* ホバー時に表示される住所 */}
-                                                <div className="
-                                                    absolute left-0 mt-1 hidden group-hover:block
-                                                    text-sm rounded p-3
-                                                    shadow-lg bg-white  border border-gray-300 whitespace-nowrap z-10">
-                                                    〒{item.shipping_postcode}<br />
-                                                    {item.shipping_address}
+                                                <div className="hidden md:block">
+                                                    <div className="
+                                                        absolute left-0 mt-1 hidden group-hover:block
+                                                        text-sm rounded p-3
+                                                        shadow-lg bg-white  border border-gray-300 whitespace-nowrap z-10">
+                                                        〒{item.shipping_postcode}<br />
+                                                        {item.shipping_address}
+                                                    </div>
+                                                </div>
+                                                <div className="block md:hidden text-sm">
+                                                    <p>{item.shipping_name}</p>
+                                                    <p>〒{item.shipping_postcode}</p>
+                                                    <p>{item.shipping_address}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -155,7 +162,7 @@ export default function OrdersPage() {
                                 </div>
 
                                 {/* 下段 */}
-                                <div className="p-2 flex items-center justify-between">
+                                <div className="p-2 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
                                     {/* 下段・左側 */}
                                     <div className="p-2 items-center gap-4 max-w-sm">
@@ -180,7 +187,7 @@ export default function OrdersPage() {
                                             <Link href={`/products/${item.product?.id}`}>
                                                 <img
                                                     src={item.product?.images?.[0]?.image_path || "/no-image.png"}
-                                                    className="w-25 h-25 object-contain cursor-pointer"
+                                                    className="w-24 h-24 object-contain"
                                                     alt={item.product?.product_name}
                                                 />
                                             </Link>
@@ -188,7 +195,7 @@ export default function OrdersPage() {
                                             {/* 商品名 */}
                                             <Link
                                                 href={`/products/${item.product?.id}`}
-                                                className="font-medium truncate text-blue-600 hover:underline"
+                                                className="font-medium text-sm md:text-base break-words text-blue-600 hover:underline"
                                             >
                                                 {item.product?.product_name || "商品名なし"}
                                             </Link>
@@ -196,7 +203,7 @@ export default function OrdersPage() {
                                     </div>
 
                                     {/* 下段・右 */}
-                                    <div className="py-4 items-center w-[200px]">
+                                    <div className="py-4 w-full md:w-[200px]">
 
                                         {/* お支払い番号 */}
                                         <button
