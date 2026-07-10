@@ -75,6 +75,7 @@ Mamazon は、Amazon を参考に制作したポートフォリオ用の EC サ�
 
 - Cloudinary
 - Stripe（テストモード）
+   > ※クレジットで注文を試す場合、クレジットカード番号は4242 4242 4242 4242でお願いいたします。
 - Twilio Verify API
 
 ## 主な機能
