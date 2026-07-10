@@ -97,10 +97,10 @@ export default function OrdersPage() {
                                 {/* 上段 */}
                                 <div className="flex flex-col md:flex-row md:justify-between rounded-t-lg bg-[rgb(239,242,242)]">
                                     {/* 上段・左 */}
-                                    <div className="flex flex-col sm:flex-row">
+                                    <div className="flex flex-col gap-1 sm:flex-row sm:gap-0">
 
                                         {/* 注文日 */}
-                                        <div className="px-6 py-2 mb-2">
+                                        <div className="px-3 py-1 sm:px-6 sm:py-2 sm:mb-2">
                                             <span className="text-xs">
                                                 注文日
                                             </span>
@@ -110,7 +110,7 @@ export default function OrdersPage() {
                                         </div>
 
                                         {/* 価格 */}
-                                        <div className="px-6 py-2 mb-2">
+                                        <div className="px-3 py-1 sm:px-6 sm:py-2 sm:mb-2">
                                             <span className="text-xs">
                                                 合計
                                             </span>
@@ -120,7 +120,7 @@ export default function OrdersPage() {
                                         </div>
 
                                         {/* お届け先 */}
-                                        <div className="px-6 py-2 mb-2">
+                                        <div className="px-3 py-1 sm:px-6 sm:py-2 sm:mb-2">
                                             <span className="text-xs">
                                                 お届け先
                                             </span>
@@ -149,7 +149,7 @@ export default function OrdersPage() {
                                      {/* 上段・右 */}
                                     <div className="flex justify-end">
                                         {/* 注文番号 */}
-                                        <div className="px-6 py-2 mb-2">
+                                        <div className="px-3 py-1 sm:px-6 sm:py-2 sm:mb-2">
                                             <span className="text-xs">
                                                 注文番号
                                             </span>
@@ -220,7 +220,7 @@ export default function OrdersPage() {
                                                 ${
                                                     item.shipment_status === "お届け済み"
                                                         ? "cursor-pointer border-black-100 hover:bg-gray-100"
-                                                        : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                                        : "bg-[rgb(239,242,242)] text-gray-500 cursor-not-allowed"
                                                 }`}
                                             >
                                                 商品レビューを書く
