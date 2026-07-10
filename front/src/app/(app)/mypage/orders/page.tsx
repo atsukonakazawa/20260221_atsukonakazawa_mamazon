@@ -140,7 +140,6 @@ export default function OrdersPage() {
                                                     </div>
                                                 </div>
                                                 <div className="block md:hidden text-sm">
-                                                    <p>{item.shipping_name}</p>
                                                     <p>〒{item.shipping_postcode}</p>
                                                     <p>{item.shipping_address}</p>
                                                 </div>
